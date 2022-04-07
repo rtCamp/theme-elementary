@@ -1,0 +1,30 @@
+{
+	"name": "elementary",
+	"version": "1.0.0",
+	"description": "Feature plugin skeleton v2 for internal uses.",
+	"private": true,
+	"author": "rtCamp",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"rtcamp",
+		"wp-theme",
+		"blocks-theme"
+	],
+	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rtCamp/theme-elementary.git"
+	},
+	"bugs": {
+		"url": "https://github.com/rtCamp/theme-elementary/issues"
+	},
+	"engines": {
+		"node": ">= 14",
+		"npm": ">= 6.14 <7"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"lint:php": "vendor/bin/phpcs",
+		"lint:php:fix": "./bin/phpcbf.sh"
+	}
+}
