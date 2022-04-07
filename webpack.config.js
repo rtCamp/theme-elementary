@@ -1,34 +1,37 @@
 /**
  * External dependencies
  */
-const fs = require('fs');
-const path = require('path');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+const fs = require( 'fs' );
+const path = require( 'path' );
+const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
+const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 
 /**
  * WordPress dependencies
  */
-const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+/**
+ * WordPress dependencies
+ */
+const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 // Extend the default config.
 const sharedConfig = {
 	...defaultConfig,
 	output: {
-		path: path.resolve(process.cwd(), 'assets', 'build', 'js'),
+		path: path.resolve( process.cwd(), 'assets', 'build', 'js' ),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
 	plugins: [
 		...defaultConfig.plugins
-		.map(
-			(plugin) => {
-				if (plugin.constructor.name === 'MiniCssExtractPlugin') {
-					plugin.options.filename = '../css/[name].css';
-				}
-				return plugin;
-			},
-		),
+			.map(
+				( plugin ) => {
+					if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
+						plugin.options.filename = '../css/[name].css';
+					}
+					return plugin;
+				},
+			),
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
@@ -36,7 +39,7 @@ const sharedConfig = {
 		splitChunks: {
 			...defaultConfig.optimization.splitChunks,
 		},
-		minimizer: defaultConfig.optimization.minimizer.concat([new CssMinimizerPlugin()]),
+		minimizer: defaultConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
 	},
 };
 
@@ -48,12 +51,12 @@ const styles = {
 		const entries = {};
 
 		const dir = './assets/src/css';
-		fs.readdirSync(dir).forEach((fileName) => {
+		fs.readdirSync( dir ).forEach( ( fileName ) => {
 			const fullPath = `${ dir }/${ fileName }`;
-			if (!fs.lstatSync(fullPath).isDirectory()) {
-				entries[fileName.replace(/\.[^/.]+$/, '')] = fullPath;
+			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
+				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
 			}
-		});
+		} );
 
 		return entries;
 	},
@@ -62,7 +65,7 @@ const styles = {
 	},
 	plugins: [
 		...sharedConfig.plugins.filter(
-			(plugin) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
+			( plugin ) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
 		),
 	],
 
@@ -75,7 +78,7 @@ const exampleJS = {
 		'example-js': path.resolve(process.cwd(), 'assets', 'src', 'js', 'example.js'),
 	},
 };
-*/
+ */
 
 module.exports = [
 	styles, // Do not remove this.
