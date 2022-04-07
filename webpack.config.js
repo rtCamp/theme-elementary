@@ -49,8 +49,16 @@ const styles = {
 	...sharedConfig,
 	entry: () => {
 		const entries = {};
-
 		const dir = './assets/src/css';
+
+		if ( ! fs.existsSync( dir ) ) {
+			return entries;
+		}
+
+		if ( fs.readdirSync( dir ).length === 0 ) {
+			return entries;
+		}
+
 		fs.readdirSync( dir ).forEach( ( fileName ) => {
 			const fullPath = `${ dir }/${ fileName }`;
 			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
