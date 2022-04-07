@@ -22,9 +22,36 @@
 		"node": ">= 14",
 		"npm": ">= 6.14 <7"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@babel/core": "7.17.8",
+		"@wordpress/babel-preset-default": "6.7.0",
+		"@wordpress/browserslist-config": "4.1.2",
+		"@wordpress/eslint-plugin": "11.1.0",
+		"@wordpress/scripts": "22.2.1",
+		"browserslist": "4.20.0",
+		"cross-env": "7.0.3",
+		"css-minimizer-webpack-plugin": "3.4.1",
+		"eslint": "8.11.0",
+		"eslint-plugin-eslint-comments": "3.2.0",
+		"eslint-plugin-import": "2.25.4",
+		"eslint-plugin-jest": "26.1.3",
+		"npm-run-all": "4.1.5",
+		"webpack-remove-empty-scripts": "0.7.3"
+	},
 	"scripts": {
+		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
+		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
+		"build:js": "wp-scripts build",
+		"dev": "wp-scripts start",
+		"lint": "npm-run-all --parallel lint:*",
+		"lint:css": "wp-scripts lint-style ./assets/src",
+		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
+		"lint:js": "wp-scripts lint-js ./assets/src",
+		"lint:js:fix": "npm run lint:js -- --fix ./assets/src",
+		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
 		"lint:php": "vendor/bin/phpcs",
-		"lint:php:fix": "./bin/phpcbf.sh"
+		"lint:php:fix": "./bin/phpcbf.sh",
+		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
+		"start": "wp-scripts start"
 	}
 }
