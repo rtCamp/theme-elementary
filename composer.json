@@ -16,7 +16,7 @@
 		}
 	},
 	"scripts": {
-		"cs" : "@php ./vendor/bin/phpcs",
-		"cs:fix" : "@php ./vendor/bin/phpcbf"
+		"phpcs" : "@php ./vendor/bin/phpcs",
+		"phpcs:fix" : "@php ./vendor/bin/phpcbf"
 	}
 }
