@@ -47,7 +47,7 @@
 		Multiple valid text domains can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="blank-theme"/>
+			<property name="text_domain" type="array" value="elementary"/>
 		</properties>
 	</rule>
 
@@ -79,7 +79,7 @@
 		Multiple valid prefixes can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="blank_theme, BLANK_THEME" />
+			<property name="prefixes" type="array" value="elementary, ELEMENTARY" />
 		</properties>
 	</rule>
 
