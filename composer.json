@@ -1,0 +1,22 @@
+{
+	"name": "rtcamp/theme-elementary",
+	"description": "A Block based starter theme.",
+	"type": "wordpress-theme",
+	"homepage": "https://rtcamp.com/",
+	"require-dev": {
+		"wp-coding-standards/wpcs": "^2.3",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"automattic/vipwpcs": "^2.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "0.7.2",
+		"sirbrillig/phpcs-variable-analysis": "^2.11.3"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"phpcs" : "@php ./vendor/bin/phpcs",
+		"phpcs:fix" : "@php ./vendor/bin/phpcbf"
+	}
+}
