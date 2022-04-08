@@ -5,7 +5,7 @@
  * @package Elementary
  */
 
-define( 'TESTS_THEME_DIR', dirname( __DIR__ ) );
+define( 'TESTS_THEME_DIR', __DIR__ );
 
 // Load Composer dependencies if applicable.
 if ( file_exists( dirname( TESTS_THEME_DIR ) . '/vendor/autoload.php' ) ) {
