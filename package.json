@@ -18,10 +18,6 @@
 	"bugs": {
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
-	"engines": {
-		"node": ">= 14",
-		"npm": ">= 6.14 <7"
-	},
 	"devDependencies": {
 		"@babel/core": "7.17.8",
 		"@wordpress/babel-preset-default": "6.7.0",
