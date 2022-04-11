@@ -18,6 +18,14 @@
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
 	},
+	"autoload": {
+		"classmap": [
+			"inc/"
+		],
+		"files": [
+			"inc/helpers/custom-functions.php"
+		]
+	},
 	"autoload-dev": {
 		"psr-4": {
 			"Elementary\\Tests\\": "tests/php/"
