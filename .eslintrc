@@ -1,0 +1,15 @@
+{
+	"root": true,
+	"extends": [
+		"plugin:@wordpress/eslint-plugin/recommended-with-formatting",
+		"plugin:import/recommended",
+		"plugin:eslint-comments/recommended"
+	],
+	"env": {
+		"browser": true
+	},
+	"rules": {
+		"jsdoc/check-indentation": "error",
+		"@wordpress/dependency-group": "error"
+	}
+}
