@@ -11,5 +11,19 @@
 	"rules": {
 		"jsdoc/check-indentation": "error",
 		"@wordpress/dependency-group": "error"
-	}
+	},
+	"overrides": [{
+		"files": [
+			"**/__tests__/**/*.js",
+			"**/test/*.js",
+			"**/?(*.)test.js",
+			"tests/js/**/*.js"
+		],
+		"extends": [
+			"plugin:jest/all"
+		],
+		"rules": {
+		  // Add Rules for Jest here
+		}
+	}]
 }
