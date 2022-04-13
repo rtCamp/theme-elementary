@@ -2,10 +2,10 @@
 /**
  * Base class for block patterns.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Patterns;
+namespace Elementary_Theme\Patterns;
 
 /**
  * Class Block_Pattern_Base

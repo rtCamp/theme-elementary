@@ -2,10 +2,10 @@
 /**
  * Provide a base class for all unit tests by extending WP_UnitTestCase.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Tests;
+namespace Elementary_Theme\Tests;
 
 use WP_UnitTestCase;
 

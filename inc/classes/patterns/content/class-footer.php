@@ -2,12 +2,12 @@
 /**
  * Footer pattern content.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Patterns\Content;
+namespace Elementary_Theme\Patterns\Content;
 
-use Elementary\Patterns\Block_Pattern_Base;
+use Elementary_Theme\Patterns\Block_Pattern_Base;
 
 /**
  * Class Footer
@@ -23,7 +23,7 @@ final class Footer extends Block_Pattern_Base {
 	 */
 	public function block_pattern() {
 		return array(
-			'title'      => __( 'Footer', 'elementary' ),
+			'title'      => __( 'Footer', 'elementary-theme' ),
 			'categories' => array( 'footer' ),
 			'blockTypes' => array( 'core/template-part/footer' ),
 			'content'    => $this->block_pattern_content(),
@@ -48,8 +48,8 @@ final class Footer extends Block_Pattern_Base {
 					<?php
 					printf(
 						/* Translators: WordPress link. */
-						esc_html__( 'Proudly powered by %s', 'elementary' ),
-						'<a href="' . esc_url( __( 'https://wordpress.org', 'elementary' ) ) . '" rel="nofollow">WordPress</a>'
+						esc_html__( 'Proudly powered by %s', 'elementary-theme' ),
+						'<a href="' . esc_url( __( 'https://wordpress.org/', 'elementary-theme' ) ) . '">WordPress</a>'
 					);
 					?>
 				</p><!-- /wp:paragraph -->

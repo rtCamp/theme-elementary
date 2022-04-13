@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
 define( 'TESTS_THEME_DIR', __DIR__ );
