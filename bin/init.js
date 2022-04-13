@@ -30,7 +30,8 @@ const info = {
 		return `\x1b[34m${ message }\x1b[0m`;
 	},
 };
-let isSomethingChanged = false;
+let fileContentUpdated = false;
+let fileNameUpdated = false;
 
 // Start with a prompt.
 rl.question( 'Would you like to setup the theme? (Y/n) ', ( answer ) => {
@@ -144,14 +145,33 @@ const initTheme = ( themeInfo ) => {
 	const incDirFiles = getAllFiles( getRoot() + '/inc' );
 	const templatesDirFiles = getAllFiles( getRoot() + '/templates' );
 
+	// File name to replace in.
+	const fileNameToReplace = {
+		'class-elementary-theme.php': 'class-' + themeInfo.kebabCase + '.php',
+	};
+
 	// Concat all files.
 	const allFiles = files.concat( incDirFiles ).concat( templatesDirFiles );
 
-	console.log( info.success( '\nReplacing theme details in files...' ) );
+	// Replace files contents.
+	console.log( info.success( '\nUpdating theme details in files...' ) );
 	Object.keys( chunksToReplace ).forEach( ( key ) => {
-		replaceContentInFile( allFiles, key, chunksToReplace[ key ] );
+		replaceFileContent( allFiles, key, chunksToReplace[ key ] );
 	} );
-	if ( isSomethingChanged ) {
+	if ( ! fileContentUpdated ) {
+		console.log( info.error( 'No file content updated.\n' ) );
+	}
+
+	// Replace file names
+	console.log( info.success( '\nUpdating theme bootstrap file name...' ) );
+	Object.keys( fileNameToReplace ).forEach( ( key ) => {
+		replaceFileName( allFiles, key, fileNameToReplace[ key ] );
+	} );
+	if ( ! fileNameUpdated ) {
+		console.log( info.error( 'No file name updated.\n' ) );
+	}
+
+	if ( fileContentUpdated || fileNameUpdated ) {
 		console.log( info.success( '\nYour new theme is ready to go!' ), '✨' );
 		// Docs link
 		console.log( info.success( '\nFor more information on how to use this theme, please visit the following link: ' + info.warning( 'https://github.com/rtCamp/theme-elementary/blob/main/README.md' ) ) );
@@ -185,9 +205,9 @@ const getAllFiles = ( dir ) => {
  *
  * @param {Array}  files           Files to search
  * @param {string} chunksToReplace String to replace
- * @param {Object} newChunk        New string to replace with
+ * @param {string} newChunk        New string to replace with
  */
-const replaceContentInFile = ( files, chunksToReplace, newChunk ) => {
+const replaceFileContent = ( files, chunksToReplace, newChunk ) => {
 	files.forEach( ( file ) => {
 		const filePath = path.resolve( getRoot(), file );
 
@@ -197,9 +217,33 @@ const replaceContentInFile = ( files, chunksToReplace, newChunk ) => {
 			content = content.replace( regex, newChunk );
 			if ( content !== fs.readFileSync( filePath, 'utf8' ) ) {
 				fs.writeFileSync( filePath, content, 'utf8' );
-				console.log( info.success( `Updated file is ${ info.message( path.basename( filePath ) ) }` ) );
-				isSomethingChanged = true;
+				console.log( info.success( `Updated [${ info.message( chunksToReplace ) }] ${ info.success( 'to' ) } [${ info.message( newChunk ) }] ${ info.success( 'in file' ) } [${ info.message( path.basename( file ) ) }]` ) );
+				fileContentUpdated = true;
 			}
+		} catch ( err ) {
+			console.log( info.error( `\nError: ${ err }` ) );
+		}
+	} );
+};
+
+/**
+ * Change File Name
+ *
+ * @param {Array}  files       Files to search
+ * @param {string} oldFileName Old file name
+ * @param {string} newFileName New file name
+ */
+const replaceFileName = ( files, oldFileName, newFileName ) => {
+	files.forEach( ( file ) => {
+		if ( oldFileName !== path.basename( file ) ) {
+			return;
+		}
+		const filePath = path.resolve( getRoot(), file );
+		const newFilePath = path.resolve( getRoot(), file.replace( oldFileName, newFileName ) );
+		try {
+			fs.renameSync( filePath, newFilePath );
+			console.log( info.success( `Updated file [${ info.message( path.basename( filePath ) ) }] ${ info.success( 'to' ) } [${ info.message( path.basename( newFilePath ) ) }]` ) );
+			fileNameUpdated = true;
 		} catch ( err ) {
 			console.log( info.error( `\nError: ${ err }` ) );
 		}
