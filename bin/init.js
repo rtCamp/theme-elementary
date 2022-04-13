@@ -79,7 +79,7 @@ const setupTheme = ( themeName ) => {
 		'Theme Name: ': `${ themeInfo.themeName }`,
 		'Theme Version: ': `1.0.0`,
 		'Text Domain: ': `${ themeInfo.kebabCase }`,
-		'Package: ': `${ themeInfo.kebabCase }`,
+		'Package: ': `${ themeInfo.trainCase }`,
 		'Namespace: ': `${ themeInfo.pascalSnakeCase }`,
 		'Function Prefix: ': `${ themeInfo.snakeCaseWithUnderscoreSuffix }`,
 		'CSS Class Prefix: ': `${ themeInfo.kebabCaseWithHyphenSuffix }`,
@@ -142,8 +142,11 @@ const initTheme = ( themeInfo ) => {
 		'README.md',
 		'style.css',
 	];
+
 	const incDirFiles = getAllFiles( getRoot() + '/inc' );
+	const partsDir = getAllFiles( getRoot() + '/parts' );
 	const templatesDirFiles = getAllFiles( getRoot() + '/templates' );
+	const testsDir = getAllFiles( getRoot() + '/tests' );
 
 	// File name to replace in.
 	const fileNameToReplace = {
@@ -151,7 +154,7 @@ const initTheme = ( themeInfo ) => {
 	};
 
 	// Concat all files.
-	const allFiles = files.concat( incDirFiles ).concat( templatesDirFiles );
+	const allFiles = files.concat( incDirFiles ).concat( partsDir ).concat( templatesDirFiles ).concat( testsDir );
 
 	// Replace files contents.
 	console.log( info.success( '\nUpdating theme details in files...' ) );
