@@ -54,7 +54,7 @@
 		"lint:php:fix": "./bin/phpcbf.sh",
 		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
-		"prepare": "husky install",
+		"prepare": "husky install && ./bin/init.js",
 		"start": "wp-scripts start",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js",
