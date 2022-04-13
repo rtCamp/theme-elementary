@@ -30,6 +30,7 @@ const info = {
 		return `\x1b[34m${ message }\x1b[0m`;
 	},
 };
+let isSomethingChanged = false;
 
 // Start with a prompt.
 rl.question( 'Would you like to setup the theme? (Y/n) ', ( answer ) => {
@@ -130,18 +131,6 @@ const initTheme = ( themeInfo ) => {
 		ELEMENTARY_THEME_: themeInfo.macroCaseWithUnderscoreSuffix,
 	};
 
-	Object.keys( chunksToReplace ).forEach( ( key ) => {
-		replaceContentInFile( key, chunksToReplace[ key ] );
-	} );
-};
-
-/**
- * Replace content in file
- *
- * @param {string} chunksToReplace
- * @param {Object} newChunk
- */
-const replaceContentInFile = ( chunksToReplace, newChunk ) => {
 	const files = [
 		'composer.json',
 		'functions.php',
@@ -152,7 +141,53 @@ const replaceContentInFile = ( chunksToReplace, newChunk ) => {
 		'README.md',
 		'style.css',
 	];
+	const incDirFiles = getAllFiles( getRoot() + '/inc' );
+	const templatesDirFiles = getAllFiles( getRoot() + '/templates' );
 
+	// Concat all files.
+	const allFiles = files.concat( incDirFiles ).concat( templatesDirFiles );
+
+	console.log( info.success( '\nReplacing theme details in files...' ) );
+	Object.keys( chunksToReplace ).forEach( ( key ) => {
+		replaceContentInFile( allFiles, key, chunksToReplace[ key ] );
+	} );
+	if ( isSomethingChanged ) {
+		console.log( info.success( '\nYour new theme is ready to go!' ), '✨' );
+		// Docs link
+		console.log( info.success( '\nFor more information on how to use this theme, please visit the following link: ' + info.warning( 'https://github.com/rtCamp/theme-elementary/blob/main/README.md' ) ) );
+	} else {
+		console.log( info.warning( '\nNo changes were made to your theme.\n' ) );
+	}
+};
+
+/**
+ * Get all files in a directory
+ *
+ * @param {Array} dir - Directory to search
+ */
+const getAllFiles = ( dir ) => {
+	const files = fs.readdirSync( dir );
+	const allFiles = [];
+	files.forEach( ( file ) => {
+		const filePath = path.join( dir, file );
+		const stat = fs.statSync( filePath );
+		if ( stat.isDirectory() ) {
+			allFiles.push( ...getAllFiles( filePath ) );
+		} else {
+			allFiles.push( filePath );
+		}
+	} );
+	return allFiles;
+};
+
+/**
+ * Replace content in file
+ *
+ * @param {Array}  files           Files to search
+ * @param {string} chunksToReplace String to replace
+ * @param {Object} newChunk        New string to replace with
+ */
+const replaceContentInFile = ( files, chunksToReplace, newChunk ) => {
 	files.forEach( ( file ) => {
 		const filePath = path.resolve( getRoot(), file );
 
@@ -162,7 +197,8 @@ const replaceContentInFile = ( chunksToReplace, newChunk ) => {
 			content = content.replace( regex, newChunk );
 			if ( content !== fs.readFileSync( filePath, 'utf8' ) ) {
 				fs.writeFileSync( filePath, content, 'utf8' );
-				console.log( info.success( `Updated ${ file }` ) );
+				console.log( info.success( `Updated file is ${ info.message( path.basename( filePath ) ) }` ) );
+				isSomethingChanged = true;
 			}
 		} catch ( err ) {
 			console.log( info.error( `\nError: ${ err }` ) );
