@@ -132,43 +132,32 @@ const initTheme = ( themeInfo ) => {
 		ELEMENTARY_THEME_: themeInfo.macroCaseWithUnderscoreSuffix,
 	};
 
-	const files = [
-		'composer.json',
-		'functions.php',
-		'index.php',
-		'package.json',
-		'package-lock.json',
-		'phpcs.xml.dist',
-		'README.md',
-		'style.css',
-	];
-
-	const incDirFiles = getAllFiles( getRoot() + '/inc' );
-	const partsDir = getAllFiles( getRoot() + '/parts' );
-	const templatesDirFiles = getAllFiles( getRoot() + '/templates' );
-	const testsDir = getAllFiles( getRoot() + '/tests' );
+	const files = getAllFiles( getRoot() );
 
 	// File name to replace in.
-	const fileNameToReplace = {
-		'class-elementary-theme.php': 'class-' + themeInfo.kebabCase + '.php',
-	};
-
-	// Concat all files.
-	const allFiles = files.concat( incDirFiles ).concat( partsDir ).concat( templatesDirFiles ).concat( testsDir );
+	const fileNameToReplace = {};
+	files.forEach( ( file ) => {
+		const fileName = path.basename( file );
+		Object.keys( chunksToReplace ).forEach( ( key ) => {
+			if ( fileName.includes( key ) ) {
+				fileNameToReplace[ fileName ] = fileName.replace( key, chunksToReplace[ key ] );
+			}
+		} );
+	} );
 
 	// Replace files contents.
-	console.log( info.success( '\nUpdating theme details in files...' ) );
+	console.log( info.success( '\nUpdating theme details in file(s)...' ) );
 	Object.keys( chunksToReplace ).forEach( ( key ) => {
-		replaceFileContent( allFiles, key, chunksToReplace[ key ] );
+		replaceFileContent( files, key, chunksToReplace[ key ] );
 	} );
 	if ( ! fileContentUpdated ) {
 		console.log( info.error( 'No file content updated.\n' ) );
 	}
 
 	// Replace file names
-	console.log( info.success( '\nUpdating theme bootstrap file name...' ) );
+	console.log( info.success( '\nUpdating theme file(s) name...' ) );
 	Object.keys( fileNameToReplace ).forEach( ( key ) => {
-		replaceFileName( allFiles, key, fileNameToReplace[ key ] );
+		replaceFileName( files, key, fileNameToReplace[ key ] );
 	} );
 	if ( ! fileNameUpdated ) {
 		console.log( info.error( 'No file name updated.\n' ) );
@@ -189,18 +178,37 @@ const initTheme = ( themeInfo ) => {
  * @param {Array} dir - Directory to search
  */
 const getAllFiles = ( dir ) => {
-	const files = fs.readdirSync( dir );
-	const allFiles = [];
-	files.forEach( ( file ) => {
-		const filePath = path.join( dir, file );
-		const stat = fs.statSync( filePath );
-		if ( stat.isDirectory() ) {
-			allFiles.push( ...getAllFiles( filePath ) );
-		} else {
-			allFiles.push( filePath );
-		}
-	} );
-	return allFiles;
+	const dirIgnore = [
+		'.git',
+		'.github',
+		'node_modules',
+		'vendor',
+		'bin',
+	];
+
+	try {
+		const files = fs.readdirSync( dir );
+
+		files.forEach( ( file, index ) => {
+			if ( dirIgnore.indexOf( file ) !== -1 ) {
+				files.splice( index, 1 );
+			}
+		} );
+
+		const allFiles = [];
+		files.forEach( ( file ) => {
+			const filePath = path.join( dir, file );
+			const stat = fs.statSync( filePath );
+			if ( stat.isDirectory() ) {
+				allFiles.push( ...getAllFiles( filePath ) );
+			} else {
+				allFiles.push( filePath );
+			}
+		} );
+		return allFiles;
+	} catch ( err ) {
+		console.log( info.error( err ) );
+	}
 };
 
 /**
