@@ -178,22 +178,17 @@ const initTheme = ( themeInfo ) => {
  * @param {Array} dir - Directory to search
  */
 const getAllFiles = ( dir ) => {
-	const dirIgnore = [
+	const dirOrFilesIgnore = [
 		'.git',
 		'.github',
 		'node_modules',
 		'vendor',
-		'bin',
+		'init.js',
 	];
 
 	try {
-		const files = fs.readdirSync( dir );
-
-		files.forEach( ( file, index ) => {
-			if ( dirIgnore.indexOf( file ) !== -1 ) {
-				files.splice( index, 1 );
-			}
-		} );
+		let files = fs.readdirSync( dir );
+		files = files.filter( ( fileOrDir ) => ! dirOrFilesIgnore.includes( fileOrDir ) );
 
 		const allFiles = [];
 		files.forEach( ( file ) => {
