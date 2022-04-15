@@ -41,7 +41,7 @@
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
 		"build:js": "wp-scripts build",
 		"dev": "wp-scripts start",
-		"lint": "npm-run-all --parallel lint:*",
+		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
 		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
 		"lint:js": "wp-scripts lint-js ./assets/src",
