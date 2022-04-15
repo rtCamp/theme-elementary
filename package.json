@@ -1,14 +1,14 @@
 {
 	"name": "elementary",
 	"version": "1.0.0",
-	"description": "Feature plugin skeleton v2 for internal uses.",
+	"description": "A base for block theme development.",
 	"private": true,
 	"author": "rtCamp",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"rtcamp",
 		"wp-theme",
-		"blocks-theme"
+		"block-theme"
 	],
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
 	"repository": {
