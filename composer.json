@@ -8,11 +8,19 @@
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"automattic/vipwpcs": "^2.3",
 		"dealerdirect/phpcodesniffer-composer-installer": "0.7.2",
-		"sirbrillig/phpcs-variable-analysis": "^2.11.3"
+		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
+		"phpunit/phpunit": "^9.5",
+		"wp-phpunit/wp-phpunit": "^5.9",
+		"yoast/phpunit-polyfills": "^1.0"
 	},
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Elementary\\Tests\\": "tests/php/"
 		}
 	},
 	"scripts": {

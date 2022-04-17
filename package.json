@@ -23,6 +23,7 @@
 		"@wordpress/babel-preset-default": "6.7.0",
 		"@wordpress/browserslist-config": "4.1.2",
 		"@wordpress/eslint-plugin": "11.1.0",
+		"@wordpress/env": "^4.4.0",
 		"@wordpress/scripts": "22.2.1",
 		"browserslist": "4.20.0",
 		"cross-env": "7.0.3",
@@ -52,6 +53,9 @@
 		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
 		"prepare": "husky install",
-		"start": "wp-scripts start"
+		"start": "wp-scripts start",
+		"pretest:php": "wp-env run composer 'install --no-interaction'",
+		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/themes/$(basename \"$PWD\")/phpunit.xml.dist --verbose'",
+		"wp-env": "wp-env"
 	}
 }

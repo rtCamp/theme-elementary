@@ -19,6 +19,9 @@
 	<!-- Only check the PHP, CSS and SCSS files. JS files are checked separately with JSCS and JSHint. -->
 	<arg name="extensions" value="php"/>
 
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
 	<!-- Check all files in this directory and the directories below it. -->
 	<file>.</file>
 
@@ -81,8 +84,29 @@
 		<properties>
 			<property name="prefixes" type="array" value="elementary, ELEMENTARY" />
 		</properties>
+		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 	</rule>
 
+	<!-- Ignore following files from tests. -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>tests/php/TestCase.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress-Docs">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress-VIP-Go">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.WP.GlobalVariablesOverride.Prohibited">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 
 	<!--
 	#############################################################################
