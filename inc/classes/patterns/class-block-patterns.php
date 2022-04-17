@@ -7,6 +7,7 @@
 
 namespace Elementary\Patterns;
 
+use Elementary\Traits\Singleton;
 use WP_Block_Pattern_Categories_Registry;
 use WP_Block_Patterns_Registry;
 
@@ -16,6 +17,8 @@ use WP_Block_Patterns_Registry;
  * @since 1.0.0
  */
 class Block_Patterns {
+
+	use Singleton;
 
 	/**
 	 * Blocks Patterns Namespace.
@@ -30,6 +33,23 @@ class Block_Patterns {
 	 * @var string
 	 */
 	const BLOCK_CONTENT_NAMESPACE = 'Elementary\\Patterns\\Content\\';
+
+	/**
+	 * Constructor.
+	 */
+	protected function __construct() {
+		$this->setup_hooks();
+	}
+
+	/**
+	 * Setup hooks.
+	 *
+	 * @since 1.0.0
+	 */
+	public function setup_hooks() {
+		add_action( 'init', [ $this, 'elementary_register_block_patterns_categories' ] );
+		add_action( 'init', [ $this, 'elementary_register_block_patterns' ] );
+	}
 
 	/**
 	 * Register categories for blocks patterns.

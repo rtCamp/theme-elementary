@@ -23,24 +23,18 @@ if ( ! defined( 'ELEMENTARY_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
-if ( ! function_exists( 'elementary_support' ) ) :
-	/**
-	 * Add required theme support.
-	 *
-	 * @since 1.0.0
-	 */
-	function elementary_support() {
-		// Add support for core block styles.
-		add_theme_support( 'wp-block-styles' );
-	}
-
-endif;
-
-add_action( 'after_setup_theme', 'elementary_support' );
-
 require_once ELEMENTARY_TEMP_DIR . '/vendor/autoload.php';
 
-// Add block patterns.
-$elementary_block_patterns_register = new \Elementary\Patterns\Block_Patterns();
-add_action( 'init', array( $elementary_block_patterns_register, 'elementary_register_block_patterns_categories' ) );
-add_action( 'init', array( $elementary_block_patterns_register, 'elementary_register_block_patterns' ) );
+/**
+ * Theme bootstrap instance.
+ *
+ * @since 1.0.0
+ *
+ * @return object Elementary
+ */
+function elementary_instance() {
+	return Elementary\Elementary::get_instance();
+}
+
+// Instantiate theme.
+elementary_instance();
