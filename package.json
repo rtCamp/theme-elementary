@@ -1,14 +1,14 @@
 {
 	"name": "elementary-theme",
 	"version": "1.0.0",
-	"description": "A Block based starter theme.",
+	"description": "A base for block theme development.",
 	"private": true,
 	"author": "rtCamp",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"rtcamp",
 		"wp-theme",
-		"blocks-theme"
+		"block-theme"
 	],
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
 	"repository": {
@@ -45,7 +45,7 @@
 		"build:js": "wp-scripts build",
 		"dev": "wp-scripts start",
 		"init": "./bin/init.js",
-		"lint": "npm-run-all --parallel lint:*",
+		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
 		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
 		"lint:js": "wp-scripts lint-js ./assets/src",

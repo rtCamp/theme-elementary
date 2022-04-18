@@ -23,7 +23,7 @@ class Elementary_Theme {
 	 * Constructor.
 	 */
 	protected function __construct() {
-		// Get classes instance.
+		// Instantiate classes.
 		Block_Patterns::get_instance();
 
 		// Setup hooks.

@@ -7,9 +7,7 @@
 
 namespace Elementary_Theme\Patterns;
 
-use Elementary_Theme\Traits\Singleton;
-use WP_Block_Pattern_Categories_Registry;
-use WP_Block_Patterns_Registry;
+use Elementary\Traits\Singleton;
 
 /**
  * Class Block_Patterns
@@ -79,9 +77,7 @@ class Block_Patterns {
 		$block_pattern_categories = apply_filters( 'elementary_theme_block_patterns_categories', $block_pattern_categories );
 
 		foreach ( $block_pattern_categories as $name => $properties ) {
-			if ( ! WP_Block_Pattern_Categories_Registry::get_instance()->is_registered( $name ) ) {
-				register_block_pattern_category( $name, $properties );
-			}
+			register_block_pattern_category( $name, $properties );
 		}
 	}
 
@@ -106,13 +102,12 @@ class Block_Patterns {
 		$block_patterns = apply_filters( 'elementary_theme_block_patterns', $block_patterns_classes );
 
 		foreach ( $block_patterns as $name => $class ) {
-			if ( ! WP_Block_Patterns_Registry::get_instance()->is_registered( $name ) ) {
-				$class = self::BLOCK_CONTENT_NAMESPACE . $class;
-				register_block_pattern(
-					self::PATTERN_NAMESPACE . '/' . $name,
-					( new $class() )->block_pattern()
-				);
-			}
+			$class = self::BLOCK_CONTENT_NAMESPACE . $class;
+
+			register_block_pattern(
+				self::PATTERN_NAMESPACE . '/' . $name,
+				( new $class() )->block_pattern()
+			);
 		}
 	}
 }
