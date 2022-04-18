@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
 define( 'TESTS_THEME_DIR', __DIR__ );
@@ -29,6 +29,8 @@ require_once $_test_root . '/includes/functions.php';
 
 /**
  * Registers theme.
+ *
+ * @return void
  */
 function _register_theme() {
 	$theme_dir     = dirname( __DIR__ );

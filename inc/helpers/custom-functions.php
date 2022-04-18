@@ -2,7 +2,7 @@
 /**
  * Define custom functions for the theme.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
 // Define custom functions here.

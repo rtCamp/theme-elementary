@@ -1,14 +1,14 @@
 {
-	"name": "elementary",
+	"name": "elementary-theme",
 	"version": "1.0.0",
-	"description": "A Block based starter theme.",
+	"description": "A base for block theme development.",
 	"private": true,
 	"author": "rtCamp",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"rtcamp",
 		"wp-theme",
-		"blocks-theme"
+		"block-theme"
 	],
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
 	"repository": {
@@ -44,7 +44,8 @@
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
 		"build:js": "wp-scripts build",
 		"dev": "wp-scripts start",
-		"lint": "npm-run-all --parallel lint:*",
+		"init": "./bin/init.js",
+		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
 		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
 		"lint:js": "wp-scripts lint-js ./assets/src",
@@ -54,7 +55,7 @@
 		"lint:php:fix": "./bin/phpcbf.sh",
 		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
-		"prepare": "husky install",
+		"prepare": "husky install && npm run init",
 		"start": "wp-scripts start",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js",

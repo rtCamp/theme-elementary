@@ -2,13 +2,14 @@
 /**
  * Base class for block patterns.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Patterns;
+namespace Elementary_Theme\Patterns;
 
 /**
- * Class Block_Pattern_Base
+ * Class Block_Pattern_Base.
+ * An abstract class which ensures uniform names for the content and registration functions.
  *
  * @since 1.0.0
  */

@@ -2,20 +2,20 @@
 /**
  * Theme bootstrap file.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary;
+namespace Elementary_Theme;
 
-use Elementary\Traits\Singleton;
-use Elementary\Patterns\Block_Patterns;
+use Elementary_Theme\Traits\Singleton;
+use Elementary_Theme\Patterns\Block_Patterns;
 
 /**
- * Class Elementary
+ * Class Elementary_Theme
  *
  * @since 1.0.0
  */
-class Elementary {
+class Elementary_Theme {
 
 	use Singleton;
 
@@ -23,7 +23,7 @@ class Elementary {
 	 * Constructor.
 	 */
 	protected function __construct() {
-		// Get classes instance.
+		// Instantiate classes.
 		Block_Patterns::get_instance();
 
 		// Setup hooks.
@@ -36,7 +36,7 @@ class Elementary {
 	 * @since 1.0.0
 	 */
 	public function setup_hooks() {
-		add_action( 'after_setup_theme', array( $this, 'elementary_support' ) );
+		add_action( 'after_setup_theme', array( $this, 'elementary_theme_support' ) );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class Elementary {
 	 *
 	 * @since 1.0.0
 	 */
-	public function elementary_support() {
+	public function elementary_theme_support() {
 		// Add support for core block styles.
 		add_theme_support( 'wp-block-styles' );
 	}
