@@ -1,5 +1,5 @@
 {
-	"name": "rtcamp/theme-elementary",
+	"name": "rtcamp/elementary-theme",
 	"description": "A Block based starter theme.",
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
@@ -28,7 +28,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Elementary\\Tests\\": "tests/php/"
+			"Elementary_Theme\\Tests\\": "tests/php/"
 		}
 	},
 	"scripts": {

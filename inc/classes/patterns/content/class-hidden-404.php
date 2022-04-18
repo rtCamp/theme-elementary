@@ -2,12 +2,12 @@
 /**
  * 404 Pattern content.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Patterns\Content;
+namespace Elementary_Theme\Patterns\Content;
 
-use Elementary\Patterns\Block_Pattern_Base;
+use Elementary_Theme\Patterns\Block_Pattern_Base;
 
 /**
  * Class Hidden_404
@@ -22,7 +22,7 @@ final class Hidden_404 extends Block_Pattern_Base {
 	 */
 	public function block_pattern() {
 		return array(
-			'title'    => __( '404 content', 'elementary' ),
+			'title'    => __( '404 content', 'elementary-theme' ),
 			'inserter' => false,
 			'content'  => $this->block_pattern_content(),
 		);
@@ -37,17 +37,17 @@ final class Hidden_404 extends Block_Pattern_Base {
 		ob_start();
 		?>
 		<!-- wp:heading {"style":{"typography":{"fontSize":"clamp(4rem, 40vw, 20rem)","fontWeight":"100","lineHeight":"1"}},"className":"has-text-align-center"} -->
-		<h2 class="has-text-align-center" style="font-size:clamp(4rem, 40vw, 20rem);font-weight:100;line-height:1"><?php echo esc_html( _x( '404', 'Error code for a webpage that is not found.', 'elementary' ) ); ?></h2>
+		<h2 class="has-text-align-center" style="font-size:clamp(4rem, 40vw, 20rem);font-weight:100;line-height:1"><?php echo esc_html( _x( '404', 'Error code for a webpage that is not found.', 'elementary-theme' ) ); ?></h2>
 		<!-- /wp:heading -->
 		<!-- wp:paragraph {"align":"center"} -->
-		<p class="has-text-align-center"><?php esc_html_e( 'This page could not be found. Maybe try a search?', 'elementary' ); ?></p>
+		<p class="has-text-align-center"><?php esc_html_e( 'This page could not be found. Maybe try a search?', 'elementary-theme' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:spacer {"height":"1em"} -->
 		<div style="height:1em" aria-hidden="true" class="wp-block-spacer"></div>
 		<!-- /wp:spacer -->
 
-		<!-- wp:search {"label":"<?php esc_html_e( 'Search', 'elementary' ); ?>","showLabel":false,"width":100,"widthUnit":"%","buttonText":"<?php esc_html_e( 'Search', 'elementary' ); ?>","buttonUseIcon":true,"align":"center"} /-->
+		<!-- wp:search {"label":"<?php esc_html_e( 'Search', 'elementary-theme' ); ?>","showLabel":false,"width":100,"widthUnit":"%","buttonText":"<?php esc_html_e( 'Search', 'elementary-theme' ); ?>","buttonUseIcon":true,"align":"center"} /-->
 
 		<!-- wp:spacer {"height":"2em"} -->
 		<div style="height:2em" aria-hidden="true" class="wp-block-spacer"></div>

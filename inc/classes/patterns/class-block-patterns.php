@@ -2,12 +2,12 @@
 /**
  * Blocks Patterns handler.
  *
- * @package Elementary
+ * @package Elementary-Theme
  */
 
-namespace Elementary\Patterns;
+namespace Elementary_Theme\Patterns;
 
-use Elementary\Traits\Singleton;
+use Elementary_Theme\Traits\Singleton;
 
 /**
  * Class Block_Patterns
@@ -23,14 +23,14 @@ class Block_Patterns {
 	 *
 	 * @var string
 	 */
-	const PATTERN_NAMESPACE = 'elementary';
+	const PATTERN_NAMESPACE = 'elementary-theme';
 
 	/**
 	 * Block Content classes namespace.
 	 *
 	 * @var string
 	 */
-	const BLOCK_CONTENT_NAMESPACE = 'Elementary\\Patterns\\Content\\';
+	const BLOCK_CONTENT_NAMESPACE = 'Elementary_Theme\\Patterns\\Content\\';
 
 	/**
 	 * Constructor.
@@ -45,8 +45,8 @@ class Block_Patterns {
 	 * @since 1.0.0
 	 */
 	public function setup_hooks() {
-		add_action( 'init', [ $this, 'elementary_register_block_patterns_categories' ] );
-		add_action( 'init', [ $this, 'elementary_register_block_patterns' ] );
+		add_action( 'init', [ $this, 'elementary_theme_register_block_patterns_categories' ] );
+		add_action( 'init', [ $this, 'elementary_theme_register_block_patterns' ] );
 	}
 
 	/**
@@ -54,16 +54,16 @@ class Block_Patterns {
 	 *
 	 * @since 1.0.0
 	 */
-	public function elementary_register_block_patterns_categories() {
+	public function elementary_theme_register_block_patterns_categories() {
 		$block_pattern_categories = array(
 			'featured' => array(
-				'label' => __( 'Featured', 'elementary' ),
+				'label' => __( 'Featured', 'elementary-theme' ),
 			),
 			'footer'   => array(
-				'label' => __( 'Footer', 'elementary' ),
+				'label' => __( 'Footer', 'elementary-theme' ),
 			),
 			'query'    => array(
-				'label' => __( 'Query', 'elementary' ),
+				'label' => __( 'Query', 'elementary-theme' ),
 			),
 		);
 
@@ -74,7 +74,7 @@ class Block_Patterns {
 		 *
 		 * @param array $block_pattern_categories Array of block pattern categories.
 		 */
-		$block_pattern_categories = apply_filters( 'elementary_block_patterns_categories', $block_pattern_categories );
+		$block_pattern_categories = apply_filters( 'elementary_theme_block_patterns_categories', $block_pattern_categories );
 
 		foreach ( $block_pattern_categories as $name => $properties ) {
 			register_block_pattern_category( $name, $properties );
@@ -86,7 +86,7 @@ class Block_Patterns {
 	 *
 	 * @since 1.0.0
 	 */
-	public function elementary_register_block_patterns() {
+	public function elementary_theme_register_block_patterns() {
 		$block_patterns_classes = array(
 			'footer'     => 'Footer',
 			'hidden-404' => 'Hidden_404',
@@ -99,7 +99,7 @@ class Block_Patterns {
 		 *
 		 * @param array $block_patterns The theme block patterns.
 		 */
-		$block_patterns = apply_filters( 'elementary_block_patterns', $block_patterns_classes );
+		$block_patterns = apply_filters( 'elementary_theme_block_patterns', $block_patterns_classes );
 
 		foreach ( $block_patterns as $name => $class ) {
 			$class = self::BLOCK_CONTENT_NAMESPACE . $class;
