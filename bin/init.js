@@ -34,14 +34,14 @@ let fileContentUpdated = false;
 let fileNameUpdated = false;
 
 // Start with a prompt.
-rl.question( 'Would you like to setup the theme? (Y/n) ', ( answer ) => {
+rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
 	if ( 'n' === answer.toLowerCase() ) {
 		console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
 		process.exit( 0 );
 	}
 	rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
 		const themeInfo = setupTheme( themeName );
-		rl.question( 'Confirm the Theme Details (Y/n) ', ( confirm ) => {
+		rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
 			if ( 'n' === confirm.toLowerCase() ) {
 				console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
 				process.exit( 0 );
