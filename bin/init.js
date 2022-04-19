@@ -77,13 +77,13 @@ const loadThemeSetupModal = ( themeName ) => {
 
 	const themeDetails = {
 		'Theme Name: ': `${ themeInfo.themeName }`,
-		'Theme Version: ': `1.0.0`,
-		'Text Domain: ': `${ themeInfo.kebabCase }`,
-		'Package: ': `${ themeInfo.trainCase }`,
-		'Namespace: ': `${ themeInfo.pascalSnakeCase }`,
-		'Function Prefix: ': `${ themeInfo.snakeCaseWithUnderscoreSuffix }`,
-		'CSS Class Prefix: ': `${ themeInfo.kebabCaseWithHyphenSuffix }`,
-		'PHP Variable Prefix: ': `${ themeInfo.snakeCaseWithUnderscoreSuffix }`,
+		'Theme Version: ': '1.0.0',
+		'Text Domain: ': themeInfo.kebabCase,
+		'Package: ': themeInfo.trainCase,
+		'Namespace: ': themeInfo.pascalSnakeCase,
+		'Function Prefix: ': themeInfo.snakeCaseWithUnderscoreSuffix,
+		'CSS Class Prefix: ': themeInfo.kebabCaseWithHyphenSuffix,
+		'PHP Variable Prefix: ': themeInfo.snakeCaseWithUnderscoreSuffix,
 		'Version Constant: ': `${ themeInfo.macroCase }_VERSION`,
 		'Theme Directory Constant: ': `${ themeInfo.macroCase }_TEMP_DIR`,
 		'Theme Build Directory Constant: ': `${ themeInfo.macroCase }_BUILD_DIR`,
@@ -115,6 +115,7 @@ const loadThemeSetupModal = ( themeName ) => {
  */
 const initTheme = ( themeInfo ) => {
 	const chunksToReplace = {
+		'rtcamp/elementary': themeInfo.packageName, // Specifically targets composer.json file.
 		'elementary theme': themeInfo.themeNameLowerCase,
 		'Elementary Theme': themeInfo.themeName,
 		'ELEMENTARY THEME': themeInfo.themeNameCobolCase,
@@ -150,6 +151,7 @@ const initTheme = ( themeInfo ) => {
 	Object.keys( chunksToReplace ).forEach( ( key ) => {
 		replaceFileContent( files, key, chunksToReplace[ key ] );
 	} );
+
 	if ( ! fileContentUpdated ) {
 		console.log( info.error( 'No file content updated.\n' ) );
 	}
@@ -265,6 +267,7 @@ const generateThemeInfo = ( themeName ) => {
 	const themeNameLowerCase = themeName.toLowerCase();
 
 	const kebabCase = themeName.replace( /\s+/g, '-' ).toLowerCase();
+	const packageName = `rtcamp/${ kebabCase }`;
 	const snakeCase = kebabCase.replace( /\-/g, '_' );
 	const kebabCaseWithHyphenSuffix = kebabCase + '-';
 	const snakeCaseWithUnderscoreSuffix = snakeCase + '_';
@@ -285,6 +288,7 @@ const generateThemeInfo = ( themeName ) => {
 
 	return {
 		themeName,
+		packageName,
 		themeNameLowerCase,
 		kebabCase,
 		snakeCase,
