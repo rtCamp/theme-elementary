@@ -57,7 +57,7 @@ npm run build:prod
 **Watch changes**
 
 ```bash
-npm run dev
+npm start
 ```
 
 **Linting & Formatting**
