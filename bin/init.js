@@ -40,7 +40,7 @@ rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
 		process.exit( 0 );
 	}
 	rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
-		const themeInfo = setupTheme( themeName );
+		const themeInfo = loadThemeSetupModal( themeName );
 		rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
 			if ( 'n' === confirm.toLowerCase() ) {
 				console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
@@ -57,13 +57,13 @@ rl.on( 'close', () => {
 } );
 
 /**
- * Theme Setup
+ * Renders the theme setup modal with all necessary information related to the search-replace.
  *
  * @param {string} themeName
  *
  * @return {Object} themeInfo
  */
-const setupTheme = ( themeName ) => {
+const loadThemeSetupModal = ( themeName ) => {
 	console.log( info.success( '\nFiring up the theme setup...' ) );
 
 	// Ask theme name.
