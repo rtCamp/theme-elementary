@@ -5,7 +5,7 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme;
+ namespace Elementary_Theme;
 
 use Elementary_Theme\Traits\Singleton;
 use Elementary_Theme\Patterns\Block_Patterns;
