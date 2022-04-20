@@ -1,7 +1,16 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/theme.json",
 	"version": 2,
-	"customTemplates": [],
+	"customTemplates": [
+		{
+			"name": "no-title",
+			"title": "No Title Template",
+			"postTypes": [
+				"page",
+				"post"
+			]
+		}
+	],
 	"settings": {
 		"appearanceTools": true,
 		"color": {
@@ -35,6 +44,39 @@
 				"large": "clamp(100px, 12vw, 460px)",
 				"outer": "min(4vw, 90px)"
 			}
+		},
+		"typography": {
+			"dropCap": false,
+			"fontFamilies": [
+				{
+					"fontFamily": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Oxygen-Sans,Ubuntu,Cantarell,\"Helvetica Neue\",sans-serif",
+					"name": "System Font",
+					"slug": "system-font"
+				},
+				{
+					"fontFamily": "\"Source Serif Pro\", serif",
+					"name": "Source Serif Pro",
+					"slug": "source-serif-pro"
+				}
+			],
+			"fontSizes": [
+				{
+					"size": "1rem",
+					"slug": "small"
+				},
+				{
+					"size": "1.125rem",
+					"slug": "medium"
+				},
+				{
+					"size": "1.75rem",
+					"slug": "large"
+				},
+				{
+					"size": "clamp(1.75rem, 3vw, 2.25rem)",
+					"slug": "x-large"
+				}
+			]
 		},
 		"layout": {
 			"contentSize": "620px",
