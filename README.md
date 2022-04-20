@@ -38,10 +38,24 @@ A [Block based](https://developer.wordpress.org/block-editor/how-to-guides/theme
 ```
 
 ## Get Started :rocket:
-1. Clone this repository using `git clone [URL to Git repo]`
-1. Having cloned this repository, install node packages and PHP dependencies using: `composer install && npm install`.
 
-That was all! You're good to go with building your block theme. :sparkles:
+### Method 1 (Recommended)
+```
+composer create-project rtcamp/elementary . --stability="dev"
+```
+This command is equivalant of cloning the repository and running `composer install && npm install`
+
+### Method 2
+Manually clone this repository using
+```
+git clone [URL to Git repo]
+```
+Having cloned this repository, install node packages and PHP dependencies using
+```
+composer install && npm install
+```
+
+In both the methods, you will be prompted with a theme setup wizard which will help you with the search-replace. That was all! You're good to go with building your block theme. :sparkles:
 
 **Note**: Refer to the `.nvmrc` file to check the supported Node.js version for running this project. If your current Node.js version does not run the project successfully on localhost, please use [Node Version Manager](https://github.com/nvm-sh/nvm) on your terminal to configure the right Node.js version.
 
