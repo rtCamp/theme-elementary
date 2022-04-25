@@ -32,26 +32,51 @@ const info = {
 };
 let fileContentUpdated = false;
 let fileNameUpdated = false;
+let themeCleanup = false;
 
-// Start with a prompt.
-rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
-	if ( 'n' === answer.toLowerCase() ) {
-		console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-		process.exit( 0 );
-	}
-	rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
-		const themeInfo = loadThemeSetupModal( themeName );
-		rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
-			if ( 'n' === confirm.toLowerCase() ) {
-				console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-				process.exit( 0 );
-			}
-			initTheme( themeInfo );
-			rl.close();
+const args = process.argv.slice( 2 );
+
+if ( 0 === args.length ) {
+	rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
+		if ( 'n' === answer.toLowerCase() ) {
+			console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
+			process.exit( 0 );
+		}
+
+		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
+			const themeInfo = renderThemeDetails( themeName );
+			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
+				if ( 'n' === confirm.toLowerCase() ) {
+					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
+					process.exit( 0 );
+				}
+
+				initTheme( themeInfo );
+
+				rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
+					if ( 'n' === cleanup.toLowerCase() ) {
+						console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
+						process.exit( 0 );
+					}
+					runThemeCleanup();
+					rl.close();
+				} );
+			} );
 		} );
 	} );
-} );
-
+} else if ( ( args.includes( '--clean' ) || args.includes( '-c' ) ) && 1 === args.length ) {
+	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
+		if ( 'n' === cleanup.toLowerCase() ) {
+			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
+			process.exit( 0 );
+		}
+		runThemeCleanup();
+		rl.close();
+	} );
+} else {
+	console.log( info.error( '\nInvalid arguments.\n' ) );
+	process.exit( 0 );
+}
 rl.on( 'close', () => {
 	process.exit( 0 );
 } );
@@ -63,7 +88,7 @@ rl.on( 'close', () => {
  *
  * @return {Object} themeInfo
  */
-const loadThemeSetupModal = ( themeName ) => {
+const renderThemeDetails = ( themeName ) => {
 	console.log( info.success( '\nFiring up the theme setup...' ) );
 
 	// Ask theme name.
@@ -168,7 +193,7 @@ const initTheme = ( themeInfo ) => {
 	if ( fileContentUpdated || fileNameUpdated ) {
 		console.log( info.success( '\nYour new theme is ready to go!' ), '✨' );
 		// Docs link
-		console.log( info.success( '\nFor more information on how to use this theme, please visit the following link: ' + info.warning( 'https://github.com/rtCamp/theme-elementary/blob/main/README.md' ) ) );
+		console.log( info.success( '\nFor more information on how to use this theme, please visit the following link: ' + info.warning( 'https://github.com/rtCamp/theme-elementary/blob/main/README.md\n' ) ) );
 	} else {
 		console.log( info.warning( '\nNo changes were made to your theme.\n' ) );
 	}
@@ -185,7 +210,6 @@ const getAllFiles = ( dir ) => {
 		'.github',
 		'node_modules',
 		'vendor',
-		'init.js',
 	];
 
 	try {
@@ -314,4 +338,43 @@ const generateThemeInfo = ( themeName ) => {
  */
 const getRoot = () => {
 	return path.resolve( __dirname, '../' );
+};
+
+/**
+ * Run theme cleanup to delete files and directories
+ *
+ * It will remove following directories and files:
+ * 1. .git
+ * 2. .github
+ * 3. bin
+ * 4. languages
+ */
+const runThemeCleanup = () => {
+	const deleteDirs = [
+		'.git',
+		'.github',
+		'bin',
+		'languages',
+	];
+
+	deleteDirs.forEach( ( dir ) => {
+		const dirPath = path.resolve( getRoot(), dir );
+		try {
+			if ( fs.existsSync( dirPath ) ) {
+				fs.rmdirSync( dirPath, {
+					recursive: true,
+				} );
+				console.log( info.success( `Deleted directory [${ info.message( dir ) }]` ) );
+				themeCleanup = true;
+			}
+		} catch ( err ) {
+			console.log( info.error( `\nError: ${ err }` ) );
+		}
+	} );
+
+	if ( themeCleanup ) {
+		console.log( info.success( '\nTheme cleanup completed!' ), '✨' );
+	} else {
+		console.log( info.warning( '\nNo theme cleanup required!\n' ) );
+	}
 };
