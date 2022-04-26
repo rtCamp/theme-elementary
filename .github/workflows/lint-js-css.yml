@@ -1,8 +1,8 @@
 name: Lint JS, CSS
 
 on:
-    branches:
-      - main
+  branches:
+    - main
   pull_request:
     paths:
       - '**.js'
