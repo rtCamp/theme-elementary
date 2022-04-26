@@ -46,9 +46,6 @@ jobs:
       - name: CSS Lint
         run: npm run lint:css
 
-      - name: JS Lint
-        run: npm run lint:js
-
       - name: JS Lint Report
         run: npm run lint:js:report
         continue-on-error: true
