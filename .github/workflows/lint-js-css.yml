@@ -1,4 +1,4 @@
-name: Lint JS, CSS, package.json
+name: Linting
 
 on:
   pull_request:
