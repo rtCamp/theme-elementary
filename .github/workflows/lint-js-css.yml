@@ -1,21 +1,32 @@
-name: Lint JS, CSS
+name: Lint JS, CSS, package.json
 
 on:
   pull_request:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+
     paths:
       - '**.js'
       - '.eslint*'
       - '**.css'
+      - '**.scss'
       - '.nvmrc'
       - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
-    name: Lint JS, CSS
+    name: Lint JS, CSS, package.json
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,3 +52,6 @@ jobs:
       - name: JS Lint Report
         run: npm run lint:js:report
         continue-on-error: true
+
+      - name: package.json Lint
+        run: npm run lint:package-json
