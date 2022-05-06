@@ -13,7 +13,7 @@
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/rtCamp/theme-elementary.git"
+		"url": "https://github.com/rtCamp/theme-elementary.git"
 	},
 	"bugs": {
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
@@ -52,7 +52,7 @@
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
 		"lint:php": "vendor/bin/phpcs",
 		"lint:php:fix": "./bin/phpcbf.sh",
-		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
+		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
 		"prepare": "husky install && npm run init",
 		"start": "wp-scripts start",
