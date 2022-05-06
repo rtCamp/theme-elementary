@@ -13,7 +13,7 @@
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/rtCamp/theme-elementary.git"
+		"url": "https://github.com/rtCamp/theme-elementary.git"
 	},
 	"bugs": {
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
@@ -22,17 +22,17 @@
 		"@babel/core": "7.17.8",
 		"@wordpress/babel-preset-default": "6.7.0",
 		"@wordpress/browserslist-config": "4.1.2",
-		"@wordpress/env": "^4.4.0",
+		"@wordpress/env": "^4.6.0",
 		"@wordpress/eslint-plugin": "11.1.0",
 		"@wordpress/jest-preset-default": "8.1.1",
 		"@wordpress/scripts": "22.2.1",
-		"browserslist": "4.20.0",
+		"browserslist": "4.20.3",
 		"cross-env": "7.0.3",
 		"css-minimizer-webpack-plugin": "3.4.1",
-		"eslint": "8.11.0",
+		"eslint": "8.14.0",
 		"eslint-plugin-eslint-comments": "3.2.0",
-		"eslint-plugin-import": "2.25.4",
 		"eslint-plugin-jest": "26.1.5",
+		"eslint-plugin-import": "2.26.0",
 		"husky": "7.0.4",
 		"jest-silent-reporter": "0.5.0",
 		"lint-staged": "12.3.7",
@@ -52,7 +52,7 @@
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
 		"lint:php": "vendor/bin/phpcs",
 		"lint:php:fix": "./bin/phpcbf.sh",
-		"lint:pkg-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
+		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
 		"prepare": "husky install && npm run init",
 		"start": "wp-scripts start",
