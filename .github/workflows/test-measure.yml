@@ -228,6 +228,8 @@ jobs:
         run: npm run test:php
 
   build-prod:
+    needs: pre-run
+    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0 || needs.pre-run.outputs.changed-css-count > 0
     name: 'Build production'
     runs-on: ubuntu-latest
     steps:
