@@ -57,9 +57,9 @@
 		"prepare": "husky install && npm run init",
 		"start": "wp-scripts start",
 		"test": "npm-run-all --parallel test:*",
-		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js",
+		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
-		"pretest:php": "wp-env run composer 'install --no-interaction'",
+		"pretest:php": "wp-env run composer 'install --no-interaction --no-scripts'",
 		"test:php": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/themes/$(basename \"$PWD\")/phpunit.xml.dist --verbose'",
 		"wp-env": "wp-env"
 	}
