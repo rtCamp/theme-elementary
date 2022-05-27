@@ -8,4 +8,7 @@ module.exports = {
 	"**/*.{css,scss}": [
 		"npm run lint:css"
 	],
+	"package.json": [
+		"npm run lint:package-json"
+	],
 };
