@@ -255,6 +255,7 @@ jobs:
           CI: true
 
       - name: Comment on PR with build status
+        if: ${{ github.event_name }} == 'pull_request'
         uses: actions/github-script@v6
         with:
           script: |
