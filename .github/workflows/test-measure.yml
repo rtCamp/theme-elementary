@@ -226,3 +226,63 @@ jobs:
       - name: Run tests
         if: ${{ needs.pre-run.outputs.changed-php-count > 0 }}
         run: npm run test:php
+
+  build-prod:
+    name: 'Build production'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3.2.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci --ignore-scripts
+        env:
+          CI: true
+
+      - name: Build production
+        run: npm run build:prod
+        continue-on-error: true
+        env:
+          CI: true
+
+      - name: Comment on PR with build status
+        - uses: actions/github-script@v6
+          if: ${{ steps.build-prod.outputs.exit-code }} != 0
+          with:
+            - name: build-passed-label
+              script: |
+                github.rest.issues.addLabels({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: ['Build:Failing']
+                })
+                github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: 'Build:Passing'
+                })
+          if: ${{ steps.build-prod.outputs.exit-code }} == 0
+            - name: build-failed-label
+                script: |
+                  github.rest.issues.addLabels({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: ['Build:Passing']
+                  })
+                  github.rest.issues.removeLabel({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: 'Build:Failing'
+                  })
+
+
