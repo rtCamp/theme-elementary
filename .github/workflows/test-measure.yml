@@ -250,43 +250,5 @@ jobs:
       - name: Build production
         id: build
         run: npm run build:prod
-        continue-on-error: true
         env:
           CI: true
-
-      - name: Comment on PR with build status
-        if: ${{ github.event_name }} == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            if ( '${{ steps.build.outcome }}' != 'success' ) {
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['Build:Failing']
-              })
-                if ( ${{ github.event.label.name == 'Build:Passing' }} ) {
-                  github.rest.issues.removeLabel({
-                    issue_number: context.issue.number,
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    name: 'Build:Passing'
-                  })
-                }
-            } else {
-              github.rest.issues.addLabels({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                labels: ['Build:Passing']
-              })
-                if ( ${{ github.event.label.name == 'Build:Failing' }} ) {
-                  github.rest.issues.removeLabel({
-                    issue_number: context.issue.number,
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    name: 'Build:Failing'
-                  })
-                }
-            }
