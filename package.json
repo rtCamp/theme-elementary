@@ -28,7 +28,7 @@
 		"@wordpress/scripts": "23.0.0",
 		"browserslist": "4.20.3",
 		"cross-env": "7.0.3",
-		"css-minimizer-webpack-plugin": "3.4.1",
+		"css-minimizer-webpack-plugin": "4.0.0",
 		"eslint": "8.15.0",
 		"eslint-plugin-eslint-comments": "3.2.0",
 		"eslint-plugin-jest": "26.2.2",
