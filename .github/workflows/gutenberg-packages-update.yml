@@ -43,7 +43,7 @@ jobs:
           echo "::set-output name=version::$(echo "$LAST_VERSION")"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          QUERY: 'repo:rtCamp/theme-elementary is:pr author:app/github-actions is:merged in:title Update Gutenberg packages after'
+          QUERY: 'repo:rtCamp/theme-elementary is:pr author:rtBot is:merged in:title Update Gutenberg packages after'
 
       - name: Determine if package updates are needed
         id: release-status
@@ -70,7 +70,7 @@ jobs:
           echo "Latest PR number: ${PR_NUM}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          QUERY: 'repo:rtCamp/theme-elementary is:pr author:app/github-actions is:open in:title Update Gutenberg packages after'
+          QUERY: 'repo:rtCamp/theme-elementary is:pr author:rtBot is:open in:title Update Gutenberg packages after'
 
       # Needed to later close PR.
       - name: Checkout repo
@@ -173,7 +173,7 @@ jobs:
           echo "::set-output name=pr-url::$PR_URL"
         env:
           VERSION: ${{ needs.check-gutenberg-release.outputs.latest-version }}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.RTBOT_TOKEN}}
           BASE_BRANCH: ${{ steps.branches.outputs.base }}
           HEAD_BRANCH: ${{ steps.branches.outputs.head }}
 
@@ -182,7 +182,7 @@ jobs:
         if: steps.pr-create.outputs.pr-url != ''
         run: gh pr ready "$PR_URL"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.RTBOT_TOKEN }}
           PR_URL: ${{ steps.pr-create.outputs.pr-url }}
 
       - name: Add PR reviewers
@@ -190,5 +190,5 @@ jobs:
         # Add a PR reviewer so that a notification can be sent to the concerned person.
         run: gh pr edit "$PR_URL" --add-reviewer ${{ secrets.PR_REVIEWER }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RTBOT_TOKEN }}
           PR_URL: ${{ steps.pr-create.outputs.pr-url }}

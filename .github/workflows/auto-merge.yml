@@ -29,11 +29,10 @@ jobs:
         if: >
           contains( github.event.workflow_run.head_commit.message, 'version-update:semver-minor' ) || contains( github.event.workflow_run.head_commit.message, 'version-update:semver-patch' )
         run: |
-          gh pr review "$PR_NUMBER" --approve --body "LGTM!"
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
           PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.RTBOT_TOKEN}}
 
   gutenberg-packages:
     name: Gutenberg packages update PR auto-merge
@@ -49,4 +48,4 @@ jobs:
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
           PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.RTBOT_TOKEN}}
