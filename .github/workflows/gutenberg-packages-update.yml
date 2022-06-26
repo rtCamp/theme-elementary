@@ -114,8 +114,8 @@ jobs:
       - name: Configure git user
         # Setting up github-action bot as git user <https://github.com/actions/checkout#push-a-commit-using-the-built-in-token>.
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name ${{ secrets.AUTHOR_NAME }}
+          git config user.email ${{ secrets.AUTHOR_EMAIL }}
       - name: Check if remote branch exists
         id: remote-branch
         run: echo ::set-output name=exists::$([[ -z $(git ls-remote --heads origin "$HEAD_BRANCH" ) ]] && echo "0" || echo "1")
