@@ -32,7 +32,7 @@ jobs:
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
           PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.RTBOT_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GH_BOT_TOKEN}}
 
   gutenberg-packages:
     name: Gutenberg packages update PR auto-merge
@@ -48,4 +48,4 @@ jobs:
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
           PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.RTBOT_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GH_BOT_TOKEN}}
