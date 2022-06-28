@@ -24,27 +24,13 @@ jobs:
       - name: Configure git user
         # Setting up github-action bot as git user <https://github.com/actions/checkout#push-a-commit-using-the-built-in-token>.
         run: |
-          git config user.name thelovekesh
+          git config user.name 'thelovekesh'
           git config user.email "lovekesh.kumar@rtcamp.com"
-      - name: Check if remote branch exists
-        id: remote-branch
-        run: echo ::set-output name=exists::$([[ -z $(git ls-remote --heads origin "$HEAD_BRANCH" ) ]] && echo "0" || echo "1")
-        env:
-          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
 
       - name: Create branch to base pull request on
         if: steps.remote-branch.outputs.exists == 0
         run: git checkout -b "$HEAD_BRANCH"
         env:
-          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
-
-      - name: Fetch existing branch to add commits to
-        if: steps.remote-branch.outputs.exists == 1
-        run: |
-          git checkout "$HEAD_BRANCH"
-          git merge --no-edit "$BASE_BRANCH"
-        env:
-          BASE_BRANCH: ${{ steps.branches.outputs.base }}
           HEAD_BRANCH: ${{ steps.branches.outputs.head }}
 
       - name: Commit and push changes
