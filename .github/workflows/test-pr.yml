@@ -34,7 +34,6 @@ jobs:
           HEAD_BRANCH: ${{ steps.branches.outputs.head }}
 
       - name: Commit and push changes
-        if: steps.packages.outputs.list != 0
         run: |
           git commit --allow-empty -m "Update Gutenberg packages"
           git push -u origin "$HEAD_BRANCH"
@@ -43,7 +42,6 @@ jobs:
 
       - name: Draft a pull request
         id: pr-create
-        if: steps.packages.outputs.list != 0 && steps.remote-branch.outputs.exists == 0
         run: |
           PR_URL=$(gh pr create --draft --base "$BASE_BRANCH" --title "Update Gutenberg packages after release" --body "PR" | grep https://)
           echo "::set-output name=pr-url::$PR_URL"
