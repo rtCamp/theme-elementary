@@ -1,12 +1,7 @@
 name: Create test PR
 
 on:
-  # Allow for the workflow to be manually run if needed.
-  workflow_dispatch:
-
-permissions:
-  pull-requests: write
-  contents: write
+  push:
 
 jobs:
   create-pr:
