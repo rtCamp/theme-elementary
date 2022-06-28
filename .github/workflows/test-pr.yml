@@ -1,0 +1,75 @@
+name: Create test PR
+
+on:
+  # Allow for the workflow to be manually run if needed.
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Fetch history for all branches and tags to allow for successful merge of base branch if needed.
+          fetch-depth: 0
+
+      - name: Determine branch name
+        id: branches
+        run: |
+          echo "::set-output name=base::$(echo ${GITHUB_REF#refs/heads/})"
+          echo "::set-output name=head::$(echo "update/gutenberg-v$VERSION-packages")"
+        env:
+          VERSION: 1.0.0
+
+      - name: Configure git user
+        # Setting up github-action bot as git user <https://github.com/actions/checkout#push-a-commit-using-the-built-in-token>.
+        run: |
+          git config user.name thelovekesh
+          git config user.email "lovekesh.kumar@rtcamp.com"
+      - name: Check if remote branch exists
+        id: remote-branch
+        run: echo ::set-output name=exists::$([[ -z $(git ls-remote --heads origin "$HEAD_BRANCH" ) ]] && echo "0" || echo "1")
+        env:
+          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
+
+      - name: Create branch to base pull request on
+        if: steps.remote-branch.outputs.exists == 0
+        run: git checkout -b "$HEAD_BRANCH"
+        env:
+          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
+
+      - name: Fetch existing branch to add commits to
+        if: steps.remote-branch.outputs.exists == 1
+        run: |
+          git checkout "$HEAD_BRANCH"
+          git merge --no-edit "$BASE_BRANCH"
+        env:
+          BASE_BRANCH: ${{ steps.branches.outputs.base }}
+          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
+
+      - name: Commit and push changes
+        if: steps.packages.outputs.list != 0
+        run: |
+          git commit --allow-empty -m "Update Gutenberg packages"
+          git push -u origin "$HEAD_BRANCH"
+        env:
+          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
+
+      - name: Draft a pull request
+        id: pr-create
+        if: steps.packages.outputs.list != 0 && steps.remote-branch.outputs.exists == 0
+        run: |
+          PR_URL=$(gh pr create --draft --base "$BASE_BRANCH" --title "Update Gutenberg packages after release" --body "PR" | grep https://)
+          echo "::set-output name=pr-url::$PR_URL"
+          echo $PR_URL
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_BOT_TOKEN}}
+          BASE_BRANCH: ${{ steps.branches.outputs.base }}
+          HEAD_BRANCH: ${{ steps.branches.outputs.head }}
+
+
