@@ -113,8 +113,8 @@ jobs:
 
       - name: Configure git user
         run: |
-          git config user.name ${{ secrets.AUTHOR_NAME }}
-          git config user.email ${{ secrets.AUTHOR_EMAIL }}
+          git config user.name rtBot
+          git config user.email '43742164+rtBot@users.noreply.github.com'
       - name: Check if remote branch exists
         id: remote-branch
         run: echo ::set-output name=exists::$([[ -z $(git ls-remote --heads origin "$HEAD_BRANCH" ) ]] && echo "0" || echo "1")
@@ -179,7 +179,8 @@ jobs:
       - name: Add PR reviewers
         if: steps.pr-create.outputs.pr-url != ''
         # Add a PR reviewer so that a notification can be sent to the concerned person.
-        run: gh pr edit "$PR_URL" --add-reviewer ${{ secrets.PR_REVIEWER }}
+        run: gh pr edit "$PR_URL" --add-reviewer "$REVIEWER_USERNAME"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           PR_URL: ${{ steps.pr-create.outputs.pr-url }}
+          REVIEWER_USERNAME: thelovekesh
