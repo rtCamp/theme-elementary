@@ -37,13 +37,14 @@ jobs:
   gutenberg-packages:
     name: Gutenberg packages update PR auto-merge
     runs-on: ubuntu-latest
-    if: >
-      ( startsWith(github.event.workflow_run.head_commit.message, 'Update WordPress NPM packages based on Gutenberg release') && endsWith(github.event.workflow_run.head_commit.message, 'github-actions <github-actions@github.com>') ) && ( ${{ github.event.workflow_run.head_commit.author.name }} == 'github-actions' && ${{ github.event.workflow_run.head_commit.author.email }} == 'github-actions@github.com' )
+    if: ${{ github.actor == ${{ secrets.AUTHOR_NAME }} }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Approve and merge the PR
+        if: >
+          startsWith(github.event.workflow_run.head_commit.message, 'Update WordPress NPM packages based on Gutenberg release') && endsWith(github.event.workflow_run.head_commit.message, '${{ secrets.AUTHOR_NAME }} ${{ secrets.AUTHOR_EMAIL }}')
         run: |
           gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
