@@ -168,7 +168,7 @@ jobs:
         if: steps.packages.outputs.list != 0 && steps.remote-branch.outputs.exists == 0
         run: |
           PR_BODY=$(node .github/bin/gutenberg-packages-update-pr-body.js "${{ steps.packages.outputs.list }}")
-          PR_URL=$(gh pr create --base "$BASE_BRANCH" --title "Update Gutenberg packages after v$VERSION release" --body "$PR_BODY" --label dependencies | grep https://)
+          PR_URL=$(gh pr create --base "$BASE_BRANCH" --title "Update Gutenberg packages after v$VERSION release" --body "$PR_BODY" --label Dependencies --label NPM | grep https://)
           echo "::set-output name=pr-url::$PR_URL"
         env:
           VERSION: ${{ needs.check-gutenberg-release.outputs.latest-version }}
