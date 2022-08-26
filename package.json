@@ -4,7 +4,7 @@
 	"description": "A base for block theme development.",
 	"private": true,
 	"author": "rtCamp",
-	"license": "MIT",
+	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"rtcamp",
 		"wp-theme",
