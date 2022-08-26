@@ -1,10 +1,10 @@
 {
 	"name": "elementary-theme",
 	"version": "1.0.0",
-	"description": "A base for block theme development.",
+	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
 	"private": true,
 	"author": "rtCamp",
-	"license": "MIT",
+	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"rtcamp",
 		"wp-theme",
