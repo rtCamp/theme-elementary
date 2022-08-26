@@ -1,6 +1,6 @@
 # Theme Elementary
 
-A [Block based](https://developer.wordpress.org/block-editor/how-to-guides/themes/block-theme-overview/) starter theme.
+A starter theme that facilitates a quick head start for developing new [block-based themes](https://developer.wordpress.org/block-editor/how-to-guides/themes/block-theme-overview/) along with a bunch of developer-friendly features.
 
 - [Understand the Folder Structure](https://github.com/rtCamp/theme-elementary#understand-the-folder-structure-open_file_folder)
 - [Get Started](https://github.com/rtCamp/theme-elementary#get-started-rocket)
