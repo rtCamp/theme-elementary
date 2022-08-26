@@ -41,7 +41,7 @@ A [Block based](https://developer.wordpress.org/block-editor/how-to-guides/theme
 
 ### Method 1 (Recommended)
 ```
-composer create-project rtcamp/elementary . --stability="dev"
+composer create-project rtcamp/elementary [folder_name]
 ```
 This command is equivalant of cloning the repository and running `composer install && npm install`
 
