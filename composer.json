@@ -1,9 +1,9 @@
 {
 	"name": "rtcamp/elementary",
-	"description": "A Block based starter theme.",
+	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
-	"license": "MIT",
+	"license": "GPL-2.0-or-later",
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^2.3",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
@@ -35,8 +35,8 @@
 		}
 	},
 	"scripts": {
-		"phpcs" : "@php ./vendor/bin/phpcs",
-		"phpcs:fix" : "@php ./vendor/bin/phpcbf",
+		"phpcs": "@php ./vendor/bin/phpcs",
+		"phpcs:fix": "@php ./vendor/bin/phpcbf",
 		"post-install-cmd": [
 			"npm i"
 		]
