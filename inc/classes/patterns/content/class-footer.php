@@ -36,6 +36,7 @@ final class Footer extends Block_Pattern_Base {
 	 * @return string Block pattern content.
 	 */
 	public function block_pattern_content() {
+		// phpcs:disable WordPressVIPMinimum.Security.Mustache.OutputNotation
 		ob_start();
 		?>
 		<!-- wp:group {"layout":{"inherit":"true"}} -->
@@ -57,5 +58,6 @@ final class Footer extends Block_Pattern_Base {
 		</div><!-- /wp:group -->
 		<?php
 		return ob_get_clean();
+		// phpcs:enable WordPressVIPMinimum.Security.Mustache.OutputNotation
 	}
 }
