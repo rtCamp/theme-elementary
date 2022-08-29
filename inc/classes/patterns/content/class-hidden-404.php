@@ -21,11 +21,11 @@ final class Hidden_404 extends Block_Pattern_Base {
 	 * @return array Block pattern properties.
 	 */
 	public function block_pattern() {
-		return array(
+		return [
 			'title'    => __( '404 content', 'elementary-theme' ),
 			'inserter' => false,
 			'content'  => $this->block_pattern_content(),
-		);
+		];
 	}
 
 	/**

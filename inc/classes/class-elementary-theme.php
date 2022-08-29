@@ -38,7 +38,7 @@ class Elementary_Theme {
 	 * @since 1.0.0
 	 */
 	public function setup_hooks() {
-		add_action( 'after_setup_theme', array( $this, 'elementary_theme_support' ) );
+		add_action( 'after_setup_theme', [ $this, 'elementary_theme_support' ] );
 	}
 
 	/**

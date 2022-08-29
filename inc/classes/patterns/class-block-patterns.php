@@ -55,17 +55,17 @@ class Block_Patterns {
 	 * @since 1.0.0
 	 */
 	public function elementary_theme_register_block_patterns_categories() {
-		$block_pattern_categories = array(
-			'featured' => array(
+		$block_pattern_categories = [
+			'featured' => [
 				'label' => __( 'Featured', 'elementary-theme' ),
-			),
-			'footer'   => array(
+			],
+			'footer'   => [
 				'label' => __( 'Footer', 'elementary-theme' ),
-			),
-			'query'    => array(
+			],
+			'query'    => [
 				'label' => __( 'Query', 'elementary-theme' ),
-			),
-		);
+			],
+		];
 
 		/**
 		 * Filters the block pattern categories.
@@ -87,10 +87,10 @@ class Block_Patterns {
 	 * @since 1.0.0
 	 */
 	public function elementary_theme_register_block_patterns() {
-		$block_patterns_classes = array(
+		$block_patterns_classes = [
 			'footer'     => 'Footer',
 			'hidden-404' => 'Hidden_404',
-		);
+		];
 
 		/**
 		 * Filters the theme block patterns.

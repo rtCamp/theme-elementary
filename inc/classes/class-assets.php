@@ -34,7 +34,7 @@ class Assets {
 	 */
 	public function setup_hooks() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		add_filter( 'render_block', array( $this, 'enqueue_block_specific_assets' ), 10, 2 );
+		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
 	}
 
 	/**
@@ -53,8 +53,8 @@ class Assets {
 	/**
 	 * Enqueue block specific assets.
 	 *
-	 * @param String $markup Markup of the block.
-	 * @param Array  $block Array with block information.
+	 * @param string $markup Markup of the block.
+	 * @param array  $block Array with block information.
 	 *
 	 * @since 1.0.0
 	 */
@@ -76,14 +76,14 @@ class Assets {
 	 *
 	 * @return array
 	 */
-	public function get_asset_meta( $file, $deps = array(), $ver = false ) {
+	public function get_asset_meta( $file, $deps = [], $ver = false ) {
 		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file )['extension'] ) );
 		$asset_meta      = is_readable( $asset_meta_file )
 			? require $asset_meta_file
-			: array(
-				'dependencies' => array(),
+			: [
+				'dependencies' => [],
 				'version'      => $this->get_file_version( $file, $ver ),
-			);
+			];
 
 		$asset_meta['dependencies'] = array_merge( $deps, $asset_meta['dependencies'] );
 
@@ -101,7 +101,7 @@ class Assets {
 	 *                                    Default 'false'.
 	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
-	public function register_script( $handle, $file, $deps = array(), $ver = false, $in_footer = true ) {
+	public function register_script( $handle, $file, $deps = [], $ver = false, $in_footer = true ) {
 
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
@@ -128,7 +128,7 @@ class Assets {
 	 *
 	 * @return bool Whether the style has been registered. True on success, false on failure.
 	 */
-	public function register_style( $handle, $file, $deps = array(), $ver = false, $media = 'all' ) {
+	public function register_style( $handle, $file, $deps = [], $ver = false, $media = 'all' ) {
 
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
