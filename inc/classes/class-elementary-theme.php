@@ -9,6 +9,7 @@ namespace Elementary_Theme;
 
 use Elementary_Theme\Traits\Singleton;
 use Elementary_Theme\Patterns\Block_Patterns;
+use Elementary_Theme\Assets;
 
 /**
  * Class Elementary_Theme
@@ -25,6 +26,7 @@ class Elementary_Theme {
 	protected function __construct() {
 		// Instantiate classes.
 		Block_Patterns::get_instance();
+		Assets::get_instance();
 
 		// Setup hooks.
 		$this->setup_hooks();
@@ -36,7 +38,7 @@ class Elementary_Theme {
 	 * @since 1.0.0
 	 */
 	public function setup_hooks() {
-		add_action( 'after_setup_theme', array( $this, 'elementary_theme_support' ) );
+		add_action( 'after_setup_theme', [ $this, 'elementary_theme_support' ] );
 	}
 
 	/**

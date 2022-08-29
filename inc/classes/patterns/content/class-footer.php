@@ -22,12 +22,12 @@ final class Footer extends Block_Pattern_Base {
 	 * @return array Block pattern properties.
 	 */
 	public function block_pattern() {
-		return array(
+		return [
 			'title'      => __( 'Footer', 'elementary-theme' ),
-			'categories' => array( 'footer' ),
-			'blockTypes' => array( 'core/template-part/footer' ),
+			'categories' => [ 'footer' ],
+			'blockTypes' => [ 'core/template-part/footer' ],
 			'content'    => $this->block_pattern_content(),
-		);
+		];
 	}
 
 	/**
@@ -36,6 +36,7 @@ final class Footer extends Block_Pattern_Base {
 	 * @return string Block pattern content.
 	 */
 	public function block_pattern_content() {
+		// phpcs:disable WordPressVIPMinimum.Security.Mustache.OutputNotation
 		ob_start();
 		?>
 		<!-- wp:group {"layout":{"inherit":"true"}} -->
@@ -57,5 +58,6 @@ final class Footer extends Block_Pattern_Base {
 		</div><!-- /wp:group -->
 		<?php
 		return ob_get_clean();
+		// phpcs:enable WordPressVIPMinimum.Security.Mustache.OutputNotation
 	}
 }

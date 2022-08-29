@@ -76,15 +76,14 @@ const styles = {
 
 };
 
-/* Example of how to add a new entry point for a JS file.
-const exampleJS = {
+const scripts = {
 	...sharedConfig,
 	entry: {
-		'example-js': path.resolve(process.cwd(), 'assets', 'src', 'js', 'example.js'),
+		'core-navigation': path.resolve( process.cwd(), 'assets', 'src', 'js', 'core-navigation.js' ),
 	},
 };
- */
 
 module.exports = [
-	styles, // Do not remove this.
+	scripts,
+	styles,
 ];
