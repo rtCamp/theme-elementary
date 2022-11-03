@@ -17,6 +17,7 @@
 
 # Enviroment
 .env
+.wp-env.override.json
 
 # Build
 assets/build/
