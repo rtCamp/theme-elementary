@@ -90,6 +90,7 @@ class Block_Patterns {
 		$block_patterns_classes = [
 			'footer'     => 'Footer',
 			'hidden-404' => 'Hidden_404',
+			'page-creation-pattern' => 'Page_Creation_Pattern',
 		];
 
 		/**

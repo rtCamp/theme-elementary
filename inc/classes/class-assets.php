@@ -34,7 +34,7 @@ class Assets {
 	 */
 	public function setup_hooks() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
 	}
 
@@ -167,7 +167,7 @@ class Assets {
 	 *
 	 * @return void
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_assets() {
 		wp_enqueue_style( 'elementary-theme-styles' );
 	}
 
