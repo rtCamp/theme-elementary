@@ -34,6 +34,7 @@ class Assets {
 	 */
 	public function setup_hooks() {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
 	}
 
@@ -48,6 +49,7 @@ class Assets {
 
 		$this->register_script( 'core-navigation', 'js/core-navigation.js' );
 		$this->register_style( 'core-navigation', 'css/core-navigation.css' );
+		$this->register_style( 'elementary-theme-styles', 'css/styles.css' );
 	}
 
 	/**
@@ -158,6 +160,15 @@ class Assets {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		return file_exists( $file_path ) ? filemtime( $file_path ) : false;
+	}
+
+	/**
+	 * Enqueue JS and CSS in frontend.
+	 *
+	 * @return void
+	 */
+	public function enqueue_assets() {
+		wp_enqueue_style( 'elementary-theme-styles' );
 	}
 
 }
