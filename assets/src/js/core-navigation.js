@@ -1,5 +1,5 @@
 /**
- * Custom script required for the core Navigatino block.
+ * Custom script required for the core Navigation block.
  */
 
 /**
