@@ -19,8 +19,7 @@ A starter theme that facilitates a quick head start for developing new [block-ba
 ├── functions.php (PHP entry point)
 ├── inc
 │   ├── classes (Holds all classes)
-│   │   ├── class-elementary-theme.php (Instantiates all of the classes)
-│   │   └── patterns (Logic for registering block patterns)
+│   │   └── class-elementary-theme.php (Instantiates all of the classes)
 │   ├── helpers (PHP Helpers)
 │   │   └── custom-functions.php
 │   └── traits (PHP Traits)

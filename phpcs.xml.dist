@@ -120,6 +120,9 @@
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 	</rule>
 
+	<!-- Exclude patterns folder -->
+	<exclude-pattern>*patterns/*</exclude-pattern>
+
 	<!-- Third-party or auto-generated code -->
 	<exclude-pattern>*/build/*</exclude-pattern>
 	<exclude-pattern>*/data/*</exclude-pattern>
