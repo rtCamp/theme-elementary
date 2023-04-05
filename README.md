@@ -26,6 +26,7 @@ A starter theme that facilitates a quick head start for developing new [block-ba
 │       └── trait-singleton.php
 ├── index.php
 ├── parts (Block Template Parts)
+├── patterns (Block Template Patterns)
 │   ├── *.html
 ├── style.css
 ├── templates (Block Templates)
