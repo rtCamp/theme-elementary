@@ -88,8 +88,8 @@ class Block_Patterns {
 	 */
 	public function elementary_theme_register_block_patterns() {
 		$block_patterns_classes = [
-			'footer'     => 'Footer',
-			'hidden-404' => 'Hidden_404',
+			'footer'                => 'Footer',
+			'hidden-404'            => 'Hidden_404',
 			'page-creation-pattern' => 'Page_Creation_Pattern',
 		];
 
