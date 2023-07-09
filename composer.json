@@ -33,5 +33,12 @@
 		"psr-4": {
 			"Elementary_Theme\\Tests\\": "tests/php/"
 		}
+	},
+	"scripts": {
+		"phpcs": "@php ./vendor/bin/phpcs",
+		"phpcs:fix": "@php ./vendor/bin/phpcbf",
+		"post-install-cmd": [
+			"npm i"
+		]
 	}
 }
