@@ -20,12 +20,12 @@
 	},
 	"devDependencies": {
 		"@babel/core": "7.22.5",
-		"@wordpress/babel-preset-default": "7.20.0",
-		"@wordpress/browserslist-config": "5.19.0",
-		"@wordpress/env": "8.2.0",
-		"@wordpress/eslint-plugin": "14.9.0",
-		"@wordpress/jest-preset-default": "11.7.0",
-		"@wordpress/scripts": "26.7.0",
+		"@wordpress/babel-preset-default": "7.21.0",
+		"@wordpress/browserslist-config": "5.20.0",
+		"@wordpress/env": "8.3.0",
+		"@wordpress/eslint-plugin": "14.10.0",
+		"@wordpress/jest-preset-default": "11.8.0",
+		"@wordpress/scripts": "26.8.0",
 		"browserslist": "4.21.9",
 		"cross-env": "7.0.3",
 		"css-minimizer-webpack-plugin": "5.0.1",
@@ -59,7 +59,7 @@
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
-		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction",
+		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction --no-scripts",
 		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer exec 'phpunit --do-not-cache-result --verbose'",
 		"wp-env": "wp-env"
 	}
