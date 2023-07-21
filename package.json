@@ -19,6 +19,7 @@
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
 	"devDependencies": {
+<<<<<<< HEAD
 		"@babel/core": "7.22.9",
 		"@wordpress/babel-preset-default": "7.21.0",
 		"@wordpress/browserslist-config": "5.20.0",
@@ -26,6 +27,15 @@
 		"@wordpress/eslint-plugin": "14.10.0",
 		"@wordpress/jest-preset-default": "11.8.0",
 		"@wordpress/scripts": "26.8.0",
+=======
+		"@babel/core": "7.22.8",
+		"@wordpress/babel-preset-default": "7.22.0",
+		"@wordpress/browserslist-config": "5.21.0",
+		"@wordpress/env": "8.4.0",
+		"@wordpress/eslint-plugin": "14.11.0",
+		"@wordpress/jest-preset-default": "11.9.0",
+		"@wordpress/scripts": "26.9.0",
+>>>>>>> 20a2f66 (Update WordPress NPM packages based on Gutenberg release v16.2.1)
 		"browserslist": "4.21.9",
 		"cross-env": "7.0.3",
 		"css-minimizer-webpack-plugin": "5.0.1",
