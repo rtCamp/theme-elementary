@@ -19,7 +19,7 @@
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
 	"devDependencies": {
-		"@babel/core": "7.23.3",
+		"@babel/core": "7.23.5",
 		"@wordpress/babel-preset-default": "7.30.0",
 		"@wordpress/browserslist-config": "5.29.0",
 		"@wordpress/env": "8.12.0",
