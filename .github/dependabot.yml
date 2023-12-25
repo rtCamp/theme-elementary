@@ -21,9 +21,10 @@ updates:
     labels:
       - NPM
       - Dependencies
-    ignore:
-      # Updates are handled via the `gutenberg-packages-update` GHA workflow.
-      - dependency-name: "@wordpress/*"
+    group:
+      wordpress-packages:
+        patterns:
+          - "@wordpress/*"
 
   - package-ecosystem: composer
     directory: '/'
