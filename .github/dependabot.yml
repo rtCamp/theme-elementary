@@ -21,7 +21,7 @@ updates:
     labels:
       - NPM
       - Dependencies
-    group:
+    groups:
       wordpress-packages:
         patterns:
           - "@wordpress/*"
