@@ -45,7 +45,7 @@ A starter theme that facilitates a quick head start for developing new [block-ba
 ```
 composer create-project rtcamp/elementary [folder_name]
 ```
-This command is equivalant of cloning the repository and running `composer install && npm install`
+This command is equivalent to cloning the repository and running `composer install && npm install`
 
 ### Method 2
 Manually clone this repository using
