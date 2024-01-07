@@ -8,6 +8,8 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const readline = require( 'readline' );
+const { promisify } = require( 'util' );
+const exec = promisify( require( 'child_process' ).exec );
 
 /**
  * Define Constants
@@ -16,6 +18,7 @@ const rl = readline.createInterface( {
 	input: process.stdin,
 	output: process.stdout,
 } );
+
 const info = {
 	error: ( message ) => {
 		return `\x1b[31m${ message }\x1b[0m`;
@@ -30,17 +33,31 @@ const info = {
 		return `\x1b[34m${ message }\x1b[0m`;
 	},
 };
+
 let fileContentUpdated = false;
 let fileNameUpdated = false;
 let themeCleanup = false;
+let isGitInitialized = false;
 
 const args = process.argv.slice( 2 );
+const themeCleanupQuestion = () => {
+	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
+		if ( 'n' === cleanup.toLowerCase() ) {
+			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
+		} else {
+			runThemeCleanup();
+		}
+
+		runHuskySetup();
+		rl.close();
+	} );
+};
 
 if ( 0 === args.length ) {
 	rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
 		if ( 'n' === answer.toLowerCase() ) {
 			console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-			process.exit( 0 );
+			rl.close();
 		}
 
 		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
@@ -48,31 +65,22 @@ if ( 0 === args.length ) {
 			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
 				if ( 'n' === confirm.toLowerCase() ) {
 					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-					process.exit( 0 );
-				}
-
-				initTheme( themeInfo );
-
-				rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
-					if ( 'n' === cleanup.toLowerCase() ) {
-						console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
-						process.exit( 0 );
-					}
-					runThemeCleanup();
 					rl.close();
+				}
+				initTheme( themeInfo );
+				rl.question( 'Would you like to initialize git? (y/n) ', async ( initialize ) => {
+					if ( 'n' === initialize.toLowerCase() ) {
+						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
+					} else {
+						await initializeGit();
+					}
+					themeCleanupQuestion();
 				} );
 			} );
 		} );
 	} );
 } else if ( ( args.includes( '--clean' ) || args.includes( '-c' ) ) && 1 === args.length ) {
-	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
-		if ( 'n' === cleanup.toLowerCase() ) {
-			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
-			process.exit( 0 );
-		}
-		runThemeCleanup();
-		rl.close();
-	} );
+	themeCleanupQuestion();
 } else {
 	console.log( info.error( '\nInvalid arguments.\n' ) );
 	process.exit( 0 );
@@ -80,6 +88,81 @@ if ( 0 === args.length ) {
 rl.on( 'close', () => {
 	process.exit( 0 );
 } );
+
+/**
+ * Run husky setup
+ *
+ * @return {void}
+ */
+const runHuskySetup = () => {
+	// Run husky install command.
+	console.log( info.success( '\nInstalling husky...' ) );
+
+	// Check if .git file exists.
+	const gitDir = path.resolve( getRoot(), '.git' );
+	if ( ! fs.existsSync( gitDir ) ) {
+		console.log( info.warning( '\n.git directory does not exists.\nExiting without installing husky.' ) );
+		return;
+	}
+
+	const huskyInstallCommand = `husky install`;
+	exec( huskyInstallCommand )
+		.then( ( result ) => {
+			console.log( info.success( `stdout: ${ result.stdout }` ) );
+			console.log( info.success( '\nHusky installed successfully!' ), '✨' );
+		} )
+		.catch( ( error ) => {
+			console.log( info.error( `error: ${ error.message }` ) );
+			if ( error.stderr ) {
+				console.log( info.error( `stderr: ${ error.stderr }` ) );
+			}
+		} );
+};
+
+/**
+ * Initialize Git.
+ *
+ * @return {Promise<void>}
+ */
+const initializeGit = async () => {
+	// Initialize git.
+	console.log( info.success( '\nInitializing git...' ) );
+
+	// Check if .git file exists.
+	const gitDir = path.resolve( getRoot(), '.git' );
+	if ( fs.existsSync( gitDir ) ) {
+		console.log( info.warning( '\n.git directory already exists.\n' ) );
+		return;
+	}
+
+	const pathToRoot = path.resolve( getRoot() );
+	const gitInitCommand = `git init '${ pathToRoot }'`;
+	const pathToAllFiles = path.resolve( getRoot(), '.' );
+	const gitAddCommand = `git add '${ pathToAllFiles }'`;
+	const gitCommit = `git commit -m 'Initialize project using rtCamp/theme-elementary'`;
+
+	try {
+		// Execute git init command in the root directory and await for the response.
+		const initResult = await exec( gitInitCommand );
+		console.log( info.success( `stdout: ${ initResult.stdout }` ) );
+
+		// Execute git add command in the root directory and await for the response.
+		const addResult = await exec( gitAddCommand );
+		console.log( info.success( `stdout: ${ addResult.stdout }` ) );
+
+		// Execute git commit command in the root directory and await for the response.
+		const commitResult = await exec( gitCommit );
+		console.log( info.success( `stdout: ${ commitResult.stdout }` ) );
+
+		console.log( info.success( '\nGit initialized successfully!' ), '✨' );
+		isGitInitialized = true;
+	} catch ( error ) {
+		console.log( info.error( `error: ${ error.message }` ) );
+		if ( error.stderr ) {
+			console.log( info.error( `stderr: ${ error.stderr }` ) );
+		}
+	}
+};
 
 /**
  * Renders the theme setup modal with all necessary information related to the search-replace.
@@ -351,11 +434,14 @@ const getRoot = () => {
  */
 const runThemeCleanup = () => {
 	const deleteDirs = [
-		'.git',
 		'.github',
 		'bin',
 		'languages',
 	];
+
+	if ( ! isGitInitialized ) {
+		deleteDirs.push( '.git' );
+	}
 
 	deleteDirs.forEach( ( dir ) => {
 		const dirPath = path.resolve( getRoot(), dir );
