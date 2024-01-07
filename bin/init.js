@@ -40,6 +40,12 @@ let themeCleanup = false;
 let isGitInitialized = false;
 
 const args = process.argv.slice( 2 );
+
+/**
+ * Ask theme claenup question.
+ *
+ * @return {void}
+ */
 const themeCleanupQuestion = () => {
 	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
 		if ( 'n' === cleanup.toLowerCase() ) {
@@ -48,6 +54,7 @@ const themeCleanupQuestion = () => {
 			runThemeCleanup();
 		}
 
+		// Run husky setup from JS file to avoid husky install error.
 		runHuskySetup();
 		rl.close();
 	} );
@@ -68,6 +75,8 @@ if ( 0 === args.length ) {
 					rl.close();
 				}
 				initTheme( themeInfo );
+
+				// Provide await for the git initialization to complete before running theme cleanup.
 				rl.question( 'Would you like to initialize git? (y/n) ', async ( initialize ) => {
 					if ( 'n' === initialize.toLowerCase() ) {
 						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
@@ -95,7 +104,6 @@ rl.on( 'close', () => {
  * @return {void}
  */
 const runHuskySetup = () => {
-	// Run husky install command.
 	console.log( info.success( '\nInstalling husky...' ) );
 
 	// Check if .git file exists.
@@ -105,6 +113,7 @@ const runHuskySetup = () => {
 		return;
 	}
 
+	// Run husky install command.
 	const huskyInstallCommand = `husky install`;
 	exec( huskyInstallCommand )
 		.then( ( result ) => {
