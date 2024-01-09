@@ -53,9 +53,6 @@ const themeCleanupQuestion = () => {
 		} else {
 			runThemeCleanup();
 		}
-
-		// Run husky setup from JS file to avoid husky install error.
-		runHuskySetup();
 		rl.close();
 	} );
 };
@@ -77,7 +74,7 @@ if ( 0 === args.length ) {
 				initTheme( themeInfo );
 
 				// Provide await for the git initialization to complete before running theme cleanup.
-				rl.question( 'Would you like to initialize git? (y/n) ', async ( initialize ) => {
+				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
 					if ( 'n' === initialize.toLowerCase() ) {
 						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
 					} else {
@@ -99,36 +96,6 @@ rl.on( 'close', () => {
 } );
 
 /**
- * Run husky setup
- *
- * @return {void}
- */
-const runHuskySetup = () => {
-	console.log( info.success( '\nInstalling husky...' ) );
-
-	// Check if .git file exists.
-	const gitDir = path.resolve( getRoot(), '.git' );
-	if ( ! fs.existsSync( gitDir ) ) {
-		console.log( info.warning( '\n.git directory does not exists.\nExiting without installing husky.' ) );
-		return;
-	}
-
-	// Run husky install command.
-	const huskyInstallCommand = `husky install`;
-	exec( huskyInstallCommand )
-		.then( ( result ) => {
-			console.log( info.success( `stdout: ${ result.stdout }` ) );
-			console.log( info.success( '\nHusky installed successfully!' ), '✨' );
-		} )
-		.catch( ( error ) => {
-			console.log( info.error( `error: ${ error.message }` ) );
-			if ( error.stderr ) {
-				console.log( info.error( `stderr: ${ error.stderr }` ) );
-			}
-		} );
-};
-
-/**
  * Initialize Git.
  *
  * @return {Promise<void>}
@@ -140,7 +107,10 @@ const initializeGit = async () => {
 	// Check if .git file exists.
 	const gitDir = path.resolve( getRoot(), '.git' );
 	if ( fs.existsSync( gitDir ) ) {
-		console.log( info.warning( '\n.git directory already exists.\n' ) );
+		// Remove .git directory.
+		fs.rmSync( gitDir, {
+			recursive: true,
+		} );
 		return;
 	}
 
