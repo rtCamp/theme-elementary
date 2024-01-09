@@ -111,7 +111,6 @@ const initializeGit = async () => {
 		fs.rmSync( gitDir, {
 			recursive: true,
 		} );
-		return;
 	}
 
 	const pathToRoot = path.resolve( getRoot() );
