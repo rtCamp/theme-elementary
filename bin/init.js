@@ -9,7 +9,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const readline = require( 'readline' );
 const { promisify } = require( 'util' );
-const exec = promisify( require( 'child_process' ).exec );
+const { execSync } = require( 'child_process' );
 
 /**
  * Define Constants
@@ -41,44 +41,37 @@ let isGitInitialized = false;
 
 const args = process.argv.slice( 2 );
 
-/**
- * Ask theme claenup question.
- *
- * @return {void}
- */
-const themeCleanupQuestion = () => {
-	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
-		if ( 'n' === cleanup.toLowerCase() ) {
-			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
-		} else {
-			runThemeCleanup();
-		}
-		rl.close();
-	} );
-};
-
 if ( 0 === args.length ) {
 	rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
+
 		if ( 'n' === answer.toLowerCase() ) {
 			console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
 			rl.close();
 		}
 
 		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
+
 			const themeInfo = renderThemeDetails( themeName );
+
 			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
+
 				if ( 'n' === confirm.toLowerCase() ) {
 					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
 					rl.close();
 				}
+
 				initTheme( themeInfo );
 
-				// Provide await for the git initialization to complete before running theme cleanup.
+				// Remove theme initialization scripts.
+				modifyComposerJson();
+				modifyPackageJson();
+
 				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
 					if ( 'n' === initialize.toLowerCase() ) {
 						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
+						await askQuestionForHuskyInstallation();
 					} else {
-						await initializeGit();
+						await initializeGit()
 					}
 					themeCleanupQuestion();
 				} );
@@ -89,16 +82,106 @@ if ( 0 === args.length ) {
 	themeCleanupQuestion();
 } else {
 	console.log( info.error( '\nInvalid arguments.\n' ) );
-	process.exit( 0 );
+	rl.close();
 }
 rl.on( 'close', () => {
 	process.exit( 0 );
 } );
 
 /**
+ * Modify composer.json file.
+ *
+ * @return {void}
+ */
+const modifyComposerJson = () => {
+	const composerJsonPath = path.resolve( getRoot(), 'composer.json' );
+
+	if ( ! fs.existsSync( composerJsonPath ) ) {
+		return;
+	}
+
+	const composerJson = require( composerJsonPath );
+
+	try {
+		// Remove scripts.
+		delete composerJson.scripts['post-install-cmd'];
+
+		// Commit the changes to file.
+		fs.writeFileSync( composerJsonPath, JSON.stringify( composerJson, null, 2 ) );
+	} catch ( error ) {
+		console.log( error );
+	}
+}
+
+/**
+ * Modify package.json file.
+ *
+ * @return {void}
+ */
+const modifyPackageJson = () => {
+	const packageJsonPath = path.resolve( getRoot(), 'package.json' );
+
+	if ( ! fs.existsSync( packageJsonPath ) ) {
+		return;
+	}
+
+	const packageJson = require( packageJsonPath );
+
+	try {
+		delete packageJson.scripts['init'];
+
+		if ( ! packageJson.scripts['prepare'] ) {
+			return;
+		}
+
+		const prepareScript = packageJson.scripts['prepare'];
+
+		// Check if 'npm run init' is part of the prepare script.
+		if ( ! prepareScript.includes('npm run init') ) {
+			return;
+		}
+
+		// Split the prepare script into an array of individual scripts.
+		const prepareScriptArray = prepareScript.split( '&&' ).map( ( script ) => script.trim() );
+
+		// Find the index of 'npm run init' in the array.
+		const initScriptIndex = prepareScriptArray.indexOf( 'npm run init' );
+
+		// Remove 'npm run init' from the array if it exists.
+		if ( -1 !== initScriptIndex ) {
+			prepareScriptArray.splice( initScriptIndex, 1 );
+		}
+		// Join the array back into a string and update the 'prepare' script in packageJson.
+		packageJson.scripts['prepare'] = prepareScriptArray.join( ' && ' );
+
+		// Commit the changes to file.
+		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ) );
+
+	} catch ( error ) {
+		console.log( error );
+	}
+}
+
+/**
+ * Ask theme claenup question.
+ *
+ * @return {void}
+ */
+function themeCleanupQuestion() {
+	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
+		if ( 'n' === cleanup.toLowerCase() ) {
+			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
+		} else {
+			runThemeCleanup();
+		}
+		rl.close();
+	} );
+}
+
+/**
  * Initialize Git.
  *
- * @return {Promise<void>}
+ * @return {void}
  */
 const initializeGit = async () => {
 	// Initialize git.
@@ -117,23 +200,22 @@ const initializeGit = async () => {
 	const gitInitCommand = `git init '${ pathToRoot }'`;
 	const pathToAllFiles = path.resolve( getRoot(), '.' );
 	const gitAddCommand = `git add '${ pathToAllFiles }'`;
-	const gitCommit = `git commit -m 'Initialize project using rtCamp/theme-elementary'`;
+	// Apply --no-verify flag to skip husky pre-commit hook.
+	const gitCommit = `git commit -m 'Initialize project using rtCamp/theme-elementary' --no-verify`;
 
 	try {
-		// Execute git init command in the root directory and await for the response.
-		const initResult = await exec( gitInitCommand );
-		console.log( info.success( `stdout: ${ initResult.stdout }` ) );
-
-		// Execute git add command in the root directory and await for the response.
-		const addResult = await exec( gitAddCommand );
-		console.log( info.success( `stdout: ${ addResult.stdout }` ) );
-
-		// Execute git commit command in the root directory and await for the response.
-		const commitResult = await exec( gitCommit );
-		console.log( info.success( `stdout: ${ commitResult.stdout }` ) );
-
+		// Execute git init command in the root directory.
+		execSync( gitInitCommand );
 		console.log( info.success( '\nGit initialized successfully!' ), '✨' );
 		isGitInitialized = true;
+
+		await askQuestionForHuskyInstallation();
+
+		// Execute git add command in the root directory.
+		execSync( gitAddCommand );
+
+		// Execute git commit command in the root directory.
+		execSync( gitCommit );
 	} catch ( error ) {
 		console.log( info.error( `error: ${ error.message }` ) );
 		if ( error.stderr ) {
@@ -141,6 +223,70 @@ const initializeGit = async () => {
 		}
 	}
 };
+
+/**
+ * Ask Question for Husky Installation.
+ *
+ * @return {void}
+ */
+const askQuestionForHuskyInstallation = async () => {
+	const question = promisify( rl.question ).bind( rl );
+	const install = await question( 'Would you like to install Husky? (y/n) ' );
+	if ( 'n' === install.toLowerCase() ) {
+		console.log(info.warning('\nExiting without installing Husky.\n'));
+		return;
+	}
+	installHusky();
+}
+
+/**
+ * Install Husky.
+ *
+ * @return {void}
+ */
+const installHusky = () => {
+	// Install Husky.
+	console.log( info.success( '\nInstalling Husky...' ) );
+
+	const pathToRoot = path.resolve( getRoot() );
+	const huskyInstallCommand = `npm install husky --save-dev --prefix '${ pathToRoot }'`;
+
+	try {
+		// Execute Husky install command in the root directory.
+		execSync( huskyInstallCommand );
+
+		// Add husky install command to prepare script in package.json file.
+		const packageJsonPath = path.resolve( getRoot(), 'package.json' );
+
+		if ( ! fs.existsSync( packageJsonPath ) ) {
+			return;
+		}
+
+		const packageJson = require( packageJsonPath );
+
+		if ( ! packageJson.scripts['prepare'] ) {
+			packageJson.scripts['prepare'] = 'husky install';
+		} else {
+			// Check if husky install command is already present in prepare script.
+			if ( ! packageJson.scripts['prepare'].includes( 'husky install' ) ) {
+				packageJson.scripts['prepare'] = packageJson.scripts['prepare'] + ' && husky install';
+			}
+		}
+
+		// Commit the changes to file.
+		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ) );
+
+		execSync( 'npx husky install' );
+		execSync( 'npx husky add .husky/pre-commit "npm run lint:staged"' );
+
+		console.log( info.success( '\nHusky installed successfully!' ), '✨' );
+	} catch ( error ) {
+		console.log( info.error( `error: ${ error.message }` ) );
+		if ( error.stderr ) {
+			console.log( info.error( `stderr: ${ error.stderr }` ) );
+		}
+	}
+}
 
 /**
  * Renders the theme setup modal with all necessary information related to the search-replace.
@@ -413,7 +559,7 @@ const getRoot = () => {
 const runThemeCleanup = () => {
 	const deleteDirs = [
 		'.github',
-		'bin',
+		'bin/init.js',
 		'languages',
 	];
 
@@ -425,10 +571,22 @@ const runThemeCleanup = () => {
 		const dirPath = path.resolve( getRoot(), dir );
 		try {
 			if ( fs.existsSync( dirPath ) ) {
-				fs.rmdirSync( dirPath, {
+				let isDirectory = false;
+
+				if ( true === fs.lstatSync( dirPath ).isDirectory() ) {
+					isDirectory = true;
+				}
+
+				// rmSync function introduced in Node v14.14.0. It can delete files and directories recursively.
+				fs.rmSync( dirPath, {
 					recursive: true,
 				} );
-				console.log( info.success( `Deleted directory [${ info.message( dir ) }]` ) );
+
+				if ( isDirectory ) {
+					console.log( info.success( `Removed directory [${ info.message( dir ) }]` ) );
+				} else {
+					console.log( info.success( `Removed file [${ info.message( dir ) }]` ) );
+				}
 				themeCleanup = true;
 			}
 		} catch ( err ) {
