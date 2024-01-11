@@ -49,7 +49,7 @@
 		"lint:js": "wp-scripts lint-js ./assets/src",
 		"lint:js:fix": "npm run lint:js -- --fix ./assets/src",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
-		"lint:php": "vendor/bin/phpcs",
+		"lint:php": "php vendor/bin/phpcs",
 		"lint:php:fix": "node ./bin/phpcbf.js",
 		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
