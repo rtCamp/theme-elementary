@@ -216,6 +216,10 @@ const initializeGit = async () => {
  * @return {void}
  */
 const askQuestionForHuskyInstallation = async () => {
+
+	// Promisify the question function for this instance only as this question is in between another question so code after this was getting executed before this is completed.
+	// There is readlinePromises Interface introduced in v17.0.0 and is in Experimental phase so we are using promisify for now.
+	// In future we can use readlinePromises Interface.
 	const question = promisify( rl.question ).bind( rl );
 	const install = await question( 'Would you like to install Husky? (y/n) ' );
 	if ( 'n' === install.toLowerCase() ) {
