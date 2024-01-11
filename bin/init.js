@@ -10,7 +10,6 @@ const path = require( 'path' );
 const readline = require( 'readline' );
 const { promisify } = require( 'util' );
 const { execSync } = require( 'child_process' );
-const { getRoot, info } = require( './util' );
 
 /**
  * Define Constants
@@ -19,6 +18,30 @@ const rl = readline.createInterface( {
 	input: process.stdin,
 	output: process.stdout,
 } );
+
+const info = {
+	error: ( message ) => {
+		return `\x1b[31m${ message }\x1b[0m`;
+	},
+	success: ( message ) => {
+		return `\x1b[32m${ message }\x1b[0m`;
+	},
+	warning: ( message ) => {
+		return `\x1b[33m${ message }\x1b[0m`;
+	},
+	message: ( message ) => {
+		return `\x1b[34m${ message }\x1b[0m`;
+	},
+};
+
+/**
+ * Return root directory
+ *
+ * @return {string} root directory
+ */
+const getRoot = () => {
+	return path.resolve( __dirname, '../' );
+}
 
 let fileContentUpdated = false;
 let fileNameUpdated = false;

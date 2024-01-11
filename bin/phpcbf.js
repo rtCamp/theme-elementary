@@ -1,28 +1,45 @@
 #!/usr/bin/env node
 
-/* eslint no-console: 0 */
+/**
+ * External dependencies
+ */
+const { join } = require( 'node:path' );
+const { argv } = require( 'node:process' );
+const { spawn } = require( 'node:child_process' );
+const { accessSync, constants } = require( 'node:fs' );
 
-const path = require( 'path' );
-const fs = require( 'fs' );
-const { execSync } = require( 'child_process' );
-const { getRoot, info } = require( './util' );
+const args = argv.slice( 2 );
+const scriptPath = join( __dirname, '..', 'vendor', 'bin', 'phpcbf' );
 
-
-// Path to the @root/vendor/bin/phpcbf script.
-const pathToPhpcbf = path.resolve( getRoot(), 'vendor/bin/phpcbf' );
-
-if ( ! fs.existsSync( pathToPhpcbf ) ) {
-	console.log( info.error( 'phpcbf not found. Please run `composer install`.' ) );
-	process.exit( 1 );
-}
-
-// Run the phpcbf script.
-const command = `'${ pathToPhpcbf }' ${ process.argv.slice( 2 ).join( ' ' ) }`;
 try {
-	const phpcbfCommand = execSync( command );
-	console.log( phpcbfCommand.toString() );
-
-} catch ( error ) {
-	console.log( error.stdout.toString() );
+	accessSync( scriptPath, constants.F_OK );
+} catch (e) {
+	// eslint-disable-next-line no-console
+	console.error(
+		'\x1b[31m%s\x1b[0m',
+		'Error: vendor/bin/phpcbf is not found or not executable. Please run `composer install` first.'
+	);
 	process.exit( 1 );
 }
+
+const phpcbfProcess = spawn( scriptPath, args );
+
+phpcbfProcess.stdout.on( 'data', ( data ) => {
+	process.stdout.write( data );
+});
+
+phpcbfProcess.stderr.on( 'data', ( data ) => {
+	process.stderr.write( data );
+});
+
+process.on( 'SIGINT', () => {
+	phpcbfProcess.kill();
+});
+
+process.on( 'SIGTERM', () => {
+	phpcbfProcess.kill();
+});
+
+phpcbfProcess.on( 'exit', ( code ) => {
+	process.exit( 1 === code	 ? 0 : code );
+});
