@@ -103,6 +103,7 @@ rl.on( 'close', () => {
  * @return {void}
  */
 const modifyComposerJson = () => {
+	console.log( info.message( '\nRemoving post-install-cmd script from the composer.json...' ) );
 	const composerJsonPath = path.resolve( getRoot(), 'composer.json' );
 
 	if ( ! fs.existsSync( composerJsonPath ) ) {
@@ -117,8 +118,9 @@ const modifyComposerJson = () => {
 
 		// Commit the changes to file.
 		fs.writeFileSync( composerJsonPath, JSON.stringify( composerJson, null, 2 ) );
+		console.log( info.success( '\ncomposer.json updated successfully!' ), '✨' );
 	} catch ( error ) {
-		console.log( error );
+		console.log( info.error( `Error while updating composer.json: ${ error.message }` ) );
 	}
 }
 
@@ -128,6 +130,7 @@ const modifyComposerJson = () => {
  * @return {void}
  */
 const modifyPackageJson = () => {
+	console.log( info.message( '\nRemoving init script from the package.json...' ) );
 	const packageJsonPath = path.resolve( getRoot(), 'package.json' );
 
 	if ( ! fs.existsSync( packageJsonPath ) ) {
@@ -165,9 +168,9 @@ const modifyPackageJson = () => {
 
 		// Commit the changes to file.
 		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ) );
-
+		console.log( info.success( '\npackage.json updated successfully!' ), '✨' );
 	} catch ( error ) {
-		console.log( error );
+		console.log( info.error( `Error while updating package.json: ${ error.message }` ) );
 	}
 }
 
@@ -226,9 +229,9 @@ const initializeGit = async () => {
 		// Execute git commit command in the root directory.
 		execSync( gitCommit );
 	} catch ( error ) {
-		console.log( info.error( `error: ${ error.message }` ) );
+		console.log( info.error( `Error while initializing Git: ${ error.message }` ) );
 		if ( error.stderr ) {
-			console.log( info.error( `stderr: ${ error.stderr }` ) );
+			console.log( info.error( `stderr while initializing Git: ${ error.stderr }` ) );
 		}
 	}
 };
@@ -302,9 +305,9 @@ const installHusky = () => {
 
 		console.log( info.success( '\nHusky installed successfully!' ), '✨' );
 	} catch ( error ) {
-		console.log( info.error( `error: ${ error.message }` ) );
+		console.log( info.error( `Error while installing Husky: ${ error.message }` ) );
 		if ( error.stderr ) {
-			console.log( info.error( `stderr: ${ error.stderr }` ) );
+			console.log( info.error( `stderr while installing husky: ${ error.stderr }` ) );
 		}
 	}
 }
