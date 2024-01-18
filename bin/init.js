@@ -72,8 +72,8 @@ if ( 0 === args.length ) {
 				initTheme( themeInfo );
 
 				// Remove theme initialization scripts.
-				modifyComposerJson();
-				modifyPackageJson();
+				updateComposerJson();
+				updatePackageJson();
 
 				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
 					if ( 'n' === initialize.toLowerCase() ) {
@@ -98,11 +98,11 @@ rl.on( 'close', () => {
 } );
 
 /**
- * Modify composer.json file.
+ * Update composer.json file.
  *
  * @return {void}
  */
-const modifyComposerJson = () => {
+const updateComposerJson = () => {
 	console.log( info.message( '\nRemoving post-install-cmd script from the composer.json...' ) );
 	const composerJsonPath = path.resolve( getRoot(), 'composer.json' );
 
@@ -125,11 +125,11 @@ const modifyComposerJson = () => {
 }
 
 /**
- * Modify package.json file.
+ * Update package.json file.
  *
  * @return {void}
  */
-const modifyPackageJson = () => {
+const updatePackageJson = () => {
 	console.log( info.message( '\nRemoving init script from the package.json...' ) );
 	const packageJsonPath = path.resolve( getRoot(), 'package.json' );
 
@@ -149,7 +149,7 @@ const modifyPackageJson = () => {
 		const prepareScript = packageJson.scripts['prepare'];
 
 		// Check if 'npm run init' is part of the prepare script.
-		if ( ! prepareScript.includes('npm run init') ) {
+		if ( ! prepareScript.includes( 'npm run init' ) ) {
 			return;
 		}
 
@@ -201,11 +201,15 @@ const initializeGit = async () => {
 
 	// Check if .git file exists.
 	const gitDir = path.resolve( getRoot(), '.git' );
-	if ( fs.existsSync( gitDir ) ) {
-		// Remove .git directory.
-		fs.rmSync( gitDir, {
-			recursive: true,
-		} );
+	try {
+		if ( fs.existsSync( gitDir ) ) {
+			// Remove .git directory.
+			fs.rmSync( gitDir, {
+				recursive: true,
+			} );
+		}
+	} catch ( error ) {
+
 	}
 
 	const pathToRoot = path.resolve( getRoot() );
@@ -213,7 +217,7 @@ const initializeGit = async () => {
 	const pathToAllFiles = path.resolve( getRoot(), '.' );
 	const gitAddCommand = `git add '${ pathToAllFiles }'`;
 	// Apply --no-verify flag to skip husky pre-commit hook.
-	const gitCommit = `git commit -m 'Initialize project using rtCamp/theme-elementary' --no-verify`;
+	const gitCommit = `git commit -m 'Initialize project using https://github.com/rtCamp/theme-elementary' --no-verify`;
 
 	try {
 		// Execute git init command in the root directory.
