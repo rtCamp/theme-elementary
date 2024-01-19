@@ -433,7 +433,7 @@ const initTheme = ( themeInfo ) => {
 		const result = execSync( 'composer dump-autoload' );
 		console.log( info.success( result ) );
 	} catch ( error ) {
-		console.log( info.error( error ) );
+		console.log( info.error( `Error while executing composer dump-autoload: ${error}` ) );
 	}
 };
 
