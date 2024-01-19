@@ -428,6 +428,13 @@ const initTheme = ( themeInfo ) => {
 	} else {
 		console.log( info.warning( '\nNo changes were made to your theme.\n' ) );
 	}
+
+	try {
+		const result = execSync( 'composer dump-autoload' );
+		console.log( info.success( result ) );
+	} catch ( error ) {
+		console.log( info.error( error ) );
+	}
 };
 
 /**
