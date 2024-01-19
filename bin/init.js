@@ -233,10 +233,7 @@ const initializeGit = async () => {
 		// Execute git commit command in the root directory.
 		execSync( gitCommit );
 	} catch ( error ) {
-		console.log( info.error( `Error while initializing Git: ${ error.message }` ) );
-		if ( error.stderr ) {
-			console.log( info.error( `stderr while initializing Git: ${ error.stderr }` ) );
-		}
+		console.log( info.error( 'Error while installing Git. Please check above for the logs.' ) );
 	}
 };
 
@@ -309,10 +306,7 @@ const installHusky = () => {
 
 		console.log( info.success( '\nHusky installed successfully!' ), '✨' );
 	} catch ( error ) {
-		console.log( info.error( `Error while installing Husky: ${ error.message }` ) );
-		if ( error.stderr ) {
-			console.log( info.error( `stderr while installing husky: ${ error.stderr }` ) );
-		}
+		console.log( info.error( 'Error while installing husky. Please check above for the logs.' ) );
 	}
 }
 
