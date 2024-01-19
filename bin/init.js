@@ -121,6 +121,7 @@ const updateComposerJson = () => {
 		console.log( info.success( '\ncomposer.json updated successfully!' ), '✨' );
 	} catch ( error ) {
 		console.log( info.error( `Error while updating composer.json: ${ error.message }` ) );
+		console.log( info.message( 'Please remove post-install-cmd script from the composer.json file manually.' ) );
 	}
 }
 
@@ -171,6 +172,7 @@ const updatePackageJson = () => {
 		console.log( info.success( '\npackage.json updated successfully!' ), '✨' );
 	} catch ( error ) {
 		console.log( info.error( `Error while updating package.json: ${ error.message }` ) );
+		console.log( info.message( 'Please remove init script and remove npm run init command from the prepare script from the package.json file manually.' ) );
 	}
 }
 
