@@ -54,7 +54,7 @@ git clone [URL to Git repo]
 ```
 Having cloned this repository, install node packages and PHP dependencies using
 ```
-composer install && npm install
+composer install
 ```
 
 In both the methods, you will be prompted with a theme setup wizard which will help you with the search-replace. That was all! You're good to go with building your block theme. :sparkles:
