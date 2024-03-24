@@ -71,10 +71,6 @@ if ( 0 === args.length ) {
 
 				initTheme( themeInfo );
 
-				// Remove theme initialization scripts.
-				updateComposerJson();
-				updatePackageJson();
-
 				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
 					if ( 'n' === initialize.toLowerCase() ) {
 						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
@@ -110,7 +106,8 @@ const updateComposerJson = () => {
 		return;
 	}
 
-	const composerJson = require( composerJsonPath );
+	const composerJsonFile = fs.readFileSync( composerJsonPath );
+	const composerJson = JSON.parse( composerJsonFile );
 
 	try {
 		// Remove scripts.
@@ -138,7 +135,8 @@ const updatePackageJson = () => {
 		return;
 	}
 
-	const packageJson = require( packageJsonPath );
+	const packageJsonFile = fs.readFileSync( packageJsonPath );
+	const packageJson = JSON.parse( packageJsonFile );
 
 	try {
 		delete packageJson.scripts['init'];
@@ -186,6 +184,8 @@ function themeCleanupQuestion() {
 		if ( 'n' === cleanup.toLowerCase() ) {
 			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
 		} else {
+			updateComposerJson();
+			updatePackageJson();
 			runThemeCleanup();
 		}
 		rl.close();
@@ -276,38 +276,48 @@ const installHusky = () => {
 	console.log( info.success( '\nInstalling Husky...' ) );
 
 	const pathToRoot = path.resolve( getRoot() );
-	const huskyInstallCommand = `npm install husky --save-dev --prefix '${ pathToRoot }'`;
+	const huskyInstallCommand = `npm install husky@9.0.1 --save-dev --prefix '${ pathToRoot }'`;
 
 	try {
 		// Execute Husky install command in the root directory.
 		execSync( huskyInstallCommand );
 
-		// Add husky install command to prepare script in package.json file.
-		const packageJsonPath = path.resolve( getRoot(), 'package.json' );
+		const pathToPackageJson = path.resolve( getRoot(), 'package.json' );
 
-		if ( ! fs.existsSync( packageJsonPath ) ) {
-			return;
-		}
+		let prepareScript = '';
 
-		const packageJson = require( packageJsonPath );
+		// Extracting the prepare script from package.json before husky installation ovrwrites it.
+		if ( fs.existsSync( pathToPackageJson ) ) {
+			const packageJsonFile = fs.readFileSync( pathToPackageJson );
+			const packageJson = JSON.parse( packageJsonFile );
 
-		if ( ! packageJson.scripts['prepare'] ) {
-			packageJson.scripts['prepare'] = 'husky install';
-		} else {
-			// Check if husky install command is already present in prepare script.
-			if ( ! packageJson.scripts['prepare'].includes( 'husky install' ) ) {
-				packageJson.scripts['prepare'] = packageJson.scripts['prepare'] + ' && husky install';
+			if ( packageJson.scripts && packageJson.scripts.prepare ) {
+				prepareScript = packageJson.scripts.prepare;
 			}
 		}
 
-		// Commit the changes to file.
-		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ) );
+		execSync( 'npx husky init' );
+		execSync( 'echo "npm run lint:staged" > .husky/pre-commit' );
 
-		execSync( 'npx husky install' );
-		execSync( 'npx husky add .husky/pre-commit "npm run lint:staged"' );
+		if ( '' === prepareScript ) {
+			return;
+		}
+
+		// Update the prepare script with the old prepare script after husky installation overwrites it.
+		if ( fs.existsSync( pathToPackageJson ) ) {
+			const packageJsonFile = fs.readFileSync( pathToPackageJson );
+			const packageJson = JSON.parse( packageJsonFile );
+
+			if ( packageJson.scripts && packageJson.scripts.prepare ) {
+				packageJson.scripts.prepare += ` && ${ prepareScript }`;
+
+				fs.writeFileSync( pathToPackageJson, JSON.stringify( packageJson, null, 2 ) );
+			}
+		}
 
 		console.log( info.success( '\nHusky installed successfully!' ), '✨' );
 	} catch ( error ) {
+		console.log( error );
 		console.log( info.error( 'Error while installing husky. Please check above for the logs.' ) );
 	}
 }
