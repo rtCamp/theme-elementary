@@ -102,14 +102,13 @@ const updateComposerJson = () => {
 	console.log( info.message( '\nRemoving post-install-cmd script from the composer.json...' ) );
 	const composerJsonPath = path.resolve( getRoot(), 'composer.json' );
 
-	if ( ! fs.existsSync( composerJsonPath ) ) {
-		return;
-	}
-
-	const composerJsonFile = fs.readFileSync( composerJsonPath );
-	const composerJson = JSON.parse( composerJsonFile );
-
 	try {
+		if ( ! fs.existsSync( composerJsonPath ) ) {
+			return;
+		}
+
+		const composerJson = JSON.parse( fs.readFileSync( composerJsonPath ) );
+
 		// Remove scripts.
 		delete composerJson.scripts['post-install-cmd'];
 
@@ -131,14 +130,13 @@ const updatePackageJson = () => {
 	console.log( info.message( '\nRemoving init script from the package.json...' ) );
 	const packageJsonPath = path.resolve( getRoot(), 'package.json' );
 
-	if ( ! fs.existsSync( packageJsonPath ) ) {
-		return;
-	}
-
-	const packageJsonFile = fs.readFileSync( packageJsonPath );
-	const packageJson = JSON.parse( packageJsonFile );
-
 	try {
+		if ( ! fs.existsSync( packageJsonPath ) ) {
+			return;
+		}
+
+		const packageJson = JSON.parse( fs.readFileSync( packageJsonPath ) );
+
 		delete packageJson.scripts['init'];
 
 		if ( ! packageJson.scripts['prepare'] ) {
@@ -288,8 +286,7 @@ const installHusky = () => {
 
 		// Extracting the prepare script from package.json before husky installation ovrwrites it.
 		if ( fs.existsSync( pathToPackageJson ) ) {
-			const packageJsonFile = fs.readFileSync( pathToPackageJson );
-			const packageJson = JSON.parse( packageJsonFile );
+			const packageJson = JSON.parse( fs.readFileSync( pathToPackageJson ) );
 
 			if ( packageJson.scripts && packageJson.scripts.prepare ) {
 				prepareScript = packageJson.scripts.prepare;
@@ -305,8 +302,7 @@ const installHusky = () => {
 
 		// Update the prepare script with the old prepare script after husky installation overwrites it.
 		if ( fs.existsSync( pathToPackageJson ) ) {
-			const packageJsonFile = fs.readFileSync( pathToPackageJson );
-			const packageJson = JSON.parse( packageJsonFile );
+			const packageJson = JSON.parse( fs.readFileSync( pathToPackageJson ) );
 
 			if ( packageJson.scripts && packageJson.scripts.prepare ) {
 				packageJson.scripts.prepare += ` && ${ prepareScript }`;
