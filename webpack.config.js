@@ -9,18 +9,27 @@ const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 /**
  * WordPress dependencies
  */
-const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const { getAsBooleanFromENV } = require( '@wordpress/scripts/utils' );
+
+const hasExperimentalModulesFlag = getAsBooleanFromENV( 'WP_EXPERIMENTAL_MODULES' );
+let scriptConfig, moduleConfig;
+
+if ( hasExperimentalModulesFlag ) {
+	[ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
+} else {
+	scriptConfig = require( '@wordpress/scripts/config/webpack.config' );
+}
 
 // Extend the default config.
 const sharedConfig = {
-	...defaultConfig,
+	...scriptConfig,
 	output: {
 		path: path.resolve( process.cwd(), 'assets', 'build', 'js' ),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
 	plugins: [
-		...defaultConfig.plugins
+		...scriptConfig.plugins
 			.map(
 				( plugin ) => {
 					if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
@@ -32,11 +41,11 @@ const sharedConfig = {
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
-		...defaultConfig.optimization,
+		...scriptConfig.optimization,
 		splitChunks: {
-			...defaultConfig.optimization.splitChunks,
+			...scriptConfig.optimization.splitChunks,
 		},
-		minimizer: defaultConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
+		minimizer: scriptConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
 	},
 };
 
@@ -83,7 +92,26 @@ const scripts = {
 	},
 };
 
-module.exports = [
-	scripts,
-	styles,
-];
+let moduleScripts = {};
+if ( hasExperimentalModulesFlag ) {
+	moduleScripts = {
+		...moduleConfig,
+		entry: {
+			'media-text-interactive': path.resolve( process.cwd(), 'assets', 'src', 'js', 'modules', 'media-text-interactive.js' ),
+		},
+		output: {
+			...moduleConfig.output,
+			path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
+			filename: '[name].js',
+			chunkFilename: '[name].js',
+		},
+	};
+}
+
+const customExports = [ scripts, styles ];
+
+if ( hasExperimentalModulesFlag ) {
+	customExports.push( moduleScripts );
+}
+
+module.exports = customExports;
