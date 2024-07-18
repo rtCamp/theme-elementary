@@ -36,7 +36,8 @@
 		"jest-silent-reporter": "0.6.0",
 		"lint-staged": "15.2.7",
 		"npm-run-all": "4.1.5",
-		"webpack-remove-empty-scripts": "1.0.4"
+		"webpack-remove-empty-scripts": "1.0.4",
+		"@formatjs/icu-messageformat-parser": "2.7.8"
 	},
 	"scripts": {
 		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
@@ -61,8 +62,5 @@
 		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction --no-scripts",
 		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer exec 'phpunit --do-not-cache-result --verbose'",
 		"wp-env": "wp-env"
-	},
-	"dependencies": {
-		"@formatjs/icu-messageformat-parser": "2.7.8"
 	}
 }
