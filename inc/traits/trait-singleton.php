@@ -59,7 +59,7 @@ trait Singleton {
 		 *
 		 * @var array
 		 */
-		static $instance = array();
+		static $instance = [];
 
 		/**
 		 * If this trait is implemented in a class which has multiple
