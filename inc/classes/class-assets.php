@@ -24,7 +24,6 @@ class Assets {
 	protected function __construct() {
 		// Setup hooks.
 		$this->setup_hooks();
-
 	}
 
 	/**
@@ -170,5 +169,4 @@ class Assets {
 	public function enqueue_assets() {
 		wp_enqueue_style( 'elementary-theme-styles' );
 	}
-
 }

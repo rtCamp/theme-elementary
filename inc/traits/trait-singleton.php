@@ -59,7 +59,7 @@ trait Singleton {
 		 *
 		 * @var array
 		 */
-		static $instance = [];
+		static $instance = array();
 
 		/**
 		 * If this trait is implemented in a class which has multiple
@@ -83,7 +83,5 @@ trait Singleton {
 		}
 
 		return $instance[ $called_class ];
-
 	}
-
 }
