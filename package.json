@@ -61,5 +61,8 @@
 		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction --no-scripts",
 		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer exec 'phpunit --do-not-cache-result --verbose'",
 		"wp-env": "wp-env"
+	},
+	"dependencies": {
+		"@formatjs/icu-messageformat-parser": "2.7.8"
 	}
 }
