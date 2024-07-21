@@ -119,5 +119,7 @@ Run PHP tests.
 npm run test:php
 ```
 
+Best practices for developing gutenberg blocks can be found [here](https://docs.google.com/document/d/1CTQjsXjo59spQwZ82ww3oIN4Bt3oViIgVUK0i2lkRnQ/edit?usp=sharing).
+
 ## Does this interest you?
 <a href="https://rtcamp.com/"><img src="https://rtcamp.com/wp-content/uploads/sites/2/2019/04/github-banner@2x.png" alt="Join us at rtCamp, we specialize in providing high performance enterprise WordPress solutions"></a>
