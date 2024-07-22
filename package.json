@@ -18,6 +18,9 @@
 	"bugs": {
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
+	"dependencies": {
+		"@wordpress/interactivity": "^5.4.0"
+	},
 	"devDependencies": {
 		"@babel/core": "7.24.9",
 		"@wordpress/babel-preset-default": "8.3.0",
@@ -36,12 +39,12 @@
 		"jest-silent-reporter": "0.6.0",
 		"lint-staged": "15.2.7",
 		"npm-run-all": "4.1.5",
-		"webpack-remove-empty-scripts": "1.0.4"
+		"webpack-remove-empty-scripts": "1.0.3"
 	},
 	"scripts": {
 		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
-		"build:js": "wp-scripts build",
+		"build:js": "wp-scripts build --experimental-modules",
 		"init": "./bin/init.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
@@ -54,7 +57,7 @@
 		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
 		"prepare": "npm run init",
-		"start": "wp-scripts start",
+		"start": "wp-scripts start --experimental-modules",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
