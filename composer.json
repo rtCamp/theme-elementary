@@ -12,6 +12,7 @@
 		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
 		"phpunit/phpunit": "^9.5",
 		"wp-phpunit/wp-phpunit": "^6.0",
+		"wp-cli/i18n-command": "^2.4",
 		"yoast/phpunit-polyfills": "^3.0"
 	},
 	"minimum-stability": "dev",
@@ -39,6 +40,7 @@
 		"phpcs:fix": "@php ./vendor/bin/phpcbf",
 		"post-install-cmd": [
 			"npm i"
-		]
+		],
+		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
 	}
 }
