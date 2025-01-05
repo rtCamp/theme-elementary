@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
@@ -14,21 +14,22 @@ updates:
   - package-ecosystem: npm
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
     labels:
       - NPM
       - Dependencies
-    ignore:
-      # Updates are handled via the `gutenberg-packages-update` GHA workflow.
-      - dependency-name: "@wordpress/*"
+    groups:
+      wordpress-packages:
+        patterns:
+          - "@wordpress/*"
 
   - package-ecosystem: composer
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10

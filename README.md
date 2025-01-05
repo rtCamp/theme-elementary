@@ -45,7 +45,7 @@ A starter theme that facilitates a quick head start for developing new [block-ba
 ```
 composer create-project rtcamp/elementary [folder_name]
 ```
-This command is equivalant of cloning the repository and running `composer install && npm install`
+This command is equivalent to cloning the repository and running `composer install && npm install`
 
 ### Method 2
 Manually clone this repository using
@@ -54,7 +54,7 @@ git clone [URL to Git repo]
 ```
 Having cloned this repository, install node packages and PHP dependencies using
 ```
-composer install && npm install
+composer install
 ```
 
 In both the methods, you will be prompted with a theme setup wizard which will help you with the search-replace. That was all! You're good to go with building your block theme. :sparkles:
