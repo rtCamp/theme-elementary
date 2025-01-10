@@ -26,7 +26,7 @@
 		"@wordpress/eslint-plugin": "21.1.2",
 		"@wordpress/jest-preset-default": "12.8.0",
 		"@wordpress/scripts": "30.0.2",
-		"browserslist": "4.24.0",
+		"browserslist": "4.24.3",
 		"cross-env": "7.0.3",
 		"css-minimizer-webpack-plugin": "7.0.0",
 		"eslint": "8.56.0",
