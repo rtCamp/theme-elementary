@@ -50,11 +50,11 @@ class Media_Text_Interactive {
 		}
 
 		$p = new WP_HTML_Tag_Processor( $block_content );
+
 		$p->next_tag();
-
 		$p->set_attribute( 'data-wp-on--click', 'actions.play' );
-		return $p->get_updated_html();
 
+		return $p->get_updated_html();
 	}
 
 	/**
@@ -69,19 +69,24 @@ class Media_Text_Interactive {
 			return $block_content;
 		}
 
+		/**
+		 * Enqueue the module script, The prefix `@` is used to indicate that the script is a module.
+		 * This handle with the prefix `@` will be used in other scripts to import this module.
+		 */
 		wp_enqueue_script_module(
 			'@elementary/media-text-interactive',
-			sprintf( '%s/js/modules/media-text-interactive.js', ELEMENTARY_THEME_BUILD_URI ),
+			sprintf( '%s/js/modules/media-text.js', ELEMENTARY_THEME_BUILD_URI ),
 			[
 				'@wordpress/interactivity',
 			]
 		);
 
 		$p = new WP_HTML_Tag_Processor( $block_content );
-		$p->next_tag();
 
+		$p->next_tag();
 		$p->set_attribute( 'data-wp-interactive', '{ "namespace": "elementary/media-text-interactive" }' );
 		$p->set_attribute( 'data-wp-context', '{ "isPlaying": false }' );
+
 		return $p->get_updated_html();
 	}
 
@@ -96,11 +101,11 @@ class Media_Text_Interactive {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}
-
 		$p = new WP_HTML_Tag_Processor( $block_content );
-		$p->next_tag();
 
+		$p->next_tag();
 		$p->set_attribute( 'data-wp-watch', 'callbacks.playVideo' );
+
 		return $p->get_updated_html();
 	}
 }
