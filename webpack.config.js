@@ -11,6 +11,32 @@ const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
  */
 const [ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
 
+/**
+ * Read all file entries in a directory.
+ * @param {string} dir Directory to read.
+ * @return {Object} Object with file entries.
+ */
+const readAllFileEntries = ( dir ) => {
+	const entries = {};
+
+	if ( ! fs.existsSync( dir ) ) {
+		return entries;
+	}
+
+	if ( fs.readdirSync( dir ).length === 0 ) {
+		return entries;
+	}
+
+	fs.readdirSync( dir ).forEach( ( fileName ) => {
+		const fullPath = `${ dir }/${ fileName }`;
+		if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
+			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
+		}
+	} );
+
+	return entries;
+};
+
 // Extend the default config.
 const sharedConfig = {
 	...scriptConfig,
@@ -44,27 +70,7 @@ const sharedConfig = {
 // Look for css/scss files and extract them into a build/css directory.
 const styles = {
 	...sharedConfig,
-	entry: () => {
-		const entries = {};
-		const dir = './assets/src/css';
-
-		if ( ! fs.existsSync( dir ) ) {
-			return entries;
-		}
-
-		if ( fs.readdirSync( dir ).length === 0 ) {
-			return entries;
-		}
-
-		fs.readdirSync( dir ).forEach( ( fileName ) => {
-			const fullPath = `${ dir }/${ fileName }`;
-			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
-				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
-			}
-		} );
-
-		return entries;
-	},
+	entry: () => readAllFileEntries( './assets/src/css' ),
 	module: {
 		...sharedConfig.module,
 	},
@@ -85,27 +91,7 @@ const scripts = {
 
 const moduleScripts = {
 	...moduleConfig,
-	entry: () => {
-		const entries = {};
-		const dir = './assets/src/js/modules';
-
-		if ( ! fs.existsSync( dir ) ) {
-			return entries;
-		}
-
-		if ( fs.readdirSync( dir ).length === 0 ) {
-			return entries;
-		}
-
-		fs.readdirSync( dir ).forEach( ( fileName ) => {
-			const fullPath = `${ dir }/${ fileName }`;
-			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
-				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
-			}
-		} );
-
-		return entries;
-	},
+	entry: () => readAllFileEntries( './assets/src/js/modules' ),
 	output: {
 		...moduleConfig.output,
 		path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
