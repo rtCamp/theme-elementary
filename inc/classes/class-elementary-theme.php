@@ -57,8 +57,6 @@ class Elementary_Theme {
 	 * @since 1.0.0
 	 */
 	public function block_extensions() {
-
 		Media_Text_Interactive::get_instance();
-
 	}
 }

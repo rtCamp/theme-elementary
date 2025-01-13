@@ -9,16 +9,7 @@ const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 /**
  * WordPress dependencies
  */
-const { getAsBooleanFromENV } = require( '@wordpress/scripts/utils' );
-
-const hasExperimentalModulesFlag = getAsBooleanFromENV( 'WP_EXPERIMENTAL_MODULES' );
-let scriptConfig, moduleConfig;
-
-if ( hasExperimentalModulesFlag ) {
-	[ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
-} else {
-	scriptConfig = require( '@wordpress/scripts/config/webpack.config' );
-}
+const [ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
 
 // Extend the default config.
 const sharedConfig = {
@@ -92,26 +83,35 @@ const scripts = {
 	},
 };
 
-let moduleScripts = {};
-if ( hasExperimentalModulesFlag ) {
-	moduleScripts = {
-		...moduleConfig,
-		entry: {
-			'media-text-interactive': path.resolve( process.cwd(), 'assets', 'src', 'js', 'modules', 'media-text-interactive.js' ),
-		},
-		output: {
-			...moduleConfig.output,
-			path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
-			filename: '[name].js',
-			chunkFilename: '[name].js',
-		},
-	};
-}
+const moduleScripts = {
+	...moduleConfig,
+	entry: () => {
+		const entries = {};
+		const dir = './assets/src/js/modules';
 
-const customExports = [ scripts, styles ];
+		if ( ! fs.existsSync( dir ) ) {
+			return entries;
+		}
 
-if ( hasExperimentalModulesFlag ) {
-	customExports.push( moduleScripts );
-}
+		if ( fs.readdirSync( dir ).length === 0 ) {
+			return entries;
+		}
 
-module.exports = customExports;
+		fs.readdirSync( dir ).forEach( ( fileName ) => {
+			const fullPath = `${ dir }/${ fileName }`;
+			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
+				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
+			}
+		} );
+
+		return entries;
+	},
+	output: {
+		...moduleConfig.output,
+		path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
+		filename: '[name].js',
+		chunkFilename: '[name].js',
+	},
+};
+
+module.exports = [ scripts, styles, moduleScripts ];

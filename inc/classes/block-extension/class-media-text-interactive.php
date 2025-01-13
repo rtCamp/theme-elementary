@@ -21,9 +21,7 @@ class Media_Text_Interactive {
 	 * Constructor.
 	 */
 	protected function __construct() {
-
 		$this->setup_hooks();
-
 	}
 
 	/**
