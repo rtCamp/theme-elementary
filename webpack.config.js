@@ -29,7 +29,7 @@ const readAllFileEntries = ( dir ) => {
 
 	fs.readdirSync( dir ).forEach( ( fileName ) => {
 		const fullPath = `${ dir }/${ fileName }`;
-		if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
+		if ( ! fs.lstatSync( fullPath ).isDirectory() && ! fileName.startsWith( '_' ) ) {
 			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
 		}
 	} );

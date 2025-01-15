@@ -95,3 +95,19 @@ To add a new script or module to the build process, follow these steps:
    npm run build:dev  # For development
    npm run build:prod # For production
    ```
+
+## Avoid Bundling Specific Files
+
+For example, if you have a file like `_my-excluded-script.js` or `_my-excluded-styles.css`, Webpack will **ignore** it when bundling and it won't be included in the final output.
+
+### How to Exclude Files
+
+- **CSS/SCSS**: If you want to add a CSS file without bundling it, name it starting with an underscore.
+  
+  Example: `_my-excluded-styles.scss`
+
+- **JavaScript**: Similarly, prefix JS files with an underscore to prevent bundling.
+  
+  Example: `_my-excluded-script.js`
+
+By naming files with the underscore, we make sure they are excluded from the Webpack build process but can still be used elsewhere in the project.
