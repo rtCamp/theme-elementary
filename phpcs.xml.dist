@@ -37,7 +37,10 @@
 	#############################################################################
 	-->
 
-	<rule ref="WordPress"/>
+	<rule ref="WordPress">
+		<!-- Excluding sniff to allow shorthand array syntax usage. -->
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
+	</rule>
 
 
 	<!--
