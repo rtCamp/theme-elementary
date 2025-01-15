@@ -7,7 +7,7 @@
  */
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
-store( 'elementary/media-text-interactive', {
+store( 'elementary/media-text', {
 	actions: {
 		/**
 		 * Update the video play state.

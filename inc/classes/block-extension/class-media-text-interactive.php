@@ -74,7 +74,7 @@ class Media_Text_Interactive {
 		 * This handle with the prefix `@` will be used in other scripts to import this module.
 		 */
 		wp_enqueue_script_module(
-			'@elementary/media-text-interactive',
+			'@elementary/media-text',
 			sprintf( '%s/js/modules/media-text.js', ELEMENTARY_THEME_BUILD_URI ),
 			[
 				'@wordpress/interactivity',
@@ -84,7 +84,7 @@ class Media_Text_Interactive {
 		$p = new WP_HTML_Tag_Processor( $block_content );
 
 		$p->next_tag();
-		$p->set_attribute( 'data-wp-interactive', '{ "namespace": "elementary/media-text-interactive" }' );
+		$p->set_attribute( 'data-wp-interactive', '{ "namespace": "elementary/media-text" }' );
 		$p->set_attribute( 'data-wp-context', '{ "isPlaying": false }' );
 
 		return $p->get_updated_html();
