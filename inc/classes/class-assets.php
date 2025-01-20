@@ -18,6 +18,11 @@ class Assets {
 
 	use Singleton;
 
+	/**
+	 * `is_tailwindcss_enabled `Whether TailwindCSS is enabled or not.
+	 * 
+	 * @var bool
+	 */
 	private $is_tailwindcss_enabled = false;
 
 	/**
