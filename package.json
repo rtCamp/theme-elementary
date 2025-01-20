@@ -39,9 +39,12 @@
 		"webpack-remove-empty-scripts": "1.0.4"
 	},
 	"scripts": {
+		"create:block": "./bin/create-block.js",
 		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
 		"build:js": "wp-scripts build",
+		"build:blocks": "wp-scripts build --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
+		"build:block-manifest": "wp-scripts build-blocks-manifest --input=./assets/build/blocks/ --output=./assets/build/blocks/blocks-manifest.php",
 		"init": "./bin/init.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
@@ -54,7 +57,9 @@
 		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
 		"prepare": "npm run init",
-		"start": "wp-scripts start",
+		"start": "npm-run-all --parallel start:*",
+		"start:js": "wp-scripts start",
+		"start:blocks": "wp-scripts start --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
