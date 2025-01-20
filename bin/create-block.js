@@ -34,6 +34,13 @@ const parseUserInputedArgs = ( args ) => {
 		return true;
 	} );
 
+	// Add default arguments.
+	for ( const [ key, value ] of Object.entries( expectedArgs ) ) {
+		if ( value && ! args.includes( key ) ) {
+			parsedArgs += `${ key }=${ value } `;
+		}
+	}
+
 	// Add remaining arguments.
 	parsedArgs += args.join( ' ' );
 
