@@ -60,6 +60,16 @@ if ( 0 === args.length ) {
 
 		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
 
+			rl.question( 'Would you like to add TailwindCSS support? (y/n) ', ( answer ) => {
+
+				if ( 'y' === answer.toLowerCase() ) {
+
+					tailwindcssSetup();
+				}
+
+				rl.close();
+			} );
+
 			const themeInfo = renderThemeDetails( themeName );
 
 			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
@@ -92,6 +102,74 @@ if ( 0 === args.length ) {
 rl.on( 'close', () => {
 	process.exit( 0 );
 } );
+
+/**
+ * Setup the TailwindCSS files.
+ */
+const tailwindcssSetup = () => {
+
+	const tailwindFiles = [
+		{
+			path: path.resolve( getRoot(), 'tailwind.config.js' ),
+			content: `/** @type {import('tailwindcss').Config} */
+module.exports = {
+content: [
+		// Ensure changes to PHP, html files and theme.json trigger a rebuild.
+		'./**/*.{php,html}',
+		'./theme.json',
+	],
+theme: {
+	extend: {},
+},
+plugins: [],
+}
+`,
+		},
+		{
+			path: path.resolve( getRoot(), 'postcss.config.js' ),
+			content: `module.exports = {
+	plugins: {
+		tailwindcss: {},
+		autoprefixer: {},
+	},
+};
+`,
+		},
+		{
+			path: path.resolve( getRoot(), 'assets/src/css/tailwind.scss' ),
+			content: `/**
+* This injects Tailwind's base styles.
+*/
+@import "tailwindcss/base";
+
+/**
+ * This injects Tailwind's component classes.
+ */
+@import "tailwindcss/components";
+
+/**
+ * This injects Tailwind's utility classes.
+ */
+@import "tailwindcss/utilities";
+`,
+		}
+	];
+	
+	tailwindFiles.forEach( ( file ) => {
+		createFile( file.path, file.content );
+	} );
+
+	console.log( info.success( '\nTailwindCSS setup completed!' ), '✨' );
+};
+
+/**
+ * Creates a file with the given content.
+ * @param {string} filePath Path to the file.
+ * @param {string} content  Content to write to the file.
+ */
+const createFile = ( filePath, content ) => {
+	fs.writeFileSync( filePath, content );
+};
 
 /**
  * Update composer.json file.
