@@ -66,7 +66,6 @@ if ( 0 === args.length ) {
 
 					tailwindcssSetup();
 				}
-				rl.close();
 				
 				const themeInfo = renderThemeDetails( themeName );
 				
