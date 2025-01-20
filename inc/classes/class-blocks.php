@@ -44,26 +44,28 @@ class Blocks {
 	 */
 	public function register_blocks() {
 
+		$blocks_dir = untrailingslashit( get_template_directory() ) . '/assets/build/blocks';
+
 		// Get blocks manifest file path.
-		$manifest = ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/blocks-manifest.php';
+		$manifest = $blocks_dir . '/blocks-manifest.php';
 	
 		// Check if manifest file exists.
-		if ( file_exists( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/blocks-manifest.php' ) ) {
+		if ( file_exists( $manifest ) ) {
 			
 			// Register the blocks metadata collection. This will allow WordPress to know about the blocks and improve the performance.
 			wp_register_block_metadata_collection(
-				ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks',
+				$blocks_dir,
 				$manifest
 			);
 		}
 
 		// List all subdirectories in 'inc/blocks' directory.
-		$blocks = array_filter( glob( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/*' ), 'is_dir' );
+		$blocks = array_filter( glob( $blocks_dir . '/*' ), 'is_dir' );
 
 		// Register each block.
 		foreach ( $blocks as $block ) {
 			// Get the block name and skip the ones starting with '_' (underscore) prefix.
-			$block_name = str_replace( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/', '', $block );
+			$block_name = str_replace( $blocks_dir, '', $block );
 			if ( 0 === strpos( $block_name, '_' ) ) {
 				continue;
 			}
