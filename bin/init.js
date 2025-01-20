@@ -41,7 +41,7 @@ const info = {
  */
 const getRoot = () => {
 	return path.resolve( __dirname, '../' );
-}
+};
 
 let fileContentUpdated = false;
 let fileNameUpdated = false;
@@ -60,25 +60,33 @@ if ( 0 === args.length ) {
 
 		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
 
-			const themeInfo = renderThemeDetails( themeName );
+			rl.question( 'Would you like to add TailwindCSS support? (y/n) ', ( tailwindAnswer ) => {
 
-			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
+				if ( 'y' === tailwindAnswer.toLowerCase() ) {
 
-				if ( 'n' === confirm.toLowerCase() ) {
-					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-					rl.close();
+					tailwindcssSetup();
 				}
-
-				initTheme( themeInfo );
-
-				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
-					if ( 'n' === initialize.toLowerCase() ) {
-						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
-						await askQuestionForHuskyInstallation();
-					} else {
-						await initializeGit()
+				
+				const themeInfo = renderThemeDetails( themeName );
+				
+				rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
+					
+					if ( 'n' === confirm.toLowerCase() ) {
+						console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
+						rl.close();
 					}
-					themeCleanupQuestion();
+					
+					initTheme( themeInfo );
+					
+					rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
+						if ( 'n' === initialize.toLowerCase() ) {
+							console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
+							await askQuestionForHuskyInstallation();
+						} else {
+							await initializeGit()
+						}
+						themeCleanupQuestion();
+					} );
 				} );
 			} );
 		} );
@@ -92,6 +100,48 @@ if ( 0 === args.length ) {
 rl.on( 'close', () => {
 	process.exit( 0 );
 } );
+
+/**
+ * Setup the TailwindCSS files.
+ */
+const tailwindcssSetup = () => {
+
+	const tailwindFiles = [
+		{
+			path: path.resolve( getRoot(), 'tailwind.config.js' ),
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/tailwind.config.js' ),
+		},
+		{
+			path: path.resolve( getRoot(), 'postcss.config.js' ),
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/postcss.config.js' ),
+		},
+		{
+			path: path.resolve( getRoot(), 'assets/src/css/tailwind.scss' ),
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/tailwind.scss' ),
+		}
+	];
+
+	// Install the required packages and create the necessary files.
+	console.log( info.success( '\nInstalling TailwindCSS and its dependencies...' ) );
+	execSync( 'npm install tailwindcss postcss autoprefixer --save-dev' );
+	execSync( 'npx tailwindcss init -p' );
+	
+	tailwindFiles.forEach( ( file ) => {
+		copyFileContents( file.path, file.source );
+	} );
+
+	console.log( info.success( '\nTailwindCSS setup completed!' ), '✨' );
+};
+
+/**
+ * Creates a file with the given content.
+ * @param {string} filePath Path to the file.
+ * @param {string} source  Path to the source file.
+ */
+const copyFileContents = ( filePath, source ) => {
+	// copy the file contents.
+	fs.copyFileSync( source, filePath );
+};
 
 /**
  * Update composer.json file.
@@ -587,6 +637,7 @@ const generateThemeInfo = ( themeName ) => {
 const runThemeCleanup = () => {
 	const deleteDirs = [
 		'.github',
+		'bin/templates',
 		'bin/init.js',
 		'languages',
 	];

@@ -19,11 +19,21 @@ class Assets {
 	use Singleton;
 
 	/**
+	 * `is_tailwindcss_enabled `Whether TailwindCSS is enabled or not.
+	 * 
+	 * @var bool
+	 */
+	private $is_tailwindcss_enabled = false;
+
+	/**
 	 * Constructor.
 	 */
 	protected function __construct() {
 		// Setup hooks.
 		$this->setup_hooks();
+
+		// Check if the TailwindCSS config file exists.
+		$this->is_tailwindcss_enabled = file_exists( untrailingslashit( get_template_directory() ) . '/tailwind.config.js' );
 	}
 
 	/**
@@ -49,6 +59,11 @@ class Assets {
 		$this->register_script( 'core-navigation', 'js/core-navigation.js' );
 		$this->register_style( 'core-navigation', 'css/core-navigation.css' );
 		$this->register_style( 'elementary-theme-styles', 'css/styles.css' );
+		
+		// Register tailwindcss only if it is enabled.
+		if ( $this->is_tailwindcss_enabled ) {
+			$this->register_style( 'elementary-theme-tailwind', 'css/tailwind.css' );
+		}
 	}
 
 	/**
@@ -168,5 +183,10 @@ class Assets {
 	 */
 	public function enqueue_assets() {
 		wp_enqueue_style( 'elementary-theme-styles' );
+
+		// Enqueue tailwindcss only if it is enabled.
+		if ( $this->is_tailwindcss_enabled ) {
+			wp_enqueue_style( 'elementary-theme-tailwind' );
+		}
 	}
 }
