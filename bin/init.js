@@ -41,7 +41,7 @@ const info = {
  */
 const getRoot = () => {
 	return path.resolve( __dirname, '../' );
-}
+};
 
 let fileContentUpdated = false;
 let fileNameUpdated = false;
@@ -60,35 +60,34 @@ if ( 0 === args.length ) {
 
 		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
 
-			rl.question( 'Would you like to add TailwindCSS support? (y/n) ', ( answer ) => {
+			rl.question( 'Would you like to add TailwindCSS support? (y/n) ', ( tailwindAnswer ) => {
 
-				if ( 'y' === answer.toLowerCase() ) {
+				if ( 'y' === tailwindAnswer.toLowerCase() ) {
 
 					tailwindcssSetup();
 				}
-
 				rl.close();
-			} );
-
-			const themeInfo = renderThemeDetails( themeName );
-
-			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
-
-				if ( 'n' === confirm.toLowerCase() ) {
-					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-					rl.close();
-				}
-
-				initTheme( themeInfo );
-
-				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
-					if ( 'n' === initialize.toLowerCase() ) {
-						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
-						await askQuestionForHuskyInstallation();
-					} else {
-						await initializeGit()
+				
+				const themeInfo = renderThemeDetails( themeName );
+				
+				rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
+					
+					if ( 'n' === confirm.toLowerCase() ) {
+						console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
+						rl.close();
 					}
-					themeCleanupQuestion();
+					
+					initTheme( themeInfo );
+					
+					rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
+						if ( 'n' === initialize.toLowerCase() ) {
+							console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
+							await askQuestionForHuskyInstallation();
+						} else {
+							await initializeGit()
+						}
+						themeCleanupQuestion();
+					} );
 				} );
 			} );
 		} );
@@ -111,52 +110,25 @@ const tailwindcssSetup = () => {
 	const tailwindFiles = [
 		{
 			path: path.resolve( getRoot(), 'tailwind.config.js' ),
-			content: `/** @type {import('tailwindcss').Config} */
-module.exports = {
-content: [
-		// Ensure changes to PHP, html files and theme.json trigger a rebuild.
-		'./**/*.{php,html}',
-		'./theme.json',
-	],
-theme: {
-	extend: {},
-},
-plugins: [],
-}
-`,
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/tailwind.config.js' ),
 		},
 		{
 			path: path.resolve( getRoot(), 'postcss.config.js' ),
-			content: `module.exports = {
-	plugins: {
-		tailwindcss: {},
-		autoprefixer: {},
-	},
-};
-`,
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/postcss.config.js' ),
 		},
 		{
 			path: path.resolve( getRoot(), 'assets/src/css/tailwind.scss' ),
-			content: `/**
-* This injects Tailwind's base styles.
-*/
-@import "tailwindcss/base";
-
-/**
- * This injects Tailwind's component classes.
- */
-@import "tailwindcss/components";
-
-/**
- * This injects Tailwind's utility classes.
- */
-@import "tailwindcss/utilities";
-`,
+			source: path.resolve( getRoot(), 'bin/templates/tailwindcss/tailwind.scss' ),
 		}
 	];
+
+	// Install the required packages and create the necessary files.
+	console.log( info.success( '\nInstalling TailwindCSS and its dependencies...' ) );
+	execSync( 'npm install tailwindcss postcss autoprefixer --save-dev' );
+	execSync( 'npx tailwindcss init -p' );
 	
 	tailwindFiles.forEach( ( file ) => {
-		createFile( file.path, file.content );
+		copyFileContents( file.path, file.source );
 	} );
 
 	console.log( info.success( '\nTailwindCSS setup completed!' ), '✨' );
@@ -165,10 +137,11 @@ plugins: [],
 /**
  * Creates a file with the given content.
  * @param {string} filePath Path to the file.
- * @param {string} content  Content to write to the file.
+ * @param {string} source  Path to the source file.
  */
-const createFile = ( filePath, content ) => {
-	fs.writeFileSync( filePath, content );
+const copyFileContents = ( filePath, source ) => {
+	// copy the file contents.
+	fs.copyFileSync( source, filePath );
 };
 
 /**
@@ -665,6 +638,7 @@ const generateThemeInfo = ( themeName ) => {
 const runThemeCleanup = () => {
 	const deleteDirs = [
 		'.github',
+		'bin/templates',
 		'bin/init.js',
 		'languages',
 	];

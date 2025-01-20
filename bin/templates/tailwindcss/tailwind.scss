@@ -1,0 +1,14 @@
+/**
+* This injects Tailwind's base styles.
+*/
+@import "tailwindcss/base";
+
+/**
+ * This injects Tailwind's component classes.
+ */
+@import "tailwindcss/components";
+
+/**
+ * This injects Tailwind's utility classes.
+ */
+@import "tailwindcss/utilities";
