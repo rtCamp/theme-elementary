@@ -62,7 +62,11 @@ class Blocks {
 
 		// Register each block.
 		foreach ( $blocks as $block ) {
-
+			// Get the block name and skip the ones starting with '_' (underscore) prefix.
+			$block_name = str_replace( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/', '', $block );
+			if ( 0 === strpos( $block_name, '_' ) ) {
+				continue;
+			}
 			// Register the block.
 			register_block_type( $block );
 		}
