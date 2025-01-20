@@ -43,6 +43,20 @@ class Blocks {
 	 * @action init
 	 */
 	public function register_blocks() {
+
+		// Get blocks manifest file path.
+		$manifest = ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/blocks-manifest.php';
+	
+		// Check if manifest file exists.
+		if ( file_exists( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/blocks-manifest.php' ) ) {
+			
+			// Register the blocks metadata collection. This will allow WordPress to know about the blocks and improve the performance.
+			wp_register_block_metadata_collection(
+				ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks',
+				$manifest
+			);
+		}
+
 		// List all subdirectories in 'inc/blocks' directory.
 		$blocks = array_filter( glob( ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks/*' ), 'is_dir' );
 
