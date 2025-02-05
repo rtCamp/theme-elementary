@@ -9,18 +9,44 @@ const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 /**
  * WordPress dependencies
  */
-const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const [ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
+
+/**
+ * Read all file entries in a directory.
+ * @param {string} dir Directory to read.
+ * @return {Object} Object with file entries.
+ */
+const readAllFileEntries = ( dir ) => {
+	const entries = {};
+
+	if ( ! fs.existsSync( dir ) ) {
+		return entries;
+	}
+
+	if ( fs.readdirSync( dir ).length === 0 ) {
+		return entries;
+	}
+
+	fs.readdirSync( dir ).forEach( ( fileName ) => {
+		const fullPath = `${ dir }/${ fileName }`;
+		if ( ! fs.lstatSync( fullPath ).isDirectory() && ! fileName.startsWith( '_' ) ) {
+			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
+		}
+	} );
+
+	return entries;
+};
 
 // Extend the default config.
 const sharedConfig = {
-	...defaultConfig,
+	...scriptConfig,
 	output: {
 		path: path.resolve( process.cwd(), 'assets', 'build', 'js' ),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
 	plugins: [
-		...defaultConfig.plugins
+		...scriptConfig.plugins
 			.map(
 				( plugin ) => {
 					if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
@@ -32,11 +58,11 @@ const sharedConfig = {
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
-		...defaultConfig.optimization,
+		...scriptConfig.optimization,
 		splitChunks: {
-			...defaultConfig.optimization.splitChunks,
+			...scriptConfig.optimization.splitChunks,
 		},
-		minimizer: defaultConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
+		minimizer: scriptConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
 	},
 };
 
@@ -44,27 +70,7 @@ const sharedConfig = {
 // Look for css/scss files and extract them into a build/css directory.
 const styles = {
 	...sharedConfig,
-	entry: () => {
-		const entries = {};
-		const dir = './assets/src/css';
-
-		if ( ! fs.existsSync( dir ) ) {
-			return entries;
-		}
-
-		if ( fs.readdirSync( dir ).length === 0 ) {
-			return entries;
-		}
-
-		fs.readdirSync( dir ).forEach( ( fileName ) => {
-			const fullPath = `${ dir }/${ fileName }`;
-			if ( ! fs.lstatSync( fullPath ).isDirectory() ) {
-				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
-			}
-		} );
-
-		return entries;
-	},
+	entry: () => readAllFileEntries( './assets/src/css' ),
 	module: {
 		...sharedConfig.module,
 	},
@@ -83,7 +89,15 @@ const scripts = {
 	},
 };
 
-module.exports = [
-	scripts,
-	styles,
-];
+const moduleScripts = {
+	...moduleConfig,
+	entry: () => readAllFileEntries( './assets/src/js/modules' ),
+	output: {
+		...moduleConfig.output,
+		path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
+		filename: '[name].js',
+		chunkFilename: '[name].js',
+	},
+};
+
+module.exports = [ scripts, styles, moduleScripts ];
