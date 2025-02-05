@@ -1,0 +1,84 @@
+# Copyright (C) 2023 rtCamp
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Elementary Theme 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/enhance-use-wp-cli-for-pot-file-generation\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-12-12T14:37:44+05:45\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: elementary-theme\n"
+
+#. Theme Name of the theme
+msgid "Elementary Theme"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+msgid "https://rtcamp.com/"
+msgstr ""
+
+#. Description of the theme
+msgid "Elementary is a FSE based theme,"
+msgstr ""
+
+#. Author of the theme
+msgid "rtCamp"
+msgstr ""
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "Footer"
+msgstr ""
+
+#: patterns/footer.php
+msgctxt "Pattern description"
+msgid "Footer pattern."
+msgstr ""
+
+#. Translators: WordPress link.
+#: patterns/footer.php:25
+msgid "Proudly powered by %s"
+msgstr ""
+
+#: patterns/footer.php:26
+msgid "https://wordpress.org/"
+msgstr ""
+
+#: patterns/hidden-404.php
+msgctxt "Pattern title"
+msgid "404 content"
+msgstr ""
+
+#: patterns/hidden-404.php
+msgctxt "Pattern description"
+msgid "404 pattern content."
+msgstr ""
+
+#: patterns/hidden-404.php:17
+msgctxt "Error code for a webpage that is not found."
+msgid "404"
+msgstr ""
+
+#: patterns/hidden-404.php:23
+msgid "This page could not be found. Maybe try a search?"
+msgstr ""
+
+#: patterns/hidden-404.php:31
+msgid "Search"
+msgstr ""
+
+#: patterns/page-creation-pattern.php
+msgctxt "Pattern title"
+msgid "Page Creation Pattern"
+msgstr ""
+
+#: patterns/page-creation-pattern.php
+msgctxt "Pattern description"
+msgid "A page creation pattern"
+msgstr ""

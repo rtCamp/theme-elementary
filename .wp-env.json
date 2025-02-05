@@ -1,8 +1,7 @@
 {
 	"core": null,
-	"themes": [
-		"."
-	],
+	"phpVersion": "8.2",
+	"themes": [ "." ],
 	"port": 5890,
 	"env": {
 		"tests": {
