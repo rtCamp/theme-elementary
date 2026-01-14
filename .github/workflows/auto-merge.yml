@@ -23,7 +23,7 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Approve and merge the PR
         if: |
@@ -40,7 +40,7 @@ jobs:
     if: ${{ github.actor == 'rtBot' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Approve and merge the PR
         if: |
