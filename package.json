@@ -22,23 +22,23 @@
 		"webpack-dev-server": "^5.2.1"
 	},
 	"dependencies": {
-		"@wordpress/interactivity": "6.39.0"
+		"@wordpress/interactivity": "6.40.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.29.0",
-		"@wordpress/babel-preset-default": "8.39.0",
-		"@wordpress/browserslist-config": "6.39.0",
-		"@wordpress/env": "10.39.0",
-		"@wordpress/eslint-plugin": "24.1.0",
-		"@wordpress/jest-preset-default": "12.39.0",
-		"@wordpress/scripts": "31.4.0",
+		"@wordpress/babel-preset-default": "8.40.0",
+		"@wordpress/browserslist-config": "6.40.0",
+		"@wordpress/env": "11.0.0",
+		"@wordpress/eslint-plugin": "24.2.0",
+		"@wordpress/jest-preset-default": "12.40.0",
+		"@wordpress/scripts": "31.5.0",
 		"browserslist": "4.28.1",
 		"cross-env": "10.1.0",
 		"css-minimizer-webpack-plugin": "7.0.4",
-		"eslint": "9.39.2",
+		"eslint": "10.0.2",
 		"eslint-plugin-eslint-comments": "3.2.0",
 		"eslint-plugin-import": "2.32.0",
-		"eslint-plugin-jest": "29.12.1",
+		"eslint-plugin-jest": "29.15.0",
 		"eslint-plugin-react-hooks": "7.0.1",
 		"jest-silent-reporter": "0.6.0",
 		"lint-staged": "16.2.7",
