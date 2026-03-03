@@ -19,7 +19,8 @@
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
 	"overrides": {
-		"webpack-dev-server": "^5.2.1"
+		"webpack-dev-server": "^5.2.1",
+		"serialize-javascript": "^7.0.3"
 	},
 	"dependencies": {
 		"@wordpress/interactivity": "6.40.0"
