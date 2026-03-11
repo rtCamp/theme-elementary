@@ -3,6 +3,7 @@
 	"name": "elementary/example-block",
 	"title": "Example Block",
 	"category": "widgets",
-	"editorScript": "file:../../build/js/blocks/example-block/index.js",
-	"style": "file:../../build/css/blocks/example-block.css"
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
 }
