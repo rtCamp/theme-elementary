@@ -7,6 +7,7 @@
 
 namespace Elementary_Theme;
 
+use Elementary_Theme\Block_Extensions\Media_Text_Interactive;
 use Elementary_Theme\Traits\Singleton;
 use Elementary_Theme\Assets;
 use Elementary_Theme\Blocks;
@@ -30,6 +31,7 @@ class Elementary_Theme {
 
 		// Setup hooks.
 		$this->setup_hooks();
+		$this->block_extensions();
 	}
 
 	/**
@@ -49,5 +51,14 @@ class Elementary_Theme {
 	public function elementary_theme_support() {
 		// Add support for core block styles.
 		add_theme_support( 'wp-block-styles' );
+	}
+
+	/**
+	 * Block extensions
+	 *
+	 * @since 1.0.0
+	 */
+	public function block_extensions() {
+		Media_Text_Interactive::get_instance();
 	}
 }
