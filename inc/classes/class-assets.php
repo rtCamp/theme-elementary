@@ -32,6 +32,7 @@ class Assets {
 	 * @since 1.0.0
 	 */
 	public function setup_hooks() {
+		add_action( 'init', [ $this, 'register_blocks' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
@@ -168,5 +169,32 @@ class Assets {
 	 */
 	public function enqueue_assets() {
 		wp_enqueue_style( 'elementary-theme-styles' );
+	}
+
+	/**
+	 * Register theme blocks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function register_blocks() {
+
+		$blocks_dir = ELEMENTARY_THEME_TEMP_DIR . '/assets/build/blocks';
+
+		// print_r( $blocks_dir );
+		// exit;
+
+		if ( ! is_dir( $blocks_dir ) ) {
+			return;
+		}
+
+		// List all subdirectories in 'inc/blocks' directory.
+		$blocks = array_filter( glob( $blocks_dir . '/*' ), 'is_dir' );
+
+		// Register each block.
+		foreach ( $blocks as $block ) {
+			register_block_type( $block );
+		}
 	}
 }

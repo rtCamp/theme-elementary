@@ -45,11 +45,14 @@
 		"jest-silent-reporter": "0.6.0",
 		"lint-staged": "16.3.0",
 		"npm-run-all": "4.1.5",
-		"webpack-remove-empty-scripts": "1.1.1"
+		"webpack-remove-empty-scripts": "1.1.1",
+		"webpack-watched-glob-entries-plugin": "3.2.0"
 	},
 	"scripts": {
 		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
+		"build:blocks": "wp-scripts build --webpack-copy-php --config ./node_modules/@wordpress/scripts/config/webpack.config.js --source-path=./assets/src/blocks --output-path=./assets/build/blocks",
+		"start:blocks": "wp-scripts start --webpack-copy-php --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
 		"build:js": "wp-scripts build --experimental-modules",
 		"init": "./bin/init.js",
 		"lint:all": "npm-run-all --parallel lint:*",

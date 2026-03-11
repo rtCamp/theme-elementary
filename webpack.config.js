@@ -5,34 +5,30 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
+const WebpackWatchedGlobEntries = require( 'webpack-watched-glob-entries-plugin' );
 
 /**
  * WordPress dependencies
  */
-const [ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
+const [scriptConfig, moduleConfig] = require('@wordpress/scripts/config/webpack.config');
 
 /**
  * Read all file entries in a directory.
- * @param {string} dir Directory to read.
- * @return {Object} Object with file entries.
  */
-const readAllFileEntries = ( dir ) => {
+const readAllFileEntries = (dir) => {
 	const entries = {};
 
-	if ( ! fs.existsSync( dir ) ) {
+	if (!fs.existsSync(dir)) {
 		return entries;
 	}
 
-	if ( fs.readdirSync( dir ).length === 0 ) {
-		return entries;
-	}
+	fs.readdirSync(dir).forEach((fileName) => {
+		const fullPath = `${dir}/${fileName}`;
 
-	fs.readdirSync( dir ).forEach( ( fileName ) => {
-		const fullPath = `${ dir }/${ fileName }`;
-		if ( ! fs.lstatSync( fullPath ).isDirectory() && ! fileName.startsWith( '_' ) ) {
-			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
+		if (!fs.lstatSync(fullPath).isDirectory() && !fileName.startsWith('_')) {
+			entries[fileName.replace(/\.[^/.]+$/, '')] = fullPath;
 		}
-	} );
+	});
 
 	return entries;
 };
@@ -66,35 +62,57 @@ const sharedConfig = {
 	},
 };
 
-// Generate a webpack config which includes setup for CSS extraction.
-// Look for css/scss files and extract them into a build/css directory.
+// CSS build
 const styles = {
 	...sharedConfig,
-	entry: () => readAllFileEntries( './assets/src/css' ),
-	module: {
-		...sharedConfig.module,
+	entry: WebpackWatchedGlobEntries.getEntries(
+		[
+			path.resolve( __dirname, `assets/src/css/*.scss` ),
+		],
+		{
+			ignore: [
+				path.resolve( __dirname, `assets/src/css/**/_*.scss` ),
+			],
+		},
+	),
+	output: {
+		...sharedConfig.output,
+		path: path.resolve( process.cwd(), 'assets', 'build', 'css' ),
 	},
 	plugins: [
 		...sharedConfig.plugins.filter(
-			( plugin ) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
+			( plugin ) => {
+				return plugin.constructor.name !== 'DependencyExtractionWebpackPlugin' && plugin.constructor.name !== 'CopyPlugin';
+			},
 		),
 	],
-
 };
 
+// JS build
 const scripts = {
 	...sharedConfig,
 	entry: {
-		'core-navigation': path.resolve( process.cwd(), 'assets', 'src', 'js', 'core-navigation.js' ),
+		...sharedConfig.entry(),
+		...WebpackWatchedGlobEntries.getEntries(
+			[
+				path.resolve( __dirname, `assets/src/js/*.js` ),
+			],
+			{
+				ignore: [
+					path.resolve( __dirname, `assets/src/js/_*.js` ),
+				],
+			},
+		)(),
 	},
 };
 
+// module scripts.
 const moduleScripts = {
 	...moduleConfig,
-	entry: () => readAllFileEntries( './assets/src/js/modules' ),
+	entry: () => readAllFileEntries('./assets/src/js/modules'),
 	output: {
 		...moduleConfig.output,
-		path: path.resolve( process.cwd(), 'assets', 'build', 'js', 'modules' ),
+		path: path.resolve(process.cwd(), 'assets', 'build', 'js', 'modules'),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
