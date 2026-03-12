@@ -56,7 +56,7 @@
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
 		"lint:css:fix": "npm run lint:css -- --fix",
-		"lint:js": "wp-scripts lint-js ./assets/src",
+		"lint:js": "cross-env ESLINT_USE_FLAT_CONFIG=false wp-scripts lint-js ./assets/src",
 		"lint:js:fix": "npm run lint:js -- --fix",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
 		"lint:php": "php vendor/bin/phpcs",
