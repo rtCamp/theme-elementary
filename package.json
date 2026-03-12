@@ -21,10 +21,7 @@
 	"overrides": {
 		"webpack-dev-server": "^5.2.1",
 		"serialize-javascript": "^7.0.3",
-		"minimatch": "3.1.3"
-	},
-	"dependencies": {
-		"@wordpress/interactivity": "6.40.0"
+		"minimatch": "^3.1.3"
 	},
 	"devDependencies": {
 		"@babel/core": "7.29.0",
@@ -32,6 +29,7 @@
 		"@wordpress/browserslist-config": "6.40.0",
 		"@wordpress/env": "^10.39.0",
 		"@wordpress/eslint-plugin": "24.2.0",
+		"@wordpress/interactivity": "6.40.0",
 		"@wordpress/jest-preset-default": "12.40.0",
 		"@wordpress/scripts": "31.5.0",
 		"browserslist": "4.28.1",
@@ -57,9 +55,9 @@
 		"init": "./bin/init.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./assets/src",
-		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
+		"lint:css:fix": "npm run lint:css -- --fix",
 		"lint:js": "wp-scripts lint-js ./assets/src",
-		"lint:js:fix": "npm run lint:js -- --fix ./assets/src",
+		"lint:js:fix": "npm run lint:js -- --fix",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
 		"lint:php": "php vendor/bin/phpcs",
 		"lint:php:fix": "node ./bin/phpcbf.js",
@@ -68,13 +66,12 @@
 		"prepare": "npm run init",
 		"start": "npm-run-all --parallel start:*",
 		"start:js": "wp-scripts start --experimental-modules",
-		"start:blocks": "wp-scripts start --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
+		"start:blocks": "node ./bin/start-blocks.js",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
 		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction --no-scripts",
 		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer exec 'phpunit --do-not-cache-result --verbose'",
-		"wp-env": "wp-env",
 		"pot": "composer run pot"
 	}
 }

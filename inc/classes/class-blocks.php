@@ -28,47 +28,49 @@ class Blocks {
 
 	/**
 	 * Setup hooks.
-	 * 
+	 *
 	 * @since 1.0.0
 	 */
-	public function setup_hooks() {
+	private function setup_hooks() {
 		add_action( 'init', array( $this, 'register_blocks' ) );
 	}
 
 	/**
 	 * Register blocks.
-	 * 
+	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @action init
 	 */
 	public function register_blocks() {
 
-		$blocks_dir = untrailingslashit( get_template_directory() ) . '/assets/build/blocks';
+		$blocks_dir = get_template_directory() . '/assets/build/blocks';
+
+		// Bail early if the blocks directory doesn't exist (e.g. before running a build).
+		if ( ! is_dir( $blocks_dir ) ) {
+			return;
+		}
 
 		// Get blocks manifest file path.
 		$manifest = $blocks_dir . '/blocks-manifest.php';
-	
-		// Check if manifest file exists.
-		if ( file_exists( $manifest ) ) {
-			
-			// Register the blocks metadata collection. This will allow WordPress to know about the blocks and improve the performance.
-			wp_register_block_metadata_collection(
-				$blocks_dir,
-				$manifest
-			);
+
+		// Register the blocks metadata collection if the manifest exists and the function
+		// is available (introduced in WordPress 6.7). This improves block loading performance.
+		if ( file_exists( $manifest ) && function_exists( 'wp_register_block_metadata_collection' ) ) {
+			wp_register_block_metadata_collection( $blocks_dir, $manifest );
 		}
 
-		// List all subdirectories in 'inc/blocks' directory.
-		$blocks = array_filter( glob( $blocks_dir . '/*' ), 'is_dir' );
+		// List all subdirectories in 'assets/build/blocks' directory.
+		$blocks = array_filter( glob( $blocks_dir . '/*' ) ?: array(), 'is_dir' );
 
 		// Register each block.
 		foreach ( $blocks as $block ) {
-			// Get the block name and skip the ones starting with '_' (underscore) prefix.
-			$block_name = str_replace( $blocks_dir, '', $block );
-			if ( 0 === strpos( $block_name, '_' ) ) {
+			// Use basename() to get just the folder name and skip blocks
+			// prefixed with '_' (underscore), which are intentionally excluded.
+			if ( 0 === strpos( basename( $block ), '_' ) ) {
 				continue;
 			}
+
 			// Register the block.
 			register_block_type( $block );
 		}

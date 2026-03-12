@@ -1,129 +1,204 @@
-# Documentation: Block Development Commands and Workflow in Elementary Theme
+# Block Development Guide
 
-The **Elementary Theme** is a starter theme for developing WordPress block-based themes. This documentation outlines the commands available for managing blocks, the process for creating blocks, and the structure for organizing and excluding blocks in your project.
-
----
-
-## How to Create a New Block
-
-Follow these steps to create a new block:
-
-1. **Run the `create:block` Command**  
-   Execute the following command, replacing `<block-name>` with the desired name of your block:
-   ```bash
-   npm run create:block <block-name> -- --title="Your Block Title"
-   ```
-
-2. **Customize the Block**  
-   Edit the block’s files in the `assets/src/blocks/<block-name>` directory. You can define the block’s functionality, styles, and scripts in the respective files generated.
-
-3. **Build the Blocks**  
-   Once your block development is complete, build the block to generate production-ready assets:
-   ```bash
-   npm run build:blocks
-   ```
-
-4. **Verify Block Registration**  
-   The block will be automatically registered based on the manifest and folder structure. Check your WordPress site’s block editor to ensure the block is listed.
+The **Elementary Theme** provides a structured workflow for creating and managing Gutenberg blocks.
+This guide explains how to create blocks, build them, and organize them within the theme.
 
 ---
 
-## How to Exclude a Block
+## Block Naming Rules
 
-If you need to exclude a block from being registered or built:
+Block names must follow WordPress slug conventions.
 
-1. **Prefix the Block Folder Name with an Underscore**  
-   Rename the block’s folder in `assets/src/blocks` to start with `_` (e.g., `_example-block`).
+A valid block name:
 
-2. **Effect of the Underscore**  
-   - Blocks with folder names starting with `_` are ignored during the build process.
-   - They are not registered in WordPress.
+- Uses **lowercase letters**, **numbers**, and **hyphens**
+- Must **start and end** with a letter or number
+- Cannot contain spaces or underscores
+
+### Valid Examples
+
+```
+hero-section
+testimonial-slider
+cta2
+```
+
+### Invalid Examples
+
+```
+-hero
+hero-
+Hero Section
+hero_section
+```
+
+If an invalid name is used, the CLI command will exit with an error.
 
 ---
 
-## Folder Structure for Blocks
+## Creating a Block
 
-Each block resides in its own directory within the `assets/src/blocks` folder. The typical structure for a block is as follows:
+Blocks are created using the custom CLI command included in the theme.
+
+### Command
+
+```bash
+npm run create:block <block-name> -- [options]
+```
+
+The `--` separator is required to pass arguments through `npm run` to the underlying script.
+
+### Example
+
+```bash
+npm run create:block hero-section -- --title="Hero Section" --category="text"
+```
+
+This command runs the `bin/create-block.js` script, which internally uses `@wordpress/create-block` to scaffold the block inside the theme.
+
+The generated block is placed in `assets/src/blocks/<block-name>`.
+
+---
+
+## Excluding Blocks From Build
+
+To exclude a block from being built or registered, prefix the folder name with an underscore.
+
+Example:
+
+```
+assets/src/blocks/_example-block
+```
+
+Blocks prefixed with `_`:
+
+- Are **not compiled during the build process**
+- Are **not registered in WordPress**
+- Can be used for **experimental or work-in-progress blocks**
+
+---
+
+## Block Directory Structure
+
+Each block resides in its own directory within the `assets/src/blocks` folder. The typical structure is:
 
 ```
 assets/
 └── src/
     └── blocks/
         ├── hero-section/
-        │   ├── index.js        # Block script
-        │   ├── style.css       # Frontend styles
-        │   ├── editor.css      # Editor-specific styles
-        │   └── block.json      # Block metadata
-        ├── testimonial-slider/
+        │   ├── block.json
         │   ├── index.js
-        │   ├── style.css
-        │   ├── editor.css
-        │   └── block.json
+        │   ├── edit.js
+        │   ├── save.js
+        │   ├── editor.scss
+        │   └── style.scss
+        ├── testimonial-slider/
+        │   ├── block.json
+        │   ├── index.js
+        │   ├── edit.js
+        │   ├── save.js
+        │   ├── editor.scss
+        │   └── style.scss
         └── _example-block/     # Excluded block (prefixed with `_`)
 ```
 
 ---
 
-## Automatic Block Registration
+## Default Block Options
 
-Blocks are automatically registered during the WordPress `init` action. The `blocks-manifest.php` file ensures all blocks in the `assets/build/blocks` directory are registered efficiently. Excluded blocks (with `_` prefixes) are skipped during registration.
+The CLI automatically applies the following defaults:
+
+| Option | Default |
+|---|---|
+| `--variant` | `static` |
+| `--namespace` | `elementary-theme` |
+| `--no-plugin` | always applied |
+
+These options only need to be provided if you want to override them.
+
+Example:
+
+```bash
+npm run create:block hero-section -- --variant=dynamic
+```
 
 ---
 
-## Commands for Managing Blocks
+## All Available Options
 
-### 1. **Create a Block**
-Command:  
+| Parameter | Default | Description |
+|---|---|---|
+| `--title` | *(block name)* | **(Recommended)** Display name shown in the block editor |
+| `--variant` | `static` | Block variant type. Override only if you need `dynamic` |
+| `--namespace` | `elementary-theme` | Block namespace. Override only if targeting a different namespace |
+| `--category` | *(none)* | Block category, e.g. `text`, `media`, `design`, `widgets` |
+| `--icon` | *(none)* | Dashicon name or custom SVG for the block |
+| `--keywords` | *(none)* | Comma-separated keywords to help users find the block |
+
+> You can also pass any additional parameter supported by `@wordpress/create-block`.
+
+---
+
+## Development Workflow
+
+### Start Development Mode
+
 ```bash
-npm run create:block
+npm run start
 ```
 
-**Description**:  
-This command generates a new block using the `@wordpress/create-block` package. It automatically sets up the necessary files and folders in the `assets/src/blocks` directory.
+Runs the build process in **watch mode**, automatically rebuilding blocks when files change.
+Use this during active development.
 
-**Usage**:  
-```bash
-npm run create:block <block-name> -- --title="Block Title" --namespace="elementary-theme" --category="common" --icon="smiley" --keywords="block,custom"
-```
+### Production Build
 
-**Parameters**:
-- `--title`: (Optional) The display name of the block.
-- `--variant`: (Optional) The variant type of block, default is `static`.
-- `--namespace`: (Optional) The namespace for the block, default is `elementary-theme`.
-- `--category`: (Optional) The block category, e.g., `common`, `widgets`.
-- `--icon`: (Optional) An icon for the block.
-- `--keywords`: (Optional) Keywords to help users find the block.
-> Note: You can pass additional paramenters that can be used by `@wordpress/create-block` command.
-
-Example:  
-```bash
-npm run create:block hero-section -- --title="Hero Section" --category="layout"
-```
-
-### 2. **Build All Blocks**
-Command:  
 ```bash
 npm run build:blocks
 ```
 
-**Description**:  
-Compiles all block files from `assets/src/blocks` and outputs the production-ready code into `assets/build/blocks`.
+Compiles all block files from `assets/src/blocks` into `assets/build/blocks`.
+Blocks prefixed with `_` are excluded from the output.
 
-### 3. **Build Blocks Manifest**
-Command:  
+### Build Blocks Manifest
+
 ```bash
 npm run build:block-manifest
 ```
 
-**Description**:  
-Generates the `blocks-manifest.php` file, which provides metadata about the blocks. This helps WordPress efficiently register and manage block metadata.
+Generates the `blocks-manifest.php` file by scanning compiled block metadata from `assets/build/blocks/`.
+Always run this **after** `build:blocks` — the manifest is built from compiled output, not source files.
+This allows WordPress to efficiently register and manage block metadata at runtime.
+
+---
+
+## Automatic Block Registration
+
+Blocks are automatically registered using metadata from the compiled blocks inside `assets/build/blocks`.
+
+The generated `blocks-manifest.php` file allows the theme to efficiently load and register all blocks during WordPress initialization. Excluded blocks (with `_` prefixes) are skipped during both the build step and registration.
+
+No manual PHP block registration is required.
+
+---
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|---|---|---|
+| `Error: Block name is required.` | No block name was passed to the command | Provide a valid block name: `npm run create:block my-block` |
+| `Error: Block name must start and end with a lowercase letter...` | Block name contains uppercase letters, spaces, leading/trailing hyphens, or underscores | Rename to a valid slug, e.g. `my-block` instead of `My Block` or `-my-block` |
+| `Error: Block "my-block" already exists at: ...` | A folder with that name already exists in `assets/src/blocks` | Choose a different name, or manually remove the existing folder first |
+| `create-block exited with status 1` | `@wordpress/create-block` encountered an internal error | Check that `npx` is available and dependencies are installed (`npm install`) |
+| Block not appearing in editor | Block was not built or is prefixed with `_` | Run `npm run build:blocks` and ensure the folder name does not start with `_` |
 
 ---
 
 ## Best Practices
 
-- **Use meaningful names** for blocks and their folders to enhance clarity.
-- **Test blocks in the WordPress editor** after creation and build to ensure proper functionality.
-- **Exclude experimental blocks** by prefixing their folder names with `_`.
-
-By following this workflow, you can streamline the process of developing and managing custom blocks in the Elementary Theme.
+- Use **clear and descriptive block slugs**
+- Always pass `--title` for a readable block name in the editor
+- Use `_` prefix for experimental or draft blocks
+- Run `npm run start` during active development for automatic rebuilds
+- Run `npm run build:blocks` before production deployments
+- Test blocks inside the WordPress editor after creation
