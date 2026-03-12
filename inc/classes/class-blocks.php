@@ -61,7 +61,8 @@ class Blocks {
 		}
 
 		// List all subdirectories in 'assets/build/blocks' directory.
-		$blocks = array_filter( glob( $blocks_dir . '/*' ) ?: array(), 'is_dir' );
+		$glob_result = glob( $blocks_dir . '/*' );
+		$blocks = array_filter( $glob_result !== false ? $glob_result : array(), 'is_dir' );
 
 		// Register each block.
 		foreach ( $blocks as $block ) {
