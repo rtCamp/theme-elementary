@@ -8,9 +8,9 @@
 		"php": ">=8.2"
 	},
 	"require-dev": {
-		"wp-coding-standards/wpcs": "^2.3",
+		"wp-coding-standards/wpcs": "^3.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
-		"automattic/vipwpcs": "^2.3",
+		"automattic/vipwpcs": "^3.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
 		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
 		"phpunit/phpunit": "^9.5",
