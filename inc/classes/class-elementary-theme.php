@@ -10,6 +10,7 @@ namespace Elementary_Theme;
 use Elementary_Theme\Block_Extensions\Media_Text_Interactive;
 use Elementary_Theme\Traits\Singleton;
 use Elementary_Theme\Assets;
+use Elementary_Theme\Blocks;
 
 /**
  * Class Elementary_Theme
@@ -26,6 +27,7 @@ class Elementary_Theme {
 	protected function __construct() {
 		// Instantiate classes.
 		Assets::get_instance();
+		Blocks::get_instance();
 
 		// Setup hooks.
 		$this->setup_hooks();
