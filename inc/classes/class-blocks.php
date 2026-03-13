@@ -44,7 +44,7 @@ class Blocks {
 	 */
 	public function register_blocks() {
 
-		$blocks_dir = get_template_directory() . '/assets/build/blocks';
+		$blocks_dir = untrailingslashit( get_template_directory() ) . '/assets/build/blocks';
 
 		// Bail early if the blocks directory doesn't exist (e.g. before running a build).
 		if ( ! is_dir( $blocks_dir ) ) {
