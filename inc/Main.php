@@ -2,21 +2,21 @@
 /**
  * Theme bootstrap file.
  *
- * @package Elementary-Theme
+ * @package Personal-Theme
  */
 
 namespace Elementary_Theme;
 
-use Elementary_Theme\Block_Extensions\Media_Text_Interactive;
-use Elementary_Theme\Traits\Singleton;
-use Elementary_Theme\Assets;
+use Elementary_Theme\Modules\Block_Extensions\Media_Text_Interactive;
+use Elementary_Theme\Core\Assets;
+use Elementary_Theme\Kernel\Traits\Singleton;
 
 /**
- * Class Elementary_Theme
+ * Class Main
  *
  * @since 1.0.0
  */
-class Elementary_Theme {
+class Main {
 
 	use Singleton;
 

@@ -53,7 +53,7 @@
 		Multiple valid text domains can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="elementary-theme"/>
+			<property name="text_domain" type="array" value="personal-theme"/>
 		</properties>
 	</rule>
 
@@ -85,7 +85,7 @@
 		Multiple valid prefixes can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="elementary_theme, ELEMENTARY_THEME" />
+			<property name="prefixes" type="array" value="Elementary_Theme, Elementary_Theme" />
 		</properties>
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 	</rule>
@@ -118,9 +118,17 @@
 	-->
 
 
-	<config name="testVersion" value="5.6-"/>
+	<config name="testVersion" value="7.4-"/>
 	<rule ref="PHPCompatibilityWP">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+	</rule>
+
+	<!-- PSR-4 Naming compat - Exclude file naming sniffs -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>*</exclude-pattern>
 	</rule>
 
 	<!-- Exclude patterns folder -->

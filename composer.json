@@ -1,49 +1,40 @@
 {
-	"name": "rtcamp/elementary",
-	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
-	"type": "wordpress-theme",
-	"homepage": "https://rtcamp.com/",
-	"license": "GPL-2.0-or-later",
-	"require": {
-		"php": ">=8.2"
-	},
-	"require-dev": {
-		"wp-coding-standards/wpcs": "^2.3",
-		"phpcompatibility/phpcompatibility-wp": "^2.1",
-		"automattic/vipwpcs": "^2.3",
-		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
-		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
-		"phpunit/phpunit": "^9.5",
-		"wp-phpunit/wp-phpunit": "^6.0",
-		"yoast/phpunit-polyfills": "^3.0",
-		"wp-cli/i18n-command": "^2.4"
-	},
-	"minimum-stability": "dev",
-	"prefer-stable": true,
-	"config": {
-		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
-	},
-	"autoload": {
-		"classmap": [
-			"inc/"
-		],
-		"files": [
-			"inc/helpers/custom-functions.php"
-		]
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Elementary_Theme\\Tests\\": "tests/php/"
-		}
-	},
-	"scripts": {
-		"phpcs": "@php ./vendor/bin/phpcs",
-		"phpcs:fix": "@php ./vendor/bin/phpcbf",
-		"post-install-cmd": [
-			"npm i"
-		],
-		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
+"name": "rtcamp/elementary-theme",
+"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
+"type": "wordpress-theme",
+"homepage": "https://rtcamp.com/",
+"license": "GPL-2.0-or-later",
+"require": {
+	"php": ">=8.2"
+},
+"require-dev": {
+	"wp-coding-standards/wpcs": "^2.3",
+	"phpcompatibility/phpcompatibility-wp": "^2.1",
+	"automattic/vipwpcs": "^2.3",
+	"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
+	"sirbrillig/phpcs-variable-analysis": "^2.11.3",
+	"phpunit/phpunit": "^9.5",
+	"wp-phpunit/wp-phpunit": "^6.0",
+	"yoast/phpunit-polyfills": "^3.0",
+	"wp-cli/i18n-command": "^2.4"
+},
+"minimum-stability": "dev",
+"prefer-stable": true,
+"config": {
+	"allow-plugins": {
+		"dealerdirect/phpcodesniffer-composer-installer": true
 	}
+},
+"autoload": {
+	"psr-4": {
+	"Elementary_Theme\\": "inc/",
+	"Elementary_Theme\\Kernel\\": "kernel/",
+	"Elementary_Theme\\Tests\\": "tests/php/"
+}
+},
+"scripts": {
+"phpcs": "@php ./vendor/bin/phpcs",
+"phpcs:fix": "@php ./vendor/bin/phpcbf",
+	"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
+}
 }

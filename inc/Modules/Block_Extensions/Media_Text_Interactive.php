@@ -5,36 +5,26 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Block_Extensions;
+namespace Elementary_Theme\Modules\Block_Extensions;
 
+use Elementary_Theme\Kernel\Abstracts\Abstract_Block_Extension;
 use WP_HTML_Tag_Processor;
-use Elementary_Theme\Traits\Singleton;
 
 /**
  * Class Media_Text_Interactive
  */
-class Media_Text_Interactive {
-
-	use Singleton;
-
-	/**
-	 * Constructor.
-	 */
-	protected function __construct() {
-		$this->setup_hooks();
-	}
+class Media_Text_Interactive extends Abstract_Block_Extension {
 
 	/**
 	 * Setup hooks.
 	 *
 	 * @return void
 	 */
-	public function setup_hooks() {
+	public function setup_hooks(): void {
 
 		add_filter( 'render_block_core/button', array( $this, 'render_block_core_button' ), 10, 2 );
 		add_filter( 'render_block_core/columns', array( $this, 'render_block_core_columns' ), 10, 2 );
 		add_filter( 'render_block_core/video', array( $this, 'render_block_core_video' ), 10, 2 );
-
 	}
 
 	/**
