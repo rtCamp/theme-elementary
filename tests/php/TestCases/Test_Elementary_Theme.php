@@ -5,8 +5,10 @@
  * @package Elementary-Theme
  */
 
+namespace Elementary_Theme\Tests\TestCases;
+
 use Elementary_Theme\Tests\TestCase;
-use Elementary_Theme\Elementary_Theme;
+use Elementary_Theme\Main;
 
 /**
  * Class Test_Elementary_Theme
@@ -28,7 +30,7 @@ class Test_Elementary_Theme extends TestCase {
 	 * @since 1.0.0
 	 */
 	public function test_class_is_singleton() {
-		$this->assertTrue( Elementary_Theme::get_instance() instanceof Elementary_Theme );
+		$this->assertTrue( Main::get_instance() instanceof Main );
 	}
 
 	/**
