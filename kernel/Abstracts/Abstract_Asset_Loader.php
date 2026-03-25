@@ -2,7 +2,7 @@
 /**
  * Provides the base class for asset loading.
  *
- * @package Personal-Theme
+ * @package Elementary-Theme
  */
 
 namespace Elementary_Theme\Kernel\Abstracts;

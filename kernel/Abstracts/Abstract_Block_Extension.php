@@ -2,7 +2,7 @@
 /**
  * Provides the base class for block extensions.
  *
- * @package Personal-Theme
+ * @package Elementary-Theme
  */
 
 declare( strict_types=1 );

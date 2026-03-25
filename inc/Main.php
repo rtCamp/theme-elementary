@@ -2,7 +2,7 @@
 /**
  * Theme bootstrap file.
  *
- * @package Personal-Theme
+ * @package Elementary-Theme
  */
 
 namespace Elementary_Theme;

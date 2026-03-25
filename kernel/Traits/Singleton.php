@@ -22,7 +22,7 @@
  *
  * If you specifically need multiple objects, then use a normal class.
  *
- * @package Personal-Theme
+ * @package Elementary-Theme
  */
 
 namespace Elementary_Theme\Kernel\Traits;
