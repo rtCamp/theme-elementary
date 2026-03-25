@@ -21,7 +21,7 @@ class Test_Elementary_Theme extends TestCase {
 	 * @since 1.0.0
 	 */
 	public function test_class_exists() {
-		$this->assertTrue( class_exists( 'Elementary_Theme\Elementary_Theme' ) );
+		$this->assertTrue( class_exists( 'Elementary_Theme\Main' ) );
 	}
 
 	/**
@@ -39,7 +39,7 @@ class Test_Elementary_Theme extends TestCase {
 	 * @since 1.0.0
 	 */
 	public function test_class_has_method_setup_hooks() {
-		$this->assertTrue( method_exists( 'Elementary_Theme\Elementary_Theme', 'setup_hooks' ) );
+		$this->assertTrue( method_exists( 'Elementary_Theme\Main', 'setup_hooks' ) );
 	}
 
 	/**
@@ -48,6 +48,6 @@ class Test_Elementary_Theme extends TestCase {
 	 * @since 1.0.0
 	 */
 	public function test_class_has_method_elementary_theme_support() {
-		$this->assertTrue( method_exists( 'Elementary_Theme\Elementary_Theme', 'elementary_theme_support' ) );
+		$this->assertTrue( method_exists( 'Elementary_Theme\Main', 'elementary_theme_support' ) );
 	}
 }

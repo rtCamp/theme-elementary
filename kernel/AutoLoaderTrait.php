@@ -12,9 +12,9 @@ declare( strict_types = 1 );
 namespace Elementary_Theme\Kernel;
 
 /**
- * Class - AutoloaderTrait
+ * Class - AutoLoaderTrait
  */
-trait AutoloaderTrait {
+trait AutoLoaderTrait {
 	/**
 	 * The Error message to display when the autoloader errors.
 	 *
