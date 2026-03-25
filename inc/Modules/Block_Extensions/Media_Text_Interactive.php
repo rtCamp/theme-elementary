@@ -8,12 +8,15 @@
 namespace Elementary_Theme\Modules\Block_Extensions;
 
 use Elementary_Theme\Kernel\Abstracts\Abstract_Block_Extension;
+use Elementary_Theme\Kernel\Traits\Singleton;
 use WP_HTML_Tag_Processor;
 
 /**
  * Class Media_Text_Interactive
  */
 class Media_Text_Interactive extends Abstract_Block_Extension {
+
+	use Singleton;
 
 	/**
 	 * Setup hooks.

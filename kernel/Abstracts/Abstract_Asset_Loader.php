@@ -41,11 +41,7 @@ abstract class Abstract_Asset_Loader {
 	 *
 	 * @since 1.0.0
 	 */
-	public function setup_hooks() {
-		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
-	}
+	abstract public function setup_hooks();
 
 	/**
 	 * Initializes the required variables.
@@ -160,23 +156,6 @@ abstract class Abstract_Asset_Loader {
 		}
 
 		return wp_enqueue_style( $handle );
-	}
-
-	/**
-	 * Enqueue block specific assets.
-	 *
-	 * @param string $markup Markup of the block.
-	 * @param array  $block Array with block information.
-	 *
-	 * @since 1.0.0
-	 */
-	public function enqueue_block_specific_assets( $markup, $block ) {
-		if ( is_array( $block ) && ! empty( $block['blockName'] ) && 'core/navigation' === $block['blockName'] ) {
-			wp_enqueue_script( 'core-navigation' );
-			wp_enqueue_style( 'core-navigation' );
-		}
-
-		return $markup;
 	}
 
 	/**

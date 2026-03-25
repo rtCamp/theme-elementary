@@ -9,16 +9,12 @@ declare( strict_types=1 );
 
 namespace Elementary_Theme\Kernel\Abstracts;
 
-use Elementary_Theme\Kernel\Traits\Singleton;
-
 /**
  * Class Abstract_Block_Extension
  *
  * @since 1.0.0
  */
 abstract class Abstract_Block_Extension {
-
-	use Singleton;
 
 	/**
 	 * Constructor.
