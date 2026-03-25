@@ -85,7 +85,7 @@
 		Multiple valid prefixes can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="Elementary_Theme, Elementary_Theme" />
+			<property name="prefixes" type="array" value="elementary_theme, ELEMENTARY_THEME" />
 		</properties>
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 	</rule>
