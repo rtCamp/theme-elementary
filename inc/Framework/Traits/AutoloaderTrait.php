@@ -10,9 +10,10 @@
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
- * Class AutoloaderTrait
+ * Trait AutoloaderTrait
  */
 trait AutoloaderTrait {
+
 	/**
 	 * The Error message to display when the autoloader errors.
 	 *

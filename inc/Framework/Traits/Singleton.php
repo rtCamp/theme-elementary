@@ -27,6 +27,9 @@
 
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
+/**
+ * Trait Singleton
+ */
 trait Singleton {
 
 	/**

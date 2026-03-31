@@ -9,12 +9,12 @@
 
 namespace rtCamp\Theme\Elementary;
 
-if ( ! class_exists( 'rtCamp\Plugin_Skeleton_D\Framework\AutoloaderTrait' ) ) {
+if ( ! trait_exists( 'rtCamp\Theme\Elementary\Framework\Traits\AutoloaderTrait' ) ) {
 	require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Framework/Traits/AutoloaderTrait.php';
 }
 
 /**
- * Class - Autoloader
+ * Class Autoloader
  */
 final class Autoloader {
 
