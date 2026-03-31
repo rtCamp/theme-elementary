@@ -9,9 +9,9 @@ use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Main;
 
 /**
- * Class Test_Elementary_Theme
+ * Class MainTest
  */
-class Test_Elementary_Theme extends TestCase {
+class MainTest extends TestCase {
 
 	/**
 	 * Test if class Main exists.

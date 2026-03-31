@@ -5,7 +5,7 @@
  * @package Elementary-Theme
  */
 
-namespace rtCamp\Theme\Elementary\BlockExtensions;
+namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
 use rtCamp\Theme\Elementary\Framework\Traits\Singleton;

@@ -7,7 +7,7 @@
 
 namespace rtCamp\Theme\Elementary;
 
-use rtCamp\Theme\Elementary\BlockExtensions\MediaTextInteractive;
+use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
 use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 use rtCamp\Theme\Elementary\Core\Assets;
 
