@@ -33,7 +33,7 @@ require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
  * @return object Theme bootstrap instance.
  */
 function elementary_theme_instance() {
-	return Elementary_Theme\Elementary_Theme::get_instance();
+	return rtCamp\Theme\Elementary\Main::get_instance();
 }
 
 // Instantiate theme.

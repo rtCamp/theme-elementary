@@ -25,7 +25,7 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Traits;
+namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 trait Singleton {
 

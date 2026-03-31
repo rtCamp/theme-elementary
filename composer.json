@@ -26,16 +26,16 @@
 		}
 	},
 	"autoload": {
-		"classmap": [
-			"inc/"
-		],
+		"psr-4": {
+			"rtCamp\\Theme\\Elementary\\": "inc/"
+		},
 		"files": [
 			"inc/helpers/custom-functions.php"
 		]
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Elementary_Theme\\Tests\\": "tests/php/"
+			"rtCamp\\Theme\\Elementary\\Tests\\": "tests/php/"
 		}
 	},
 	"scripts": {

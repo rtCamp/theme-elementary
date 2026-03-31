@@ -93,6 +93,7 @@
 	<!-- Ignore following files from tests. -->
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
 		<exclude-pattern>tests/php/TestCase.php</exclude-pattern>
+		<exclude-pattern>inc/**/*.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">

@@ -5,9 +5,9 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme;
+namespace rtCamp\Theme\Elementary\Core;
 
-use Elementary_Theme\Traits\Singleton;
+use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 
 /**
  * Class Assets

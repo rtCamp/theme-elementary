@@ -5,15 +5,15 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Block_Extensions;
+namespace rtCamp\Theme\Elementary\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use Elementary_Theme\Traits\Singleton;
+use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 
 /**
- * Class Media_Text_Interactive
+ * Class MediaTextInteractive
  */
-class Media_Text_Interactive {
+class MediaTextInteractive {
 
 	use Singleton;
 
