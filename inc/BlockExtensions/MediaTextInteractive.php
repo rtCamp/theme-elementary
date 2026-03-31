@@ -30,11 +30,9 @@ class MediaTextInteractive {
 	 * @return void
 	 */
 	public function setup_hooks() {
-
 		add_filter( 'render_block_core/button', array( $this, 'render_block_core_button' ), 10, 2 );
 		add_filter( 'render_block_core/columns', array( $this, 'render_block_core_columns' ), 10, 2 );
 		add_filter( 'render_block_core/video', array( $this, 'render_block_core_video' ), 10, 2 );
-
 	}
 
 	/**

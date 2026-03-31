@@ -45,7 +45,6 @@ class Assets {
 	 * @action wp_enqueue_scripts
 	 */
 	public function register_assets() {
-
 		$this->register_script( 'core-navigation', 'js/core-navigation.js' );
 		$this->register_style( 'core-navigation', 'css/core-navigation.css' );
 		$this->register_style( 'elementary-theme-styles', 'css/styles.css' );
@@ -103,7 +102,6 @@ class Assets {
 	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
 	public function register_script( $handle, $file, $deps = [], $ver = false, $in_footer = true ) {
-
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -130,7 +128,6 @@ class Assets {
 	 * @return bool Whether the style has been registered. True on success, false on failure.
 	 */
 	public function register_style( $handle, $file, $deps = [], $ver = false, $media = 'all' ) {
-
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
