@@ -8,7 +8,6 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for WordPress themes.</description>
 
-
 	<!--
 	#############################################################################
 	COMMAND LINE ARGUMENTS
@@ -50,7 +49,6 @@
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
 
-
 	<!--
 	#############################################################################
 	SNIFF SPECIFIC CONFIGURATION
@@ -71,6 +69,8 @@
 		<properties>
 			<property name="is_theme" value="true"/>
 		</properties>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 	</rule>
 
 	<!-- Set the minimum supported WP version. This is used by several sniffs.
@@ -119,7 +119,6 @@
 	USE THE PHPCompatibility RULESET
 	#############################################################################
 	-->
-
 
 	<config name="testVersion" value="5.6-"/>
 	<rule ref="PHPCompatibilityWP">
