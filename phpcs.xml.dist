@@ -102,17 +102,6 @@
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 	</rule>
 
-	<!-- Ignore following files from tests. -->
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>tests/php/TestCase.php</exclude-pattern>
-		<exclude-pattern>inc/**</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>tests/*</exclude-pattern>
-		<exclude-pattern>inc/**</exclude-pattern>
-	</rule>
-
 	<rule ref="WordPress-Docs">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
