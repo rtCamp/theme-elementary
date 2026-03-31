@@ -12,6 +12,27 @@ Examples:
 - `inc/BlockExtensions/MediaTextInteractive.php` → `rtCamp\Theme\Elementary\BlockExtensions\MediaTextInteractive`
 - `inc/Framework/Traits/Singleton.php` → `rtCamp\Theme\Elementary\Framework\Traits\Singleton`
 
+## Directory tree
+
+The `inc/` directory follows a PSR-4 structure and is split into meaningful areas:
+
+- `inc/Framework/`
+  - Upstream-owned framework code.
+  - Base traits, contracts, and utilities.
+  - Do not modify in downstream themes unless there is no other option.
+- `inc/Main.php`
+  - Theme bootstrap entry point.
+  - Defines the primary theme class under `rtCamp\Theme\Elementary`.
+- `inc/Core/`
+  - Project-specific core classes.
+  - Example: asset loading, theme setup, shared services.
+- `inc/BlockExtensions/`
+  - Project-specific block extension classes.
+  - Example: block render filters, block-specific integrations.
+- `inc/helpers/`
+  - Non-namespaced helper files.
+  - Loaded via Composer `files` autoload and not subject to PSR-4 class name rules.
+
 ## Two-layer model
 
 The repository is split into two layers:
