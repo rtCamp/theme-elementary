@@ -38,7 +38,7 @@ if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\El
  */
 function elementary_theme_instance() {
 
-	if ( class_exists( 'rtCamp\Plugin_Skeleton_D\Main' ) ) {
+	if ( class_exists( 'rtCamp\Theme\Elementary\Main' ) ) {
 		return rtCamp\Theme\Elementary\Main::get_instance();
 	}
 }

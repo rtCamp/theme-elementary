@@ -9,7 +9,7 @@ Examples:
 
 - `inc/Main.php` → `rtCamp\Theme\Elementary\Main`
 - `inc/Core/Assets.php` → `rtCamp\Theme\Elementary\Core\Assets`
-- `inc/BlockExtensions/MediaTextInteractive.php` → `rtCamp\Theme\Elementary\BlockExtensions\MediaTextInteractive`
+- `inc/BlockExtensions/MediaTextInteractive.php` → `rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive`
 - `inc/Framework/Traits/Singleton.php` → `rtCamp\Theme\Elementary\Framework\Traits\Singleton`
 
 ## Directory tree

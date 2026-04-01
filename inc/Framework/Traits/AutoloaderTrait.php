@@ -19,7 +19,7 @@ trait AutoloaderTrait {
 	 *
 	 * We stick it in a function, so it's available to `missing_autoloader_notice()` without prop drilling into the hook.
 	 */
-	abstract public static function get_autoloader_error_message();
+	abstract protected static function get_autoloader_error_message();
 
 	/**
 	 * Attempts to load the autoloader file, if it exists.
@@ -62,13 +62,17 @@ trait AutoloaderTrait {
 					_doing_it_wrong( self::class, esc_html( $error_message ), '0.0.1' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 					// Display the error notice in the admin.
-					wp_admin_notice(
-						esc_html( $error_message ),
-						[
-							'type'    => 'error',
-							'dismiss' => false,
-						]
-					);
+					if ( function_exists( 'wp_admin_notice' ) ) {
+						wp_admin_notice(
+							esc_html( $error_message ),
+							[
+								'type'    => 'error',
+								'dismiss' => false,
+							]
+						);
+					} else {
+						echo '<div class="notice notice-error"><p>' . esc_html( $error_message ) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					}
 				}
 			);
 		}

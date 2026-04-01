@@ -1,6 +1,6 @@
 <?php
 /**
- * Autoloader for PHP classes inside a WordPress plugin.
+ * Autoloader for PHP classes inside a WordPress theme.
  *
  * Wraps the Composer autoloader to provide graceful failure if it is missing.
  *
@@ -33,7 +33,7 @@ final class Autoloader {
 	/**
 	 * The error message to display when the autoloader is missing.
 	 */
-	private static function get_autoloader_error_message() {
+	protected static function get_autoloader_error_message() {
 		return sprintf(
 			/* translators: %s: The plugin name. */
 			__( '%s: The Composer autoloader was not found. If you installed the plugin from the GitHub source code, make sure to run `composer install`.', 'elementary-theme' ),
