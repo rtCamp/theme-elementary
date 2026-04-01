@@ -100,7 +100,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
+      - name: Get node version
+        id: node
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Cache node_modules
+        id: node_modules
+        uses: actions/cache@v5.0.3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - name: Install Node dependencies
+        if: steps.node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         env:
           CI: true
@@ -123,7 +135,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
+      - name: Get node version
+        id: node
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Cache node_modules
+        id: node_modules
+        uses: actions/cache@v5.0.3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - name: Install Node dependencies
+        if: steps.node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         env:
           CI: true
@@ -146,7 +170,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
+      - name: Get node version
+        id: node
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Cache node_modules
+        id: node_modules
+        uses: actions/cache@v5.0.3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - name: Install Node dependencies
+        if: steps.node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         env:
           CI: true
@@ -217,8 +253,21 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
-      - name: Install Node dependencies
+      - name: Get node version
         if: needs.pre-run.outputs.changed-php-count > 0
+        id: node
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Cache node_modules
+        if: needs.pre-run.outputs.changed-php-count > 0
+        id: node_modules
+        uses: actions/cache@v5.0.3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
+      - name: Install Node dependencies
+        if: needs.pre-run.outputs.changed-php-count > 0 && steps.node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         env:
           CI: true
@@ -246,7 +295,19 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
 
+      - name: Get node version
+        id: node
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+      - name: Cache node_modules
+        id: node_modules
+        uses: actions/cache@v5.0.3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
+
       - name: Install Node dependencies
+        if: steps.node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         env:
           CI: true
