@@ -87,7 +87,7 @@ jobs:
 
   lint-css:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-css-count > 0 
+    if: needs.pre-run.outputs.changed-css-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
     name: 'Lint CSS'
     runs-on: ubuntu-latest
     steps:
@@ -122,7 +122,7 @@ jobs:
 
   lint-js:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 
+    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
     name: 'Lint JS'
     runs-on: ubuntu-latest
     steps:
@@ -157,7 +157,7 @@ jobs:
 
   unit-tests-js:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 
+    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
     name: 'Run JS unit tests'
     runs-on: ubuntu-latest
     steps:
@@ -194,7 +194,7 @@ jobs:
 
   lint-php:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0 
+    if: needs.pre-run.outputs.changed-php-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
     name: 'Lint PHP'
     runs-on: ubuntu-latest
     steps:
@@ -239,7 +239,7 @@ jobs:
       # job as a whole is because the name is variable based on the matrix, and if the condition is not met then the
       # name won't be interpolated in order to match the required jobs set up in branch protection.
       - name: Notice
-        if: needs.pre-run.outputs.changed-php-count == 0
+        if: needs.pre-run.outputs.changed-php-count <= 0
         run: echo "No PHP files were changed in ${{ github.event.repository.name }} so no PHP unit tests will run"
 
       - name: Checkout
@@ -282,7 +282,7 @@ jobs:
 
   build-prod:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0  || needs.pre-run.outputs.changed-css-count > 0
+    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0 || needs.pre-run.outputs.changed-css-count > 0
     name: 'Build production'
     runs-on: ubuntu-latest
     steps:
