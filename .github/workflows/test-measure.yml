@@ -113,9 +113,7 @@ jobs:
 
       - name: Install Node dependencies
         if: steps.node_modules.outputs.cache-hit != 'true'
-        run: |
-            echo "⚡ Cache MISS → Running npm ci"
-            npm ci --ignore-scripts
+        run: npm ci --ignore-scripts
         env:
           CI: true
 
@@ -150,9 +148,7 @@ jobs:
 
       - name: Install Node dependencies
         if: steps.node_modules.outputs.cache-hit != 'true'
-        run: |
-            echo "⚡ Cache MISS → Running npm ci"
-            npm ci --ignore-scripts
+        run: npm ci --ignore-scripts
         env:
           CI: true
 
@@ -187,9 +183,7 @@ jobs:
 
       - name: Install Node dependencies
         if: steps.node_modules.outputs.cache-hit != 'true'
-        run: |
-            echo "⚡ Cache MISS → Running npm ci"
-            npm ci --ignore-scripts
+        run: npm ci --ignore-scripts
         env:
           CI: true
 
@@ -274,9 +268,7 @@ jobs:
 
       - name: Install Node dependencies
         if: needs.pre-run.outputs.changed-php-count > 0 && steps.node_modules.outputs.cache-hit != 'true'
-        run: |
-            echo "⚡ Cache MISS → Running npm ci"
-            npm ci --ignore-scripts
+        run: npm ci --ignore-scripts
         env:
           CI: true
 
@@ -316,9 +308,7 @@ jobs:
 
       - name: Install Node dependencies
         if: steps.node_modules.outputs.cache-hit != 'true'
-        run: |
-            echo "⚡ Cache MISS → Running npm ci"
-            npm ci --ignore-scripts
+        run: npm ci --ignore-scripts
         env:
           CI: true
 
