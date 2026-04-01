@@ -1,6 +1,6 @@
 <?php
 /**
- * Autoloader for PHP classes inside a WordPress theme.
+ * Autoloader for PHP classes inside a Theme Elementary.
  *
  * Wraps the Composer autoloader to provide graceful failure if it is missing.
  *
