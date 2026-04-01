@@ -67,16 +67,16 @@ jobs:
           GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/workflows\/.+\.yml)" "$MODIFIED_FILES")
 
           echo "Changed file count: $MODIFIED_FILES_DATA"
-          echo "Changed CK theme CSS file count: $CSS_FILE_COUNT"
-          echo "Changed CK theme JS file count: $JS_FILE_COUNT"
-          echo "Changed CK theme PHP file count: $PHP_FILE_COUNT"
+          echo "Changed ${{ github.event.repository.name }} CSS file count: $CSS_FILE_COUNT"
+          echo "Changed ${{ github.event.repository.name }} JS file count: $JS_FILE_COUNT"
+          echo "Changed ${{ github.event.repository.name }} PHP file count: $PHP_FILE_COUNT"
           echo "Changed GHA workflow count: $GHA_WORKFLOW_COUNT"
 
-          echo "::set-output name=count::$MODIFIED_FILES_DATA"
-          echo "::set-output name=css-count::$CSS_FILE_COUNT"
-          echo "::set-output name=js-count::$JS_FILE_COUNT"
-          echo "::set-output name=php-count::$PHP_FILE_COUNT"
-          echo "::set-output name=gha-workflow-count::$GHA_WORKFLOW_COUNT"
+          echo "count=$MODIFIED_FILES_DATA" >> $GITHUB_OUTPUT
+          echo "css-count=$CSS_FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "js-count=$JS_FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "php-count=$PHP_FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "gha-workflow-count=$GHA_WORKFLOW_COUNT" >> $GITHUB_OUTPUT
         env:
           # Ignore Paths:
           # - .github/
@@ -174,7 +174,7 @@ jobs:
 
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Configure Composer cache
         uses: actions/cache@v5.0.3
@@ -183,6 +183,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
       - name: Install Composer dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
 
@@ -202,8 +203,8 @@ jobs:
       # job as a whole is because the name is variable based on the matrix, and if the condition is not met then the
       # name won't be interpolated in order to match the required jobs set up in branch protection.
       - name: Notice
-        if: needs.pre-run.outputs.changed-php-count > 0
-        run: echo "No PHP files were changed in CK theme so no PHP unit tests will run"
+        if: needs.pre-run.outputs.changed-php-count == 0
+        run: echo "No PHP files were changed in ${{ github.event.repository.name }} so no PHP unit tests will run"
 
       - name: Checkout
         if: needs.pre-run.outputs.changed-php-count > 0
