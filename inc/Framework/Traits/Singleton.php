@@ -22,8 +22,10 @@
  *
  * If you specifically need multiple objects, then use a normal class.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
@@ -55,7 +57,7 @@ trait Singleton {
 	 *
 	 * @return object Singleton instance of the class.
 	 */
-	final public static function get_instance() {
+	final public static function get_instance(): object {
 		/**
 		 * Collection of instance.
 		 *

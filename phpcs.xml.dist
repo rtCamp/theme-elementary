@@ -76,7 +76,7 @@
 	<!-- Set the minimum supported WP version. This is used by several sniffs.
 		The minimum version set here should be in line with the minimum WP version
 		as set in the "Requires at least" tag in the readme.txt file. -->
-	<config name="minimum_supported_wp_version" value="4.5"/>
+	<config name="minimum_supported_wp_version" value="6.5"/>
 
 	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
 		<properties>
@@ -120,7 +120,8 @@
 	#############################################################################
 	-->
 
-	<config name="testVersion" value="5.6-"/>
+	<!-- PHP compatibility range: 8.2 minimum -->
+	<config name="testVersion" value="8.2-"/>
 	<rule ref="PHPCompatibilityWP">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 	</rule>

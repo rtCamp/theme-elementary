@@ -2,8 +2,10 @@
 /**
  * Trait for WordPress asset loading.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
@@ -23,7 +25,7 @@ trait AssetLoaderTrait {
 	 *                                    Default 'false'.
 	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
-	private function register_script( $handle, $file, $deps = [], $ver = false, $in_footer = true ) {
+	private function register_script( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, bool $in_footer = true ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -49,7 +51,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @return bool Whether the style has been registered. True on success, false on failure.
 	 */
-	private function register_style( $handle, $file, $deps = [], $ver = false, $media = 'all' ) {
+	private function register_style( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, string $media = 'all' ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -65,13 +67,13 @@ trait AssetLoaderTrait {
 	/**
 	 * Get asset dependencies and version info from {handle}.asset.php if exists.
 	 *
-	 * @param string $file File name.
-	 * @param array  $deps Script dependencies to merge with.
-	 * @param string $ver  Asset version string.
+	 * @param string           $file File name.
+	 * @param array            $deps Script dependencies to merge with.
+	 * @param string|bool|null $ver  Asset version string.
 	 *
-	 * @return array
+	 * @return array Asset meta information including dependencies and version.
 	 */
-	private function get_asset_meta( $file, $deps = [], $ver = false ) {
+	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
 		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file )['extension'] ) );
 		$asset_meta      = is_readable( $asset_meta_file )
 			? require $asset_meta_file
@@ -88,12 +90,12 @@ trait AssetLoaderTrait {
 	/**
 	 * Get file version.
 	 *
-	 * @param string             $file File path.
-	 * @param int|string|boolean $ver  File version.
+	 * @param string           $file File path.
+	 * @param string|bool|null $ver  File version.
 	 *
-	 * @return bool|false|int
+	 * @return string|bool|null File version based on file modification time or provided version.
 	 */
-	private function get_file_version( $file, $ver = false ) {
+	private function get_file_version( $file, $ver = false ): string|bool|null {
 		if ( ! empty( $ver ) ) {
 			return $ver;
 		}

@@ -2,8 +2,10 @@
 /**
  * Test if class Main exists.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Main;
@@ -16,36 +18,44 @@ class MainTest extends TestCase {
 	/**
 	 * Test if class Main exists.
 	 *
+	 * @return void
+	 * 
 	 * @since 1.0.0
 	 */
-	public function test_class_exists() {
+	public function test_class_exists(): void {
 		$this->assertTrue( class_exists( 'rtCamp\Theme\Elementary\Main' ) );
 	}
 
 	/**
 	 * Test if class Main is a singleton.
 	 *
+	 * @return void
+	 * 
 	 * @since 1.0.0
 	 */
-	public function test_class_is_singleton() {
+	public function test_class_is_singleton(): void {
 		$this->assertTrue( Main::get_instance() instanceof Main );
 	}
 
 	/**
 	 * Test if class Main has a method 'setup_hooks'.
 	 *
+	 * @return void
+	 * 
 	 * @since 1.0.0
 	 */
-	public function test_class_has_method_setup_hooks() {
+	public function test_class_has_method_setup_hooks(): void {
 		$this->assertTrue( method_exists( 'rtCamp\Theme\Elementary\Main', 'setup_hooks' ) );
 	}
 
 	/**
 	 * Test if class Main has a method 'elementary_theme_support'.
 	 *
+	 * @return void
+	 * 
 	 * @since 1.0.0
 	 */
-	public function test_class_has_method_elementary_theme_support() {
+	public function test_class_has_method_elementary_theme_support(): void {
 		$this->assertTrue( method_exists( 'rtCamp\Theme\Elementary\Main', 'elementary_theme_support' ) );
 	}
 }

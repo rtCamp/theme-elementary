@@ -4,7 +4,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
 
 if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) :
