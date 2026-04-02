@@ -35,8 +35,8 @@ final class Autoloader {
 	 */
 	protected static function get_autoloader_error_message() {
 		return sprintf(
-			/* translators: %s: The plugin name. */
-			__( '%s: The Composer autoloader was not found. If you installed the plugin from the GitHub source code, make sure to run `composer install`.', 'elementary-theme' ),
+			/* translators: %s: The theme name. */
+			__( '%s: The Composer autoloader was not found. If you installed the theme from the GitHub source code, make sure to run `composer install`.', 'elementary-theme' ),
 			esc_html( 'Elementary Theme' )
 		);
 	}
