@@ -47,7 +47,7 @@ trait AssetLoaderTrait {
 	 * Register a CSS stylesheet.
 	 *
 	 * @param string           $handle Name of the stylesheet. Should be unique.
-	 * @param string|bool      $file    style file, path of the script relative to the assets/build/ directory.
+	 * @param string|bool      $file   style file, path of the script relative to the assets/build/ directory.
 	 * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
 	 * @param string|bool|null $ver    Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param string           $media  Optional. The media for which this stylesheet has been defined.
