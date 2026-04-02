@@ -11,6 +11,8 @@ namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
  * Trait AssetLoaderTrait
+ *
+ * @since 1.0.0
  */
 trait AssetLoaderTrait {
 
@@ -23,7 +25,10 @@ trait AssetLoaderTrait {
 	 * @param string|bool|null $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 *                                    Default 'false'.
+	 *
 	 * @return bool Whether the script has been registered. True on success, false on failure.
+	 *
+	 * @since 1.0.0
 	 */
 	private function register_script( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, bool $in_footer = true ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
@@ -50,6 +55,8 @@ trait AssetLoaderTrait {
 	 *                                 '(orientation: portrait)' and '(max-width: 640px)'.
 	 *
 	 * @return bool Whether the style has been registered. True on success, false on failure.
+	 *
+	 * @since 1.0.0
 	 */
 	private function register_style( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, string $media = 'all' ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
@@ -72,6 +79,8 @@ trait AssetLoaderTrait {
 	 * @param string|bool|null $ver  Asset version string.
 	 *
 	 * @return array Asset meta information including dependencies and version.
+	 *
+	 * @since 1.0.0
 	 */
 	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
 		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file )['extension'] ) );
@@ -94,6 +103,8 @@ trait AssetLoaderTrait {
 	 * @param string|bool|null $ver  File version.
 	 *
 	 * @return string|bool|null File version based on file modification time or provided version.
+	 *
+	 * @since 1.0.0
 	 */
 	private function get_file_version( $file, $ver = false ): string|bool|null {
 		if ( ! empty( $ver ) ) {

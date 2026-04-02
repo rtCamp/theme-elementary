@@ -12,6 +12,8 @@ use rtCamp\Theme\Elementary\Main;
 
 /**
  * Class MainTest
+ *
+ * @since 1.0.0
  */
 class MainTest extends TestCase {
 

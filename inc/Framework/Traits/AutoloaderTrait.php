@@ -13,6 +13,8 @@ namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
  * Trait AutoloaderTrait
+ *
+ * @since 1.0.0
  */
 trait AutoloaderTrait {
 
@@ -29,6 +31,8 @@ trait AutoloaderTrait {
 	 * @param string $autoloader_file The path to the autoloader file.
 	 *
 	 * @return bool Whether the autoloader was successfully loaded.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function require_autoloader( $autoloader_file ): bool {
 		// Use a local static variable to track if the autoloader has already been loaded.
@@ -51,6 +55,8 @@ trait AutoloaderTrait {
 	 * Displays a notice if the autoloader is missing.
 	 *
 	 * @return void
+	 *
+	 * @since 1.0.0
 	 */
 	private static function missing_autoloader_notice(): void {
 		$hooks = [

@@ -31,6 +31,8 @@ namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
  * Trait Singleton
+ *
+ * @since 1.0.0
  */
 trait Singleton {
 
@@ -56,6 +58,8 @@ trait Singleton {
 	 * as final intentionally, it is not meant to be overridden.
 	 *
 	 * @return object Singleton instance of the class.
+	 *
+	 * @since 1.0.0
 	 */
 	final public static function get_instance(): object {
 		/**

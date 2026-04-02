@@ -32,6 +32,8 @@ class Assets {
 
 	/**
 	 * Setup hooks.
+	 * 
+	 * @return void
 	 *
 	 * @since 1.0.0
 	 */
@@ -43,6 +45,8 @@ class Assets {
 
 	/**
 	 * Register assets.
+	 *
+	 * @return void
 	 *
 	 * @since 1.0.0
 	 *
@@ -63,6 +67,8 @@ class Assets {
 	 * @return string Updated markup.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @action render_block
 	 */
 	public function enqueue_block_specific_assets( string $markup, array $block ): string {
 		if ( is_array( $block ) && ! empty( $block['blockName'] ) && 'core/navigation' === $block['blockName'] ) {
@@ -77,6 +83,10 @@ class Assets {
 	 * Enqueue JS and CSS in frontend.
 	 *
 	 * @return void
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action wp_enqueue_scripts
 	 */
 	public function enqueue_assets(): void {
 		wp_enqueue_style( 'elementary-theme-styles' );
