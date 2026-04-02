@@ -5,15 +5,15 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Block_Extensions;
+namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use Elementary_Theme\Traits\Singleton;
+use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 
 /**
- * Class Media_Text_Interactive
+ * Class MediaTextInteractive
  */
-class Media_Text_Interactive {
+class MediaTextInteractive {
 
 	use Singleton;
 
@@ -30,11 +30,9 @@ class Media_Text_Interactive {
 	 * @return void
 	 */
 	public function setup_hooks() {
-
 		add_filter( 'render_block_core/button', array( $this, 'render_block_core_button' ), 10, 2 );
 		add_filter( 'render_block_core/columns', array( $this, 'render_block_core_columns' ), 10, 2 );
 		add_filter( 'render_block_core/video', array( $this, 'render_block_core_video' ), 10, 2 );
-
 	}
 
 	/**

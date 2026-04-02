@@ -25,8 +25,11 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Traits;
+namespace rtCamp\Theme\Elementary\Framework\Traits;
 
+/**
+ * Trait Singleton
+ */
 trait Singleton {
 
 	/**
@@ -53,7 +56,6 @@ trait Singleton {
 	 * @return object Singleton instance of the class.
 	 */
 	final public static function get_instance() {
-
 		/**
 		 * Collection of instance.
 		 *

@@ -23,7 +23,11 @@ if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
-require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
+require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';
+
+if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
+	return;
+}
 
 /**
  * Theme bootstrap instance.
@@ -33,7 +37,8 @@ require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
  * @return object Theme bootstrap instance.
  */
 function elementary_theme_instance() {
-	return Elementary_Theme\Elementary_Theme::get_instance();
+
+	return rtCamp\Theme\Elementary\Main::get_instance();
 }
 
 // Instantiate theme.

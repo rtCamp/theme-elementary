@@ -5,18 +5,18 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme;
+namespace rtCamp\Theme\Elementary;
 
-use Elementary_Theme\Block_Extensions\Media_Text_Interactive;
-use Elementary_Theme\Traits\Singleton;
-use Elementary_Theme\Assets;
+use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
+use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
+use rtCamp\Theme\Elementary\Core\Assets;
 
 /**
- * Class Elementary_Theme
+ * Class Main
  *
  * @since 1.0.0
  */
-class Elementary_Theme {
+class Main {
 
 	use Singleton;
 
@@ -57,6 +57,6 @@ class Elementary_Theme {
 	 * @since 1.0.0
 	 */
 	public function block_extensions() {
-		Media_Text_Interactive::get_instance();
+		MediaTextInteractive::get_instance();
 	}
 }

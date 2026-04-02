@@ -8,7 +8,6 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for WordPress themes.</description>
 
-
 	<!--
 	#############################################################################
 	COMMAND LINE ARGUMENTS
@@ -31,6 +30,14 @@
 	<!-- Check up to 20 files simultaneously. -->
 	<arg name="parallel" value="20" />
 
+	<rule ref="Squiz.Classes.ClassFileName">
+		<exclude-pattern>tests/**</exclude-pattern>
+	</rule>
+
+	<rule ref="PSR1.Classes.ClassDeclaration">
+		<exclude-pattern>tests/**</exclude-pattern>
+	</rule>
+
 	<!--
 	#############################################################################
 	USE THE WordPress RULESET
@@ -41,7 +48,6 @@
 		<!-- Excluding sniff to allow shorthand array syntax usage. -->
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
-
 
 	<!--
 	#############################################################################
@@ -63,6 +69,8 @@
 		<properties>
 			<property name="is_theme" value="true"/>
 		</properties>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 	</rule>
 
 	<!-- Set the minimum supported WP version. This is used by several sniffs.
@@ -85,18 +93,13 @@
 		Multiple valid prefixes can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="elementary_theme, ELEMENTARY_THEME" />
+			<property name="prefixes" type="array">
+				<element value="elementary_theme"/>
+				<element value="ELEMENTARY_THEME"/>
+				<element value="rtCamp\Theme\Elementary"/>
+			</property>
 		</properties>
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
-	</rule>
-
-	<!-- Ignore following files from tests. -->
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>tests/php/TestCase.php</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress-Docs">
@@ -116,7 +119,6 @@
 	USE THE PHPCompatibility RULESET
 	#############################################################################
 	-->
-
 
 	<config name="testVersion" value="5.6-"/>
 	<rule ref="PHPCompatibilityWP">

@@ -5,7 +5,7 @@
  * @package Elementary-Theme
  */
 
-namespace Elementary_Theme\Tests;
+namespace rtCamp\Theme\Elementary\Tests;
 
 use WP_UnitTestCase;
 
