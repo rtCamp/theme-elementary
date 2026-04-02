@@ -34,7 +34,7 @@ trait AutoloaderTrait {
 	 *
 	 * @since 1.0.0
 	 */
-	private static function require_autoloader( $autoloader_file ): bool {
+	private static function require_autoloader( string $autoloader_file ): bool {
 		// Use a local static variable to track if the autoloader has already been loaded.
 		static $loaded = [];
 		if ( isset( $loaded[ $autoloader_file ] ) ) {

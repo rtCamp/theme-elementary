@@ -106,7 +106,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @since 1.0.0
 	 */
-	private function get_file_version( $file, $ver = false ): string|bool|null {
+	private function get_file_version( string $file, string|bool|null $ver = false ): string|bool|null {
 		if ( ! empty( $ver ) ) {
 			return $ver;
 		}
