@@ -38,9 +38,7 @@ if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\El
  */
 function elementary_theme_instance() {
 
-	if ( class_exists( 'rtCamp\Theme\Elementary\Main' ) ) {
-		return rtCamp\Theme\Elementary\Main::get_instance();
-	}
+	return rtCamp\Theme\Elementary\Main::get_instance();
 }
 
 // Instantiate theme.
