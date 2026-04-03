@@ -94,28 +94,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6.2.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Get node version
-        id: node
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        id: node_modules
-        uses: actions/cache@v5.0.3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
-
-      - name: Install Node dependencies
-        if: steps.node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-        env:
-          CI: true
+      - name: Setup Node with cache
+        uses: ./.github/actions/setup-node-with-cache
 
       - name: Detect coding standard violations (stylelint)
         run: npm run lint:css
@@ -129,28 +109,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6.2.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Get node version
-        id: node
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        id: node_modules
-        uses: actions/cache@v5.0.3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
-
-      - name: Install Node dependencies
-        if: steps.node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-        env:
-          CI: true
+      - name: Setup Node with cache
+        uses: ./.github/actions/setup-node-with-cache
 
       - name: Detect coding standard violations (eslint)
         run: npm run lint:js
@@ -164,28 +124,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6.2.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Get node version
-        id: node
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        id: node_modules
-        uses: actions/cache@v5.0.3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
-
-      - name: Install Node dependencies
-        if: steps.node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-        env:
-          CI: true
+      - name: Setup Node with cache
+        uses: ./.github/actions/setup-node-with-cache
 
       - name: Run unit tests
         run: npm run test:js
@@ -246,31 +186,9 @@ jobs:
         if: needs.pre-run.outputs.changed-php-count > 0
         uses: actions/checkout@v6
 
-      - name: Setup Node
+      - name: Setup Node with cache
         if: needs.pre-run.outputs.changed-php-count > 0
-        uses: actions/setup-node@v6.2.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Get node version
-        if: needs.pre-run.outputs.changed-php-count > 0
-        id: node
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        if: needs.pre-run.outputs.changed-php-count > 0
-        id: node_modules
-        uses: actions/cache@v5.0.3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
-
-      - name: Install Node dependencies
-        if: needs.pre-run.outputs.changed-php-count > 0 && steps.node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-        env:
-          CI: true
+        uses: ./.github/actions/setup-node-with-cache
 
       - name: Start WP environment
         if: needs.pre-run.outputs.changed-php-count > 0
@@ -289,28 +207,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6.2.0
-        with:
-          node-version-file: '.nvmrc'
-          cache: npm
-
-      - name: Get node version
-        id: node
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        id: node_modules
-        uses: actions/cache@v5.0.3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}-${{ steps.node.outputs.version }}
-
-      - name: Install Node dependencies
-        if: steps.node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-        env:
-          CI: true
+      - name: Setup Node with cache
+        uses: ./.github/actions/setup-node-with-cache
 
       - name: Build production
         id: build
