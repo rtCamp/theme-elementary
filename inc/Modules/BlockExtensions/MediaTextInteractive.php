@@ -28,8 +28,6 @@ class MediaTextInteractive {
 
 	/**
 	 * Setup hooks.
-	 *
-	 * @return void
 	 */
 	public function setup_hooks(): void {
 		add_filter( 'render_block_core/button', array( $this, 'render_block_core_button' ), 10, 2 );

@@ -20,8 +20,6 @@ class MainTest extends TestCase {
 	/**
 	 * Test if class Main exists.
 	 *
-	 * @return void
-	 * 
 	 * @since 1.0.0
 	 */
 	public function test_class_exists(): void {
@@ -31,8 +29,6 @@ class MainTest extends TestCase {
 	/**
 	 * Test if class Main is a singleton.
 	 *
-	 * @return void
-	 * 
 	 * @since 1.0.0
 	 */
 	public function test_class_is_singleton(): void {
@@ -42,8 +38,6 @@ class MainTest extends TestCase {
 	/**
 	 * Test if class Main has a method 'setup_hooks'.
 	 *
-	 * @return void
-	 * 
 	 * @since 1.0.0
 	 */
 	public function test_class_has_method_setup_hooks(): void {
@@ -53,8 +47,6 @@ class MainTest extends TestCase {
 	/**
 	 * Test if class Main has a method 'elementary_theme_support'.
 	 *
-	 * @return void
-	 * 
 	 * @since 1.0.0
 	 */
 	public function test_class_has_method_elementary_theme_support(): void {

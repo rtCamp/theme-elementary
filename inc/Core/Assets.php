@@ -32,8 +32,6 @@ class Assets {
 
 	/**
 	 * Setup hooks.
-	 * 
-	 * @return void
 	 *
 	 * @since 1.0.0
 	 */
@@ -45,8 +43,6 @@ class Assets {
 
 	/**
 	 * Register assets.
-	 *
-	 * @return void
 	 *
 	 * @since 1.0.0
 	 *
@@ -81,8 +77,6 @@ class Assets {
 
 	/**
 	 * Enqueue JS and CSS in frontend.
-	 *
-	 * @return void
 	 *
 	 * @since 1.0.0
 	 *

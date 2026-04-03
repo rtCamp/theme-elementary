@@ -56,8 +56,6 @@ trait AutoloaderTrait {
 	/**
 	 * Displays a notice if the autoloader is missing.
 	 *
-	 * @return void
-	 *
 	 * @since 1.0.0
 	 */
 	private static function missing_autoloader_notice(): void {
