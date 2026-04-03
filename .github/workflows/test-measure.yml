@@ -22,11 +22,9 @@ jobs:
     name: 'Pre run'
     runs-on: ubuntu-latest
     outputs:
-      changed-file-count: ${{ steps.determine-file-counts.outputs.count }}
       changed-css-count: ${{ steps.determine-file-counts.outputs.css-count }}
       changed-js-count: ${{ steps.determine-file-counts.outputs.js-count }}
       changed-php-count: ${{ steps.determine-file-counts.outputs.php-count }}
-      changed-gha-workflow-count: ${{ steps.determine-file-counts.outputs.gha-workflow-count }}
 
     steps:
       - name: Checkout including last 2 commits
@@ -72,11 +70,9 @@ jobs:
           echo "Changed ${{ github.event.repository.name }} PHP file count: $PHP_FILE_COUNT"
           echo "Changed GHA workflow count: $GHA_WORKFLOW_COUNT"
 
-          echo "count=$MODIFIED_FILES_DATA" >> $GITHUB_OUTPUT
           echo "css-count=$CSS_FILE_COUNT" >> $GITHUB_OUTPUT
           echo "js-count=$JS_FILE_COUNT" >> $GITHUB_OUTPUT
           echo "php-count=$PHP_FILE_COUNT" >> $GITHUB_OUTPUT
-          echo "gha-workflow-count=$GHA_WORKFLOW_COUNT" >> $GITHUB_OUTPUT
         env:
           # Ignore Paths:
           # - .github/
@@ -88,11 +84,10 @@ jobs:
       - name: Summarize skipped jobs
         run: |
           SKIPPED=()
-          GHA="${{ steps.determine-file-counts.outputs.gha-workflow-count }}"
 
-          [[ "${{ steps.determine-file-counts.outputs.css-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-css")
-          [[ "${{ steps.determine-file-counts.outputs.js-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-js" "unit-tests-js" "build-prod")
-          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-php" "unit-test-php")
+          [[ "${{ steps.determine-file-counts.outputs.css-count }}" -le 0 ]] && SKIPPED+=("lint-css")
+          [[ "${{ steps.determine-file-counts.outputs.js-count }}" -le 0 ]] && SKIPPED+=("lint-js" "unit-tests-js" "build-prod")
+          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 ]] && SKIPPED+=("lint-php" "unit-test-php")
 
           if [[ ${#SKIPPED[@]} -gt 0 ]]; then
             echo "The following jobs will be skipped as no relevant files were changed:"
@@ -105,7 +100,7 @@ jobs:
 
   lint-css:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-css-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
+    if: needs.pre-run.outputs.changed-css-count > 0
     name: 'Lint CSS'
     runs-on: ubuntu-latest
     steps:
@@ -120,7 +115,7 @@ jobs:
 
   lint-js:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
+    if: needs.pre-run.outputs.changed-js-count > 0
     name: 'Lint JS'
     runs-on: ubuntu-latest
     steps:
@@ -135,7 +130,7 @@ jobs:
 
   unit-tests-js:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
+    if: needs.pre-run.outputs.changed-js-count > 0
     name: 'Run JS unit tests'
     runs-on: ubuntu-latest
     steps:
@@ -152,7 +147,7 @@ jobs:
 
   lint-php:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
+    if: needs.pre-run.outputs.changed-php-count > 0
     name: 'Lint PHP'
     runs-on: ubuntu-latest
     steps:
@@ -189,7 +184,7 @@ jobs:
 
   unit-test-php:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
+    if: needs.pre-run.outputs.changed-php-count > 0
     name: "PHP Unit test"
     runs-on: ubuntu-latest
     steps:
@@ -207,7 +202,7 @@ jobs:
 
   build-prod:
     needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0 || needs.pre-run.outputs.changed-css-count > 0
+    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-css-count > 0
     name: 'Build production'
     runs-on: ubuntu-latest
     steps:
