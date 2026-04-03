@@ -62,13 +62,13 @@ jobs:
           CSS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.s?css|package\.json|package-lock\.json" "$MODIFIED_FILES")
           JS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.(js|snap)|package\.json|package-lock\.json" "$MODIFIED_FILES")
           PHP_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.php|composer\.(json|lock)|phpstan\.neon\.dist" "$MODIFIED_FILES")
-          GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/workflows\/.+\.yml)" "$MODIFIED_FILES")
+          GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/(workflows|actions)\/.+\.yml)" "$MODIFIED_FILES")
 
           echo "Changed file count: $MODIFIED_FILES_DATA"
           echo "Changed ${{ github.event.repository.name }} CSS file count: $CSS_FILE_COUNT"
           echo "Changed ${{ github.event.repository.name }} JS file count: $JS_FILE_COUNT"
           echo "Changed ${{ github.event.repository.name }} PHP file count: $PHP_FILE_COUNT"
-          echo "Changed GHA workflow count: $GHA_WORKFLOW_COUNT"
+          echo "Changed GHA workflow/actions count: $GHA_WORKFLOW_COUNT"
 
           echo "css-count=$CSS_FILE_COUNT" >> $GITHUB_OUTPUT
           echo "js-count=$JS_FILE_COUNT" >> $GITHUB_OUTPUT
@@ -80,7 +80,7 @@ jobs:
           # - !.github/actions
           # - .wordpress-org/
           # - docs/
-          IGNORE_PATH_REGEX: \.github\/(?!workflows|actions)|\.wordpress-org\/|docs\/
+          IGNORE_PATH_REGEX: \.github\/(?!workflows)(?!actions)|\.wordpress-org\/|docs\/
 
       - name: Summarize skipped jobs
         run: |
