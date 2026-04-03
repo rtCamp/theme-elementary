@@ -85,6 +85,24 @@ jobs:
           # - docs/
           IGNORE_PATH_REGEX: \.github\/(?!workflows)|\.wordpress-org\/|docs\/
 
+      - name: Summarize skipped jobs
+        run: |
+          SKIPPED=()
+          GHA="${{ steps.determine-file-counts.outputs.gha-workflow-count }}"
+
+          [[ "${{ steps.determine-file-counts.outputs.css-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-css")
+          [[ "${{ steps.determine-file-counts.outputs.js-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-js" "unit-tests-js" "build-prod")
+          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 && "$GHA" -le 0 ]] && SKIPPED+=("lint-php" "unit-test-php")
+
+          if [[ ${#SKIPPED[@]} -gt 0 ]]; then
+            echo "The following jobs will be skipped as no relevant files were changed:"
+            for JOB in "${SKIPPED[@]}"; do
+              echo "  - $JOB"
+            done
+          else
+            echo "All jobs will run."
+          fi
+
   lint-css:
     needs: pre-run
     if: needs.pre-run.outputs.changed-css-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
@@ -170,32 +188,21 @@ jobs:
         run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 | cs2pr --graceful-warnings
 
   unit-test-php:
+    needs: pre-run
+    if: needs.pre-run.outputs.changed-php-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
     name: "PHP Unit test"
     runs-on: ubuntu-latest
-    needs: pre-run
     steps:
-      # Note: The repeated `needs.pre-run.outputs.changed-php-count > 0` checks would be avoided if a step could short-
-      # circuit per <https://github.com/actions/runner/issues/662>. The reason why the if statement can't be put on the
-      # job as a whole is because the name is variable based on the matrix, and if the condition is not met then the
-      # name won't be interpolated in order to match the required jobs set up in branch protection.
-      - name: Notice
-        if: needs.pre-run.outputs.changed-php-count <= 0
-        run: echo "No PHP files were changed in ${{ github.event.repository.name }} so no PHP unit tests will run"
-
       - name: Checkout
-        if: needs.pre-run.outputs.changed-php-count > 0
         uses: actions/checkout@v6
 
       - name: Setup Node with cache
-        if: needs.pre-run.outputs.changed-php-count > 0
         uses: ./.github/actions/setup-node-with-cache
 
       - name: Start WP environment
-        if: needs.pre-run.outputs.changed-php-count > 0
         run: npm run wp-env start
 
       - name: Run tests
-        if: ${{ needs.pre-run.outputs.changed-php-count > 0 }}
         run: npm run test:php
 
   build-prod:
