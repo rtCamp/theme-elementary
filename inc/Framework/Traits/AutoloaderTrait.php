@@ -22,8 +22,10 @@ trait AutoloaderTrait {
 	 * The Error message to display when the autoloader errors.
 	 *
 	 * We stick it in a function, so it's available to `missing_autoloader_notice()` without prop drilling into the hook.
+	 *
+	 * @return string The error message to display.
 	 */
-	abstract protected static function get_autoloader_error_message();
+	abstract protected static function get_autoloader_error_message(): string;
 
 	/**
 	 * Attempts to load the autoloader file, if it exists.
