@@ -77,9 +77,10 @@ jobs:
           # Ignore Paths:
           # - .github/
           # - !.github/workflows
+          # - !.github/actions
           # - .wordpress-org/
           # - docs/
-          IGNORE_PATH_REGEX: \.github\/(?!workflows)|\.wordpress-org\/|docs\/
+          IGNORE_PATH_REGEX: \.github\/(?!workflows|actions)|\.wordpress-org\/|docs\/
 
       - name: Summarize skipped jobs
         run: |
