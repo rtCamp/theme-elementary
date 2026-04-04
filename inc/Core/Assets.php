@@ -59,7 +59,7 @@ class Assets {
 	 *
 	 * @param string $markup Markup of the block.
 	 * @param array  $block  Array with block information.
-	 * 
+	 *
 	 * @return string Updated markup.
 	 *
 	 * @since 1.0.0
