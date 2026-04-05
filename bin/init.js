@@ -3,7 +3,7 @@
 /* eslint no-console: 0 */
 
 /**
- * External dependencies
+ * External dependenciess
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
