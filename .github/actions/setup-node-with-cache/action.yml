@@ -8,7 +8,6 @@ runs:
       uses: actions/setup-node@v6.2.0
       with:
         node-version-file: '.nvmrc'
-        cache: npm
 
     - name: Get node version
       id: node
