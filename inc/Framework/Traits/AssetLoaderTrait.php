@@ -20,7 +20,7 @@ trait AssetLoaderTrait {
 	 * Register a new script.
 	 *
 	 * @param string           $handle    Name of the script. Should be unique.
-	 * @param string|bool      $file      Script file, path of the script relative to the assets/build/ directory.
+	 * @param string           $file      Script file, path of the script relative to the assets/build/ directory.
 	 * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
 	 * @param string|bool|null $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
@@ -30,7 +30,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @since 1.0.0
 	 */
-	private function register_script( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, bool $in_footer = true ): bool {
+	private function register_script( string $handle, string $file, array $deps = [], string|bool|null $ver = false, bool $in_footer = true ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -47,7 +47,7 @@ trait AssetLoaderTrait {
 	 * Register a CSS stylesheet.
 	 *
 	 * @param string           $handle Name of the stylesheet. Should be unique.
-	 * @param string|bool      $file   Style file, path of the script relative to the assets/build/ directory.
+	 * @param string           $file   Style file, path of the script relative to the assets/build/ directory.
 	 * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
 	 * @param string|bool|null $ver    Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param string           $media  Optional. The media for which this stylesheet has been defined.
@@ -58,7 +58,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @since 1.0.0
 	 */
-	private function register_style( string $handle, string|bool $file, array $deps = [], string|bool|null $ver = false, string $media = 'all' ): bool {
+	private function register_style( string $handle, string $file, array $deps = [], string|bool|null $ver = false, string $media = 'all' ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
