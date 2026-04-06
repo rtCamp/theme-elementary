@@ -2,8 +2,10 @@
 /**
  * Media Text Interactive.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
@@ -26,13 +28,11 @@ class MediaTextInteractive {
 
 	/**
 	 * Setup hooks.
-	 *
-	 * @return void
 	 */
-	public function setup_hooks() {
-		add_filter( 'render_block_core/button', array( $this, 'render_block_core_button' ), 10, 2 );
-		add_filter( 'render_block_core/columns', array( $this, 'render_block_core_columns' ), 10, 2 );
-		add_filter( 'render_block_core/video', array( $this, 'render_block_core_video' ), 10, 2 );
+	public function setup_hooks(): void {
+		add_filter( 'render_block_core/button', [ $this, 'render_block_core_button' ], 10, 2 );
+		add_filter( 'render_block_core/columns', [ $this, 'render_block_core_columns' ], 10, 2 );
+		add_filter( 'render_block_core/video', [ $this, 'render_block_core_video' ], 10, 2 );
 	}
 
 	/**
@@ -40,9 +40,10 @@ class MediaTextInteractive {
 	 *
 	 * @param string $block_content Block content.
 	 * @param array  $block Block.
-	 * @return string
+	 *
+	 * @return string Updated block content.
 	 */
-	public function render_block_core_button( $block_content, $block ) {
+	public function render_block_core_button( string $block_content, array $block ): string {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}
@@ -60,9 +61,10 @@ class MediaTextInteractive {
 	 *
 	 * @param string $block_content Block content.
 	 * @param array  $block Block.
-	 * @return string
+	 *
+	 * @return string Updated block content.
 	 */
-	public function render_block_core_columns( $block_content, $block ) {
+	public function render_block_core_columns( string $block_content, array $block ): string {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}
@@ -93,9 +95,10 @@ class MediaTextInteractive {
 	 *
 	 * @param string $block_content Block content.
 	 * @param array  $block Block.
-	 * @return string
+	 *
+	 * @return string Updated block content.
 	 */
-	public function render_block_core_video( $block_content, $block ) {
+	public function render_block_core_video( string $block_content, array $block ): string {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}

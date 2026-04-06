@@ -4,13 +4,17 @@
  *
  * Wraps the Composer autoloader to provide graceful failure if it is missing.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
  * Trait AutoloaderTrait
+ *
+ * @since 1.0.0
  */
 trait AutoloaderTrait {
 
@@ -18,8 +22,10 @@ trait AutoloaderTrait {
 	 * The Error message to display when the autoloader errors.
 	 *
 	 * We stick it in a function, so it's available to `missing_autoloader_notice()` without prop drilling into the hook.
+	 *
+	 * @return string The error message to display.
 	 */
-	abstract protected static function get_autoloader_error_message();
+	abstract protected static function get_autoloader_error_message(): string;
 
 	/**
 	 * Attempts to load the autoloader file, if it exists.
@@ -27,8 +33,10 @@ trait AutoloaderTrait {
 	 * @param string $autoloader_file The path to the autoloader file.
 	 *
 	 * @return bool Whether the autoloader was successfully loaded.
+	 *
+	 * @since 1.0.0
 	 */
-	private static function require_autoloader( $autoloader_file ) {
+	private static function require_autoloader( string $autoloader_file ): bool {
 		// Use a local static variable to track if the autoloader has already been loaded.
 		static $loaded = [];
 		if ( isset( $loaded[ $autoloader_file ] ) ) {
@@ -47,8 +55,10 @@ trait AutoloaderTrait {
 
 	/**
 	 * Displays a notice if the autoloader is missing.
+	 *
+	 * @since 1.0.0
 	 */
-	private static function missing_autoloader_notice() {
+	private static function missing_autoloader_notice(): void {
 		$hooks = [
 			'admin_notices',
 			'network_admin_notices',

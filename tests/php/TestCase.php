@@ -2,8 +2,10 @@
 /**
  * Provide a base class for all unit tests by extending WP_UnitTestCase.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Tests;
 

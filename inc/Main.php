@@ -2,8 +2,10 @@
 /**
  * Theme bootstrap file.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary;
 
@@ -37,7 +39,7 @@ class Main {
 	 *
 	 * @since 1.0.0
 	 */
-	public function setup_hooks() {
+	public function setup_hooks(): void {
 		add_action( 'after_setup_theme', [ $this, 'elementary_theme_support' ] );
 	}
 
@@ -46,7 +48,7 @@ class Main {
 	 *
 	 * @since 1.0.0
 	 */
-	public function elementary_theme_support() {
+	public function elementary_theme_support(): void {
 		// Add support for core block styles.
 		add_theme_support( 'wp-block-styles' );
 	}
@@ -56,7 +58,7 @@ class Main {
 	 *
 	 * @since 1.0.0
 	 */
-	public function block_extensions() {
+	public function block_extensions(): void {
 		MediaTextInteractive::get_instance();
 	}
 }

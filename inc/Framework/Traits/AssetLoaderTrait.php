@@ -2,13 +2,17 @@
 /**
  * Trait for WordPress asset loading.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Framework\Traits;
 
 /**
  * Trait AssetLoaderTrait
+ *
+ * @since 1.0.0
  */
 trait AssetLoaderTrait {
 
@@ -16,14 +20,17 @@ trait AssetLoaderTrait {
 	 * Register a new script.
 	 *
 	 * @param string           $handle    Name of the script. Should be unique.
-	 * @param string|bool      $file       script file, path of the script relative to the assets/build/ directory.
+	 * @param string           $file      Script file, path of the script relative to the assets/build/ directory.
 	 * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
 	 * @param string|bool|null $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 *                                    Default 'false'.
+	 *
 	 * @return bool Whether the script has been registered. True on success, false on failure.
+	 *
+	 * @since 1.0.0
 	 */
-	private function register_script( $handle, $file, $deps = [], $ver = false, $in_footer = true ) {
+	private function register_script( string $handle, string $file, array $deps = [], string|bool|null $ver = false, bool $in_footer = true ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -40,7 +47,7 @@ trait AssetLoaderTrait {
 	 * Register a CSS stylesheet.
 	 *
 	 * @param string           $handle Name of the stylesheet. Should be unique.
-	 * @param string|bool      $file    style file, path of the script relative to the assets/build/ directory.
+	 * @param string           $file   Style file, path of the script relative to the assets/build/ directory.
 	 * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
 	 * @param string|bool|null $ver    Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param string           $media  Optional. The media for which this stylesheet has been defined.
@@ -48,8 +55,10 @@ trait AssetLoaderTrait {
 	 *                                 '(orientation: portrait)' and '(max-width: 640px)'.
 	 *
 	 * @return bool Whether the style has been registered. True on success, false on failure.
+	 *
+	 * @since 1.0.0
 	 */
-	private function register_style( $handle, $file, $deps = [], $ver = false, $media = 'all' ) {
+	private function register_style( string $handle, string $file, array $deps = [], string|bool|null $ver = false, string $media = 'all' ): bool {
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
 		if ( ! \file_exists( $file_path ) ) {
@@ -65,13 +74,15 @@ trait AssetLoaderTrait {
 	/**
 	 * Get asset dependencies and version info from {handle}.asset.php if exists.
 	 *
-	 * @param string $file File name.
-	 * @param array  $deps Script dependencies to merge with.
-	 * @param string $ver  Asset version string.
+	 * @param string           $file File name.
+	 * @param array            $deps Script dependencies to merge with.
+	 * @param string|bool|null $ver  Asset version string.
 	 *
-	 * @return array
+	 * @return array Asset meta information including dependencies and version.
+	 *
+	 * @since 1.0.0
 	 */
-	private function get_asset_meta( $file, $deps = [], $ver = false ) {
+	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
 		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file )['extension'] ) );
 		$asset_meta      = is_readable( $asset_meta_file )
 			? require $asset_meta_file
@@ -88,12 +99,14 @@ trait AssetLoaderTrait {
 	/**
 	 * Get file version.
 	 *
-	 * @param string             $file File path.
-	 * @param int|string|boolean $ver  File version.
+	 * @param string           $file File path.
+	 * @param string|bool|null $ver  File version.
 	 *
-	 * @return bool|false|int
+	 * @return string|bool|null File version based on file modification time or provided version.
+	 *
+	 * @since 1.0.0
 	 */
-	private function get_file_version( $file, $ver = false ) {
+	private function get_file_version( string $file, string|bool|null $ver = false ): string|bool|null {
 		if ( ! empty( $ver ) ) {
 			return $ver;
 		}
