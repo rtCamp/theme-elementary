@@ -22,9 +22,8 @@ runs:
         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json', '**/.npmrc') }}-${{ steps.node.outputs.version }}
 
     - name: Install Node dependencies
-      if: env.SHOULD_INSTALL == 'true'
+      if: steps.node_modules.outputs.cache-hit != 'true'
       run: npm ci --ignore-scripts
       shell: bash
       env:
         CI: true
-        SHOULD_INSTALL: ${{ steps.node_modules.outputs.cache-hit != 'true' }}
