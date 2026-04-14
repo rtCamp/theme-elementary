@@ -12,6 +12,7 @@ namespace rtCamp\Theme\Elementary;
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
 use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 use rtCamp\Theme\Elementary\Core\Assets;
+use rtCamp\Theme\Elementary\Core\HMR;
 
 /**
  * Class Main
@@ -28,6 +29,10 @@ class Main {
 	protected function __construct() {
 		// Instantiate classes.
 		Assets::get_instance();
+
+		if ( defined( 'THEME_HMR' ) && THEME_HMR ) {
+			HMR::get_instance();
+		}
 
 		// Setup hooks.
 		$this->setup_hooks();
