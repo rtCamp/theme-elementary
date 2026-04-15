@@ -1,0 +1,33 @@
+# https://phpstan.org/config-reference
+includes:
+    - phpstan-baseline.neon
+parameters:
+	# Rules
+	treatPhpDocTypesAsCertain: false
+	inferPrivatePropertyTypeFromConstructor: true
+	checkExplicitMixedMissingReturn: true
+	checkFunctionNameCase: true
+	checkInternalClassCaseSensitivity: true
+	checkTooWideReturnTypesInProtectedAndPublicMethods: true
+	polluteScopeWithAlwaysIterableForeach: false
+	polluteScopeWithLoopInitialAssignments: false
+	reportAlwaysTrueInLastCondition: true
+	reportStaticMethodSignatures: true
+	reportWrongPhpDocTypeInVarTag: true
+
+	# Configuration
+	level: 8
+	phpVersion:
+		min: 80200
+		max: 80500
+	paths:
+		- functions.php
+		- inc/
+	excludePaths:
+		analyse:
+			- tests/
+			- vendor/
+		analyseAndScan:
+			- node_modules (?)
+	scanFiles:
+		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php

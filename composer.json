@@ -12,17 +12,23 @@
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"automattic/vipwpcs": "^2.3",
 		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
+		"php-stubs/wp-cli-stubs": "^2.12",
 		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
 		"phpunit/phpunit": "^9.5",
 		"wp-phpunit/wp-phpunit": "^6.0",
 		"yoast/phpunit-polyfills": "^3.0",
-		"wp-cli/i18n-command": "^2.4"
+		"wp-cli/i18n-command": "^2.4",
+		"phpstan/phpstan": "^2.1",
+		"szepeviktor/phpstan-wordpress": "^2.0",
+		"phpstan/extension-installer": "^1.4",
+		"phpstan/phpstan-phpunit": "^2.0"
 	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"config": {
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"phpstan/extension-installer": true
 		}
 	},
 	"autoload": {
@@ -41,6 +47,7 @@
 	"scripts": {
 		"phpcs": "@php ./vendor/bin/phpcs",
 		"phpcs:fix": "@php ./vendor/bin/phpcbf",
+		"phpstan": "phpstan analyse --memory-limit=1G",
 		"post-install-cmd": [
 			"npm i"
 		],

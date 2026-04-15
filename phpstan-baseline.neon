@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Constant ELEMENTARY_THEME_TEMP_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: inc/Autoloader.php

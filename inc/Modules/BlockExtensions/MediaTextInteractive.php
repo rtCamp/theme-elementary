@@ -38,8 +38,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/button.
 	 *
-	 * @param string $block_content Block content.
-	 * @param array  $block Block.
+	 * @param string       $block_content Block content.
+	 * @param array<mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */
@@ -59,8 +59,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/columns.
 	 *
-	 * @param string $block_content Block content.
-	 * @param array  $block Block.
+	 * @param string       $block_content Block content.
+	 * @param array<mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */
@@ -77,7 +77,7 @@ class MediaTextInteractive {
 			'@elementary/media-text',
 			sprintf( '%s/js/modules/media-text.js', ELEMENTARY_THEME_BUILD_URI ),
 			[
-				'@wordpress/interactivity',
+				[ 'id' => '@wordpress/interactivity' ],
 			]
 		);
 
@@ -93,8 +93,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/video.
 	 *
-	 * @param string $block_content Block content.
-	 * @param array  $block Block.
+	 * @param string       $block_content Block content.
+	 * @param array<mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */

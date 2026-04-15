@@ -65,7 +65,7 @@ trait Singleton {
 		/**
 		 * Collection of instance.
 		 *
-		 * @var array
+		 * @var array<string, static>
 		 */
 		static $instance = [];
 
