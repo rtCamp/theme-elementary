@@ -113,6 +113,6 @@ trait AssetLoaderTrait {
 
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
-		return file_exists( $file_path ) ? filemtime( $file_path ) : false;
+		return file_exists( $file_path ) ? (string) filemtime( $file_path ) : false;
 	}
 }
