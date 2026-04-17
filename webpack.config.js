@@ -46,7 +46,11 @@ const readAllFileEntries = ( dir ) => {
 
 	const dirsToScan = contextPaths.length > 0 ? contextPaths : [ resolvedDir ];
 
+	const useNamespace = contextPaths.length > 0;
+
 	for ( const scanDir of dirsToScan ) {
+		const prefix = useNamespace ? `${ path.basename( scanDir ) }/` : '';
+
 		fs.readdirSync( scanDir ).forEach( ( fileName ) => {
 			const fullPath = path.join( scanDir, fileName );
 			if (
@@ -54,7 +58,7 @@ const readAllFileEntries = ( dir ) => {
 				! fileName.startsWith( '_' ) &&
 				! fileName.startsWith( '.' )
 			) {
-				entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
+				entries[ `${ prefix }${ fileName.replace( /\.[^/.]+$/, '' ) }` ] = fullPath;
 			}
 		} );
 	}
@@ -81,25 +85,6 @@ const sharedConfig = {
 				},
 			),
 		new RemoveEmptyScriptsPlugin(),
-		new CopyWebpackPlugin( {
-			patterns: [
-				{
-					from: path.resolve( process.cwd(), 'src', 'fonts' ),
-					to: path.resolve( process.cwd(), 'assets', 'build', 'fonts' ),
-					noErrorOnMissing: true,
-				},
-				{
-					from: path.resolve( process.cwd(), 'src', 'images', 'svg' ),
-					to: path.resolve( process.cwd(), 'assets', 'build', 'images', 'svg' ),
-					noErrorOnMissing: true,
-					transform: {
-						transformer( content ) {
-							return svgoOptimize( content.toString() ).data;
-						},
-					},
-				},
-			],
-		} ),
 	],
 	optimization: {
 		...scriptConfig.optimization,
@@ -128,6 +113,28 @@ const styles = {
 const scripts = {
 	...sharedConfig,
 	entry: () => readAllFileEntries( './src/js' ),
+	plugins: [
+		...sharedConfig.plugins,
+		new CopyWebpackPlugin( {
+			patterns: [
+				{
+					from: path.resolve( process.cwd(), 'src', 'fonts' ),
+					to: path.resolve( process.cwd(), 'assets', 'build', 'fonts' ),
+					noErrorOnMissing: true,
+				},
+				{
+					from: path.resolve( process.cwd(), 'src', 'images', 'svg' ),
+					to: path.resolve( process.cwd(), 'assets', 'build', 'images', 'svg' ),
+					noErrorOnMissing: true,
+					transform: {
+						transformer( content ) {
+							return svgoOptimize( content.toString() ).data;
+						},
+					},
+				},
+			],
+		} ),
+	],
 };
 
 // Interactivity API module entry points from src/js/frontend/modules/.

@@ -6,6 +6,7 @@
 # macOS/IDE
 .DS_Store
 .idea
+.vscode
 
 # Log files
 *.log
