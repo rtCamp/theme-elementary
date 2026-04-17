@@ -11,30 +11,37 @@ A starter theme that facilitates a quick head start for developing new [block-ba
 ## Understand the Folder Structure :open_file_folder:
 ```
  .
-├── assets (Holds theme's assets)
-│   └── src
-│       └── js
-│       └── css
+├── src (Frontend source)
+│   ├── css
+│   │   ├── frontend/
+│   │   ├── admin/
+│   │   ├── editor/
+│   │   ├── shared/
+│   │   ├── globals/
+│   │   └── mixins/
+│   ├── js
+│   │   ├── frontend/
+│   │   ├── admin/
+│   │   ├── editor/
+│   │   └── shared/
+│   ├── fonts/
+│   └── images/svg/
+├── assets
+│   └── build (Compiled output)
 ├── bin (Holds scripts)
 ├── functions.php (PHP entry point)
 ├── inc
-│   ├── classes (Holds all classes)
-│   │   └── class-elementary-theme.php (Instantiates all of the classes)
-│   ├── helpers (PHP Helpers)
-│   │   └── custom-functions.php
-│   └── traits (PHP Traits)
-│       └── trait-singleton.php
-├── index.php
+│   ├── Core/ (Project-specific core classes)
+│   ├── BlockExtensions/ (Block extension classes)
+│   ├── Framework/ (Upstream framework code)
+│   └── helpers/ (Non-namespaced helpers)
 ├── parts (Block Template Parts)
 ├── patterns (Block Patterns)
-│   ├── *.html
 ├── style.css
 ├── templates (Block Templates)
-│   ├── *.html
 ├── tests (Holds JS & PHP tests)
-│   ├── bootstrap.php
-│   ├── js
-│   └── php
+│   ├── js/
+│   └── php/
 └── theme.json
 
 ```
