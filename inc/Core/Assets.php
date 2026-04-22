@@ -57,8 +57,8 @@ class Assets {
 	/**
 	 * Enqueue block specific assets.
 	 *
-	 * @param string $markup Markup of the block.
-	 * @param array<string, mixed>  $block  Array with block information.
+	 * @param string               $markup Markup of the block.
+	 * @param array<string, mixed> $block  Array with block information.
 	 *
 	 * @return string Updated markup.
 	 *
