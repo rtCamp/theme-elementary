@@ -12,7 +12,6 @@
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"automattic/vipwpcs": "^2.3",
 		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
-		"php-stubs/wp-cli-stubs": "^2.12",
 		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
 		"phpunit/phpunit": "^9.5",
 		"wp-phpunit/wp-phpunit": "^6.0",
@@ -21,7 +20,8 @@
 		"phpstan/phpstan": "^2.1",
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"phpstan/extension-installer": "^1.4",
-		"phpstan/phpstan-phpunit": "^2.0"
+		"phpstan/phpstan-phpunit": "^2.0",
+		"php-stubs/wp-cli-stubs": "^2.12"
 	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
