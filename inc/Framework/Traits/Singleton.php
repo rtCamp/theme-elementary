@@ -65,7 +65,7 @@ trait Singleton {
 		/**
 		 * Collection of instance.
 		 *
-		 * @var array<string, static>
+		 * @var array<class-string, object>
 		 */
 		static $instance = [];
 
@@ -90,6 +90,9 @@ trait Singleton {
 
 		}
 
-		return $instance[ $called_class ];
+		/** @var static $singleton */
+		$singleton = $instance[ $called_class ];
+
+		return $singleton;
 	}
 }
