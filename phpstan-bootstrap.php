@@ -1,6 +1,10 @@
 <?php
 /**
  * PHPStan Bootstrap file.
+ *
+ * This is just for the constants defined in the theme. This file is used by PHPStan to bootstrap the analysis.
+ *
+ * @package rtCamp\Theme\Elementary
  */
 
 define( 'ELEMENTARY_THEME_VERSION', '1.0.0' );
