@@ -15,6 +15,8 @@ parameters:
 	reportStaticMethodSignatures: true
 	reportWrongPhpDocTypeInVarTag: true
 
+	bootstrapFiles:
+		- phpstan-bootstrap.php
 	# Configuration
 	level: 8
 	phpVersion:
