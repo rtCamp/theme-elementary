@@ -90,7 +90,12 @@ trait Singleton {
 
 		}
 
-		/** @var static $singleton */
+		/**
+		 * This assignment is necessary to make sure that the returned instance is of the correct type,
+		 * as the $instance array is typed as array<class-string, object>.
+		 *
+		 * @var static $singleton
+		 */
 		$singleton = $instance[ $called_class ];
 
 		return $singleton;
