@@ -38,8 +38,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/button.
 	 *
-	 * @param string       $block_content Block content.
-	 * @param array<mixed> $block Block.
+	 * @param string               $block_content Block content.
+	 * @param array<string, mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */
@@ -59,8 +59,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/columns.
 	 *
-	 * @param string       $block_content Block content.
-	 * @param array<mixed> $block Block.
+	 * @param string               $block_content Block content.
+	 * @param array<string, mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */
@@ -93,8 +93,8 @@ class MediaTextInteractive {
 	/**
 	 * Render block core/video.
 	 *
-	 * @param string       $block_content Block content.
-	 * @param array<mixed> $block Block.
+	 * @param string               $block_content Block content.
+	 * @param array<string, mixed> $block Block.
 	 *
 	 * @return string Updated block content.
 	 */
