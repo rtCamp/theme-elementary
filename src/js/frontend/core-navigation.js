@@ -5,4 +5,4 @@
 /**
  * Internal dependencies
  */
-import '../css/core-navigation.scss';
+import '../../css/frontend/core-navigation.scss';

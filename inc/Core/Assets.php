@@ -49,9 +49,9 @@ class Assets {
 	 * @action wp_enqueue_scripts
 	 */
 	public function register_assets(): void {
-		$this->register_script( 'core-navigation', 'js/core-navigation.js' );
-		$this->register_style( 'core-navigation', 'css/core-navigation.css' );
-		$this->register_style( 'elementary-theme-styles', 'css/styles.css' );
+		$this->register_script( 'core-navigation', 'js/frontend/core-navigation.js' );
+		$this->register_style( 'core-navigation', 'css/frontend/core-navigation.css' );
+		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles.css' );
 	}
 
 	/**
