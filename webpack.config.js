@@ -23,10 +23,13 @@ const CONTEXT_DIRS = [ 'frontend', 'admin', 'editor' ];
 /**
  * Read all file entries by scanning context subdirectories.
  *
- * Recurses one level into each context subdirectory (frontend/, admin/,
- * editor/) inside the given directory, collecting every file whose name
- * does not start with `_` or `.`. If none of the context subdirectories
- * exist, the directory itself is scanned instead.
+ * Recursively scans each context subdirectory (frontend/, admin/, editor/)
+ * inside the given directory, collecting files whose names do not start with
+ * `_` or `.`. If none of the context subdirectories exist, the directory
+ * itself is scanned recursively instead.
+ *
+ * If two files resolve to the same entry key, the first file is kept and a
+ * warning is emitted.
  *
  * @param {string} dir Base directory to scan.
  * @return {Object} Object mapping entry names to file paths.
@@ -48,19 +51,44 @@ const readAllFileEntries = ( dir ) => {
 
 	const useNamespace = contextPaths.length > 0;
 
+	const addEntry = ( entryName, fullPath ) => {
+		if ( entries[ entryName ] ) {
+			// Keep first discovery stable, but surface collisions for debugging.
+			console.warn(
+				`Duplicate webpack entry "${ entryName }" ignored: ${ fullPath } (keeping ${ entries[ entryName ] })`,
+			);
+			return;
+		}
+
+		entries[ entryName ] = fullPath;
+	};
+
+	const scanDirectory = ( scanRoot, currentDir, entryPrefix = '' ) => {
+		fs.readdirSync( currentDir, { withFileTypes: true } ).forEach( ( entry ) => {
+			if ( entry.name.startsWith( '_' ) || entry.name.startsWith( '.' ) ) {
+				return;
+			}
+
+			const fullPath = path.join( currentDir, entry.name );
+
+			if ( entry.isDirectory() ) {
+				scanDirectory( scanRoot, fullPath, entryPrefix );
+				return;
+			}
+
+			const relativePath = path
+				.relative( scanRoot, fullPath )
+				.replace( /\.[^/.]+$/, '' )
+				.split( path.sep )
+				.join( '/' );
+
+			addEntry( `${ entryPrefix }${ relativePath }`, fullPath );
+		} );
+	};
+
 	for ( const scanDir of dirsToScan ) {
 		const prefix = useNamespace ? `${ path.basename( scanDir ) }/` : '';
-
-		fs.readdirSync( scanDir ).forEach( ( fileName ) => {
-			const fullPath = path.join( scanDir, fileName );
-			if (
-				! fs.lstatSync( fullPath ).isDirectory() &&
-				! fileName.startsWith( '_' ) &&
-				! fileName.startsWith( '.' )
-			) {
-				entries[ `${ prefix }${ fileName.replace( /\.[^/.]+$/, '' ) }` ] = fullPath;
-			}
-		} );
+		scanDirectory( scanDir, scanDir, prefix );
 	}
 
 	return entries;
