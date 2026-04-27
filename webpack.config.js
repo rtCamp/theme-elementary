@@ -154,9 +154,27 @@ const scripts = {
 					from: path.resolve( process.cwd(), 'src', 'images', 'svg' ),
 					to: path.resolve( process.cwd(), 'assets', 'build', 'images', 'svg' ),
 					noErrorOnMissing: true,
+					filter: ( resourcePath ) =>
+						path.extname( resourcePath ).toLowerCase() === '.svg',
 					transform: {
-						transformer( content ) {
-							return svgoOptimize( content.toString() ).data;
+						transformer( content, absoluteFrom ) {
+							try {
+								const result = svgoOptimize( content.toString() );
+
+								if ( typeof result?.data === 'string' && result.data.length > 0 ) {
+									return result.data;
+								}
+
+								console.warn(
+									`SVGO produced no optimized output for ${ absoluteFrom }. Copying original content instead.`,
+								);
+								return content;
+							} catch ( error ) {
+								console.warn(
+									`SVGO failed for ${ absoluteFrom }: ${ error.message }. Copying original content instead.`,
+								);
+								return content;
+							}
 						},
 					},
 				},
