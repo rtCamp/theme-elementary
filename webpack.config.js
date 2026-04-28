@@ -98,17 +98,21 @@ const scripts = {
 	},
 	plugins: [
 		...sharedConfig.plugins,
-		new BrowserSyncPlugin(
-			{
-				files: ["assets/build/**/*", "**/*.php", "**/*.html"],
-				notify: false,
-				open: false,
-				logSnippet: false,
-			},
-			{
-				injectCss: true,
-			},
-		),
+		...( process.env.NODE_ENV === 'development'
+			? [
+					new BrowserSyncPlugin(
+						{
+							files: ["assets/build/**/*", "**/*.php", "**/*.html"],
+							notify: false,
+							open: false,
+							logSnippet: false,
+						},
+						{
+							injectCss: true,
+						},
+					),
+				]
+			: [] ),
 	],
 };
 

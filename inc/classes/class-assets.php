@@ -169,7 +169,7 @@ class Assets {
 	public function enqueue_assets() {
 		wp_enqueue_style( 'elementary-theme-styles' );
 
-		if ( in_array( wp_get_environment_type(), [ 'local', 'development' ], true ) ) {
+		if ( 'local' === wp_get_environment_type() && ! is_ssl() ) {
 			wp_enqueue_script( 'browser-sync', 'http://localhost:3000/browser-sync/browser-sync-client.js', [], false, true );
 		}
 	}
