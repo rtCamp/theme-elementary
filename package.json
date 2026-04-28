@@ -34,6 +34,8 @@
 		"@wordpress/eslint-plugin": "24.2.0",
 		"@wordpress/jest-preset-default": "12.40.0",
 		"@wordpress/scripts": "31.5.0",
+		"browser-sync": "3.0.4",
+		"browser-sync-webpack-plugin": "2.4.0",
 		"browserslist": "4.28.1",
 		"cross-env": "10.1.0",
 		"css-minimizer-webpack-plugin": "7.0.4",
@@ -48,6 +50,7 @@
 		"webpack-remove-empty-scripts": "1.1.1"
 	},
 	"scripts": {
+		"dev": "cross-env NODE_ENV=development WP_EXPERIMENTAL_MODULES=true webpack --config webpack.config.js --watch",
 		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
 		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
 		"build:js": "wp-scripts build --experimental-modules",
