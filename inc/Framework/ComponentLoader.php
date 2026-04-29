@@ -47,6 +47,30 @@ class ComponentLoader {
 	}
 
 	/**
+	 * Get the rendered HTML of a component as a string.
+	 *
+	 * Uses output buffering to capture the component output instead of
+	 * sending it directly to the browser.
+	 *
+	 * @param string $name    Component name (e.g. 'Button', 'Card').
+	 * @param array  $args    Arguments to pass to the component.
+	 * @param array  $options {
+	 *     Optional. Resolution options.
+	 *
+	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
+	 * }
+	 *
+	 * @return string Rendered component HTML, or empty string if not found.
+	 */
+	public static function get( string $name, array $args = [], array $options = [] ): string {
+
+		ob_start();
+		self::render( $name, $args, $options );
+
+		return (string) ob_get_clean();
+	}
+
+	/**
 	 * Resolve the component file path.
 	 *
 	 * Checks registered paths in priority order and returns the first match.
