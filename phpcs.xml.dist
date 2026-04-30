@@ -100,6 +100,8 @@
 			</property>
 		</properties>
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
+		<!-- Component partials are always require'd inside ComponentLoader::render(), so variables are method-scoped at runtime. -->
+		<exclude-pattern>src/Components/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress-Docs">
@@ -112,6 +114,8 @@
 
 	<rule ref="WordPress.WP.GlobalVariablesOverride.Prohibited">
 		<exclude-pattern>tests/*</exclude-pattern>
+		<!-- Component partials are always require'd inside ComponentLoader::render(), so variables are method-scoped at runtime. -->
+		<exclude-pattern>src/Components/*</exclude-pattern>
 	</rule>
 
 	<!--
