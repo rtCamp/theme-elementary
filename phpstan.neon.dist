@@ -30,6 +30,6 @@ parameters:
 			- tests/
 			- vendor/
 		analyseAndScan:
-			- node_modules (?)
+			- node_modules/
 	scanFiles:
-		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
