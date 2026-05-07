@@ -1,0 +1,97 @@
+name: rtCamp Standard
+
+on:
+  workflow_call:
+    inputs:
+      build-artifact-paths:
+        description: 'Newline-separated paths whose contents must not be committed.'
+        required: false
+        type: string
+        default: |
+          assets/build/
+      run-phpstan:
+        description: 'Whether to run the PHPStan job.'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-artifact-gate:
+    name: 'Block committed build artifacts'
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Fetch base branch
+        run: git fetch --depth=1 --no-tags origin "${{ github.base_ref }}"
+
+      - name: Detect committed build artifacts
+        env:
+          GATED_PATHS: ${{ inputs.build-artifact-paths }}
+        run: |
+          set -euo pipefail
+
+          PATTERN=$(printf '%s\n' "$GATED_PATHS" \
+            | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' \
+            | grep -v '^$' \
+            | sed 's/\./\\./g' \
+            | paste -sd '|' -)
+
+          if [[ -z "$PATTERN" ]]; then
+            echo "No gated paths configured; skipping."
+            exit 0
+          fi
+
+          ANCHORED="^(${PATTERN})"
+          echo "Checking changed files against: ${ANCHORED}"
+
+          CHANGED=$(git diff --name-only --diff-filter=ACMR FETCH_HEAD HEAD \
+            | grep -E "${ANCHORED}" || true)
+
+          if [[ -n "$CHANGED" ]]; then
+            echo "::error::Build artifacts must not be committed. Offending files:"
+            printf '%s\n' "$CHANGED" | sed 's/^/  - /'
+            echo
+            echo "These paths are produced by CI on merge. Remove them from the PR"
+            echo "(e.g. 'git rm --cached <file>') and ensure they are gitignored."
+            exit 1
+          fi
+
+          echo "No committed build artifacts detected."
+
+  phpstan:
+    name: 'PHPStan'
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run-phpstan }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Configure Composer cache
+        uses: actions/cache@v5.0.3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
+
+      - name: Run PHPStan
+        run: composer phpstan
