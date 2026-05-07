@@ -83,6 +83,12 @@ class ComponentLoader {
 	 */
 	private static function get_component_file( string $name, array $options = [] ): string|false {
 
+		$component_name = self::normalize_component_name( $name );
+
+		if ( false === $component_name ) {
+			return false;
+		}
+
 		$priority = self::get_priority( $options );
 
 		/**
@@ -102,9 +108,15 @@ class ComponentLoader {
 			[
 				'theme' => ELEMENTARY_THEME_TEMP_DIR . '/src/Components',
 			],
-			$name,
+			$component_name,
 			$options
 		);
+
+		$paths = self::sanitize_component_paths( $paths );
+
+		if ( empty( $paths ) ) {
+			return false;
+		}
 
 		// Order sources based on priority.
 		$order = self::get_source_order( $priority, $paths );
@@ -115,7 +127,7 @@ class ComponentLoader {
 				continue;
 			}
 
-			$file = trailingslashit( $paths[ $source ] ) . $name . '/' . $name . '.php';
+			$file = trailingslashit( $paths[ $source ] ) . $component_name . '/' . $component_name . '.php';
 
 			if ( file_exists( $file ) && is_readable( $file ) ) {
 				return $file;
@@ -123,6 +135,66 @@ class ComponentLoader {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Sanitize component path mappings returned by filters.
+	 *
+	 * @param mixed $paths Potentially filtered paths value.
+	 *
+	 * @return array<string, string> Valid source => path mappings.
+	 */
+	private static function sanitize_component_paths( mixed $paths ): array {
+		if ( ! is_array( $paths ) ) {
+			return [];
+		}
+
+		$sanitized_paths = [];
+
+		foreach ( $paths as $source => $path ) {
+			if ( ! is_string( $source ) || ! is_string( $path ) ) {
+				continue;
+			}
+
+			$source = trim( $source );
+			$path   = trim( $path );
+
+			if ( '' === $source || '' === $path ) {
+				continue;
+			}
+
+			$sanitized_paths[ $source ] = $path;
+		}
+
+		return $sanitized_paths;
+	}
+
+	/**
+	 * Normalize and validate a component name before using it in filesystem paths.
+	 *
+	 * Normalization trims surrounding whitespace. Validation then enforces
+	 * length bounds, blocks traversal and path separators, and allows only
+	 * alphanumeric characters, underscores and dashes.
+	 *
+	 * @param string $name Component name to normalize and validate.
+	 *
+	 * @return string|false Normalized component name, or false when invalid.
+	 */
+	private static function normalize_component_name( string $name ): string|false {
+		$name = trim( $name );
+
+		if (
+			'' === $name ||
+			strlen( $name ) > 128 ||
+			str_contains( $name, '..' ) ||
+			str_contains( $name, '/' ) ||
+			str_contains( $name, '\\' ) ||
+			1 !== preg_match( '/^[A-Za-z0-9_-]+$/', $name )
+		) {
+			return false;
+		}
+
+		return $name;
 	}
 
 	/**
