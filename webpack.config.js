@@ -5,11 +5,21 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
+const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
+
+const isWatch = process.argv.includes( '--watch' );
+
+if ( isWatch ) {
+	require( 'dotenv' ).config( { path: '.env.local' } );
+}
 
 /**
  * WordPress dependencies
  */
-const [ scriptConfig, moduleConfig ] = require( '@wordpress/scripts/config/webpack.config' );
+const [
+	scriptConfig,
+	moduleConfig,
+] = require( '@wordpress/scripts/config/webpack.config' );
 
 /**
  * Read all file entries in a directory.
@@ -29,7 +39,10 @@ const readAllFileEntries = ( dir ) => {
 
 	fs.readdirSync( dir ).forEach( ( fileName ) => {
 		const fullPath = `${ dir }/${ fileName }`;
-		if ( ! fs.lstatSync( fullPath ).isDirectory() && ! fileName.startsWith( '_' ) ) {
+		if (
+			! fs.lstatSync( fullPath ).isDirectory() &&
+			! fileName.startsWith( '_' )
+		) {
 			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
 		}
 	} );
@@ -46,15 +59,12 @@ const sharedConfig = {
 		chunkFilename: '[name].js',
 	},
 	plugins: [
-		...scriptConfig.plugins
-			.map(
-				( plugin ) => {
-					if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
-						plugin.options.filename = '../css/[name].css';
-					}
-					return plugin;
-				},
-			),
+		...scriptConfig.plugins.map( ( plugin ) => {
+			if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
+				plugin.options.filename = '../css/[name].css';
+			}
+			return plugin;
+		} ),
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
@@ -62,7 +72,9 @@ const sharedConfig = {
 		splitChunks: {
 			...scriptConfig.optimization.splitChunks,
 		},
-		minimizer: scriptConfig.optimization.minimizer.concat( [ new CssMinimizerPlugin() ] ),
+		minimizer: scriptConfig.optimization.minimizer.concat( [
+			new CssMinimizerPlugin(),
+		] ),
 	},
 };
 
@@ -76,17 +88,58 @@ const styles = {
 	},
 	plugins: [
 		...sharedConfig.plugins.filter(
-			( plugin ) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
+			( plugin ) =>
+				plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
 		),
 	],
-
 };
 
 const scripts = {
 	...sharedConfig,
 	entry: {
-		'core-navigation': path.resolve( process.cwd(), 'assets', 'src', 'js', 'core-navigation.js' ),
+		'core-navigation': path.resolve(
+			process.cwd(),
+			'assets',
+			'src',
+			'js',
+			'core-navigation.js',
+		),
 	},
+	plugins: [
+		...sharedConfig.plugins,
+		...( isWatch
+			? [
+				new BrowserSyncPlugin(
+					{
+						...( process.env.WP_HOST
+							? { host: process.env.WP_HOST }
+							: {} ),
+						...( process.env.WP_SSL_KEY &&
+							process.env.WP_SSL_CERT
+							? {
+								https: {
+									key: process.env.WP_SSL_KEY,
+									cert: process.env.WP_SSL_CERT,
+								},
+							}
+							: {} ),
+						files: [
+							'assets/build/**/*',
+							'**/*.php',
+							'!vendor/**',
+							'**/*.html',
+						],
+						notify: false,
+						open: false,
+						logSnippet: false,
+					},
+					{
+						injectCss: true,
+					},
+				),
+			]
+			: [] ),
+	],
 };
 
 const moduleScripts = {
