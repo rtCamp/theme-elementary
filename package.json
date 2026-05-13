@@ -54,7 +54,7 @@
 		"init": "./bin/init.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./src",
-		"lint:css:fix": "npm run lint:css -- --fix ./src",
+		"lint:css:fix": "npm run lint:css -- --fix",
 		"lint:js": "wp-scripts lint-js ./src",
 		"lint:js:fix": "npm run lint:js -- --fix ./src",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
