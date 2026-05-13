@@ -21,7 +21,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @param string           $handle    Name of the script. Should be unique.
 	 * @param string           $file      Script file, path of the script relative to the assets/build/ directory.
-	 * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
+	 * @param array<string>    $deps      Optional. An array of registered script handles this script depends on. Default empty array.
 	 * @param string|bool|null $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 *                                    Default 'false'.
@@ -48,7 +48,7 @@ trait AssetLoaderTrait {
 	 *
 	 * @param string           $handle Name of the stylesheet. Should be unique.
 	 * @param string           $file   Style file, path of the script relative to the assets/build/ directory.
-	 * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @param array<string>    $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
 	 * @param string|bool|null $ver    Optional. String specifying script version number, if not set, filetime will be used as version number.
 	 * @param string           $media  Optional. The media for which this stylesheet has been defined.
 	 *                                 Default 'all'. Accepts media types like 'all', 'print' and 'screen', or media queries like
@@ -75,15 +75,15 @@ trait AssetLoaderTrait {
 	 * Get asset dependencies and version info from {handle}.asset.php if exists.
 	 *
 	 * @param string           $file File name.
-	 * @param array            $deps Script dependencies to merge with.
+	 * @param array<string>    $deps Script dependencies to merge with.
 	 * @param string|bool|null $ver  Asset version string.
 	 *
-	 * @return array Asset meta information including dependencies and version.
+	 * @return array<string, mixed> Asset meta information including dependencies and version.
 	 *
 	 * @since 1.0.0
 	 */
 	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
-		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file )['extension'] ) );
+		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file, PATHINFO_EXTENSION ) ) );
 		$asset_meta      = is_readable( $asset_meta_file )
 			? require $asset_meta_file
 			: [
@@ -102,11 +102,11 @@ trait AssetLoaderTrait {
 	 * @param string           $file File path.
 	 * @param string|bool|null $ver  File version.
 	 *
-	 * @return string|bool|null File version based on file modification time or provided version.
+	 * @return int|string|bool File version based on file modification time or provided version.
 	 *
 	 * @since 1.0.0
 	 */
-	private function get_file_version( string $file, string|bool|null $ver = false ): string|bool|null {
+	private function get_file_version( string $file, string|bool|null $ver = false ): int|string|bool {
 		if ( ! empty( $ver ) ) {
 			return $ver;
 		}

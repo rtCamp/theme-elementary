@@ -65,7 +65,7 @@ trait Singleton {
 		/**
 		 * Collection of instance.
 		 *
-		 * @var array
+		 * @var array<class-string, object>
 		 */
 		static $instance = [];
 
@@ -90,6 +90,14 @@ trait Singleton {
 
 		}
 
-		return $instance[ $called_class ];
+		/**
+		 * This assignment is necessary to make sure that the returned instance is of the correct type,
+		 * as the $instance array is typed as array<class-string, object>.
+		 *
+		 * @var static $singleton
+		 */
+		$singleton = $instance[ $called_class ];
+
+		return $singleton;
 	}
 }
