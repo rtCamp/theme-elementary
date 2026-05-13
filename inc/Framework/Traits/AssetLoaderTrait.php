@@ -72,9 +72,9 @@ trait AssetLoaderTrait {
 	}
 
 	/**
-	 * Get asset dependencies and version info from {handle}.asset.php if exists.
+	 * Get asset dependencies and version info from a matching .asset.php file.
 	 *
-	 * @param string           $file File name.
+	 * @param string           $file File path relative to assets/build/.
 	 * @param array<string>    $deps Script dependencies to merge with.
 	 * @param string|bool|null $ver  Asset version string.
 	 *
@@ -83,8 +83,13 @@ trait AssetLoaderTrait {
 	 * @since 1.0.0
 	 */
 	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
-		$asset_meta_file = sprintf( '%s/js/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), basename( $file, '.' . pathinfo( $file, PATHINFO_EXTENSION ) ) );
-		$asset_meta      = is_readable( $asset_meta_file )
+		$normalized_file = ltrim( str_replace( '\\', '/', $file ), '/' );
+
+		// Strip the file extension. See: https://regex101.com.
+		$asset_meta_target = preg_replace( '/\.[^\/.]+$/', '', $normalized_file );
+		$asset_meta_target = ! empty( $asset_meta_target ) ? $asset_meta_target : $normalized_file;
+		$asset_meta_file   = sprintf( '%s/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), $asset_meta_target );
+		$asset_meta        = is_readable( $asset_meta_file )
 			? require $asset_meta_file
 			: [
 				'dependencies' => [],
@@ -113,6 +118,6 @@ trait AssetLoaderTrait {
 
 		$file_path = sprintf( '%s/%s', ELEMENTARY_THEME_BUILD_DIR, $file );
 
-		return file_exists( $file_path ) ? filemtime( $file_path ) : false;
+		return file_exists( $file_path ) ? (string) filemtime( $file_path ) : false;
 	}
 }
