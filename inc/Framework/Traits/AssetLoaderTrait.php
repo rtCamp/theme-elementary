@@ -84,6 +84,8 @@ trait AssetLoaderTrait {
 	 */
 	private function get_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
 		$normalized_file   = ltrim( str_replace( '\\', '/', $file ), '/' );
+
+		// Strip the file extension. See: https://regex101.com
 		$asset_meta_target = preg_replace( '/\.[^\/.]+$/', '', $normalized_file );
 		$asset_meta_target = ! empty( $asset_meta_target ) ? $asset_meta_target : $normalized_file;
 		$asset_meta_file   = sprintf( '%s/%s.asset.php', untrailingslashit( ELEMENTARY_THEME_BUILD_DIR ), $asset_meta_target );
