@@ -89,7 +89,7 @@ class Assets {
 			$scheme = is_ssl() ? 'https' : 'http';
 			$host   = wp_parse_url( home_url(), PHP_URL_HOST );
 			$host   = $host ? $host : 'localhost';
-			wp_enqueue_script( 'browser-sync', "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js", [], false, true );
+			wp_enqueue_script( 'browser-sync', "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js", [], null, true );
 		}
 	}
 }
