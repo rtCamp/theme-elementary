@@ -1,6 +1,6 @@
 # https://phpstan.org/config-reference
 includes:
-    - phpstan-baseline.neon
+	- phpstan-baseline.neon
 parameters:
 	# Rules
 	treatPhpDocTypesAsCertain: false
