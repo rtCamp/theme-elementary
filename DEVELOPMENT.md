@@ -84,3 +84,17 @@ composer dump-autoload
 
 - Do not use `classmap` autoloading for namespaced classes.
 - Keep the `rtCamp\Theme\Elementary\` PSR-4 root aligned with `inc/`.
+
+## Tailwind CSS
+
+Tailwind CSS v4 is integrated into the webpack build pipeline via PostCSS (`postcss.config.js`).
+
+**Entry point:** `src/css/frontend/tailwind.css` — compiled to `assets/build/css/frontend/tailwind.css`.
+
+**Preflight is disabled** by importing only `tailwindcss/theme.css` and `tailwindcss/utilities.css`, omitting `tailwindcss/preflight.css`. Tailwind's preflight is a CSS reset that conflicts with the block editor's own base styles and `wp-block-styles`.
+
+**Design tokens:** The `@theme {}` block in `tailwind.css` maps Tailwind utility names to WordPress CSS custom properties generated from `theme.json` (e.g. `--color-primary: var(--wp--preset--color--primary)`). This means tokens stay in sync with `theme.json` automatically — no manual duplication.
+
+**Content detection:** Tailwind v4 automatically detects template files. No explicit content globs are needed.
+
+**Opt-in:** The stylesheet is only enqueued when `src/css/frontend/tailwind.css` is present. The init script (TASK-008) controls whether this file is created during project setup.
