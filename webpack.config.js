@@ -7,7 +7,7 @@ const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
 
-const isWatch = process.argv.includes( '--watch' );
+const isWatch = process.argv.includes( '--watch' ) || process.argv.includes( 'watch' );
 
 if ( isWatch ) {
 	require( 'dotenv' ).config( { path: '.env.local' } );
