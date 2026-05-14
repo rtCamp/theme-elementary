@@ -102,6 +102,10 @@ const readAllFileEntries = ( dir, { excludeDirs = [] } = {} ) => {
 // Extend the default config.
 const sharedConfig = {
 	...scriptConfig,
+	watchOptions: {
+		...( scriptConfig.watchOptions || {} ),
+		ignored: [ '**/node_modules/**', path.resolve( process.cwd(), 'assets', 'build', '**' ) ],
+	},
 	output: {
 		path: path.resolve( process.cwd(), 'assets', 'build', 'js' ),
 		filename: '[name].js',
