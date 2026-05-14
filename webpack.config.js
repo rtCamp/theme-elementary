@@ -31,10 +31,12 @@ const CONTEXT_DIRS = [ 'frontend', 'admin', 'editor' ];
  * If two files resolve to the same entry key, the first file is kept and a
  * warning is emitted.
  *
- * @param {string} dir Base directory to scan.
+ * @param {string}   dir                  Base directory to scan.
+ * @param {Object}   options              Options.
+ * @param {string[]} options.excludeDirs  Directory names to skip during recursion.
  * @return {Object} Object mapping entry names to file paths.
  */
-const readAllFileEntries = ( dir ) => {
+const readAllFileEntries = ( dir, { excludeDirs = [] } = {} ) => {
 	const entries = {};
 
 	if ( ! fs.existsSync( dir ) ) {
@@ -72,6 +74,9 @@ const readAllFileEntries = ( dir ) => {
 			const fullPath = path.join( currentDir, entry.name );
 
 			if ( entry.isDirectory() ) {
+				if ( excludeDirs.includes( entry.name ) ) {
+					return;
+				}
 				scanDirectory( scanRoot, fullPath, entryPrefix );
 				return;
 			}
@@ -140,7 +145,7 @@ const styles = {
 // Standard JS entry points from src/js/{frontend,admin,editor}/.
 const scripts = {
 	...sharedConfig,
-	entry: () => readAllFileEntries( './src/js' ),
+	entry: () => readAllFileEntries( './src/js', { excludeDirs: [ 'modules' ] } ),
 	plugins: [
 		...sharedConfig.plugins,
 		new CopyWebpackPlugin( {
@@ -149,6 +154,7 @@ const scripts = {
 					from: path.resolve( process.cwd(), 'src', 'fonts' ),
 					to: path.resolve( process.cwd(), 'assets', 'build', 'fonts' ),
 					noErrorOnMissing: true,
+					globOptions: { ignore: [ '**/.*' ] },
 				},
 				{
 					from: path.resolve( process.cwd(), 'src', 'images', 'svg' ),
