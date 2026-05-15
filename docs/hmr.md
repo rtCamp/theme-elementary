@@ -4,7 +4,7 @@ This document explains how live reload works in the theme's development workflow
 
 ## Overview
 
-Running `npm run dev` enables live reload via [BrowserSync](https://browsersync.io/) in snippet mode. Your site URL stays unchanged. BrowserSync runs a small server on port 3000 and injects a client script into the page that listens for file change events.
+Running `npm start` enables live reload via [BrowserSync](https://browsersync.io/) in snippet mode. Your site URL stays unchanged. BrowserSync runs a small server on port 3000 and injects a client script into the page that listens for file change events.
 
 - **CSS changes** inject in-place — no full page reload.
 - **PHP, HTML, and JS changes** trigger a full page reload.
@@ -14,7 +14,7 @@ Running `npm run dev` enables live reload via [BrowserSync](https://browsersync.
 ## Quick Start
 
 ```bash
-npm run dev
+npm start
 ```
 
 Webpack starts watching for file changes and BrowserSync starts on port 3000. Open your local site and edits will reflect automatically.
@@ -33,7 +33,7 @@ define( 'WP_ENVIRONMENT_TYPE', 'local' );
 
 ## How It Works
 
-1. `npm run dev` runs webpack in watch mode.
+1. `npm start` runs webpack in watch mode.
 2. When a file changes, webpack rebuilds the affected assets in `assets/build/`.
 3. BrowserSync detects the change and notifies the browser via the client script.
 4. CSS changes are injected in-place. Everything else triggers a full reload.
@@ -61,6 +61,22 @@ WP_HOST=yoursite.local
 `WP_HOST` is your local site's hostname (without protocol or port). Set it to match your local hostname exactly.
 
 `.env.local` is gitignored.
+
+### Multiple sites / custom URL
+
+If port 3000 is already taken (e.g. two local sites running at once), set a different port in `.env.local`:
+
+```
+BS_PORT=3001
+```
+
+Then define the matching constant in `wp-config.php` so PHP enqueues the client from the right URL:
+
+```php
+define( 'THEME_ELEMENTARY_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+```
+
+`THEME_ELEMENTARY_BROWSER_SYNC_URL` overrides the auto-detected URL entirely, so it also works for remote setups (ddev, reverse proxy) where the BrowserSync server is on a different host or IP.
 
 ### HTTPS
 
