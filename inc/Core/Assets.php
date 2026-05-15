@@ -85,11 +85,16 @@ class Assets {
 	public function enqueue_assets(): void {
 		wp_enqueue_style( 'elementary-theme-styles' );
 
-		if ( 'local' === wp_get_environment_type() ) {
-			$scheme = is_ssl() ? 'https' : 'http';
-			$host   = wp_parse_url( home_url(), PHP_URL_HOST );
-			$host   = $host ? $host : 'localhost';
-			wp_enqueue_script( 'browser-sync', "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js", [], null, true );
+		if ( 'local' === wp_get_environment_type() && ! defined( 'THEME_ELEMENTARY_DISABLE_BROWSER_SYNC' ) ) {
+			if ( defined( 'THEME_ELEMENTARY_BROWSER_SYNC_URL' ) ) {
+				$bs_url = THEME_ELEMENTARY_BROWSER_SYNC_URL;
+			} else {
+				$scheme = is_ssl() ? 'https' : 'http';
+				$host   = wp_parse_url( home_url(), PHP_URL_HOST );
+				$host   = $host ? $host : 'localhost';
+				$bs_url = "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js";
+			}
+			wp_enqueue_script( 'browser-sync', $bs_url, [], false, true );
 		}
 	}
 }

@@ -5,13 +5,15 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
-const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
 
-const isWatch = process.argv.includes( '--watch' ) || process.argv.includes( 'watch' );
+const isWatch =
+	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' );
 
 if ( isWatch ) {
 	require( 'dotenv' ).config( { path: '.env.local' } );
 }
+
+const bsPort = parseInt( process.env.BS_PORT, 10 ) || 3000;
 
 /**
  * WordPress dependencies
@@ -39,10 +41,7 @@ const readAllFileEntries = ( dir ) => {
 
 	fs.readdirSync( dir ).forEach( ( fileName ) => {
 		const fullPath = `${ dir }/${ fileName }`;
-		if (
-			! fs.lstatSync( fullPath ).isDirectory() &&
-			! fileName.startsWith( '_' )
-		) {
+		if ( ! fs.lstatSync( fullPath ).isDirectory() && ! fileName.startsWith( '_' ) ) {
 			entries[ fileName.replace( /\.[^/.]+$/, '' ) ] = fullPath;
 		}
 	} );
@@ -108,36 +107,37 @@ const scripts = {
 	plugins: [
 		...sharedConfig.plugins,
 		...( isWatch
-			? [
-				new BrowserSyncPlugin(
-					{
-						...( process.env.WP_HOST
-							? { host: process.env.WP_HOST }
-							: {} ),
-						...( process.env.WP_SSL_KEY &&
-							process.env.WP_SSL_CERT
-							? {
-								https: {
-									key: process.env.WP_SSL_KEY,
-									cert: process.env.WP_SSL_CERT,
-								},
-							}
-							: {} ),
-						files: [
-							'assets/build/**/*',
-							'**/*.php',
-							'!vendor/**',
-							'**/*.html',
-						],
-						notify: false,
-						open: false,
-						logSnippet: false,
-					},
-					{
-						injectCss: true,
-					},
-				),
-			]
+			? ( () => {
+				const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
+				return [
+					new BrowserSyncPlugin(
+						{
+							port: bsPort,
+							...( process.env.WP_HOST ? { host: process.env.WP_HOST } : {} ),
+							...( process.env.WP_SSL_KEY && process.env.WP_SSL_CERT
+								? {
+									https: {
+										key: process.env.WP_SSL_KEY,
+										cert: process.env.WP_SSL_CERT,
+									},
+								}
+								: {} ),
+							files: [
+								'assets/build/**/*',
+								'**/*.php',
+								'!vendor/**',
+								'**/*.html',
+							],
+							notify: false,
+							open: false,
+							logSnippet: false,
+						},
+						{
+							injectCss: true,
+						},
+					),
+				];
+			} )()
 			: [] ),
 	],
 };
