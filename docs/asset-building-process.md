@@ -9,6 +9,8 @@ Our asset pipeline is managed by **Webpack**, using the configuration provided b
 1. **JS and CSS Files** are processed, concatenated, and minified for production.
 2. **Modules** are handled separately to ensure they're loaded correctly.
 3. **CSS/SCSS files** are extracted and moved to a dedicated `css` directory.
+4. **Fonts** are copied from `src/fonts/` to `assets/build/fonts/`.
+5. **SVGs** are optimized with SVGO and copied from `src/images/svg/` to `assets/build/images/svg/`.
 
 ### Key Configuration Files
 
@@ -17,9 +19,11 @@ Our asset pipeline is managed by **Webpack**, using the configuration provided b
 
 ### Directory Structure
 
-- **assets/src/js**: Contains JavaScript files.
-- **assets/src/css**: Contains CSS/SCSS files.
-- **assets/src/js/modules**: Contains modular JavaScript files that are handled separately.
+- **src/css/{frontend,admin,editor}**: Contains CSS/SCSS files, organized by context.
+- **src/js/{frontend,admin,editor}**: Contains JavaScript files, organized by context.
+- **src/js/frontend/modules**: Contains Interactivity API module scripts.
+- **src/fonts**: Font files copied to `assets/build/fonts/` during build via `CopyWebpackPlugin`.
+- **src/images/svg**: Source SVGs optimized by SVGO and copied to `assets/build/images/svg/` during build via `CopyWebpackPlugin`.
 - **assets/build/js**: Where built JavaScript files are output.
 - **assets/build/css**: Where built CSS files are output.
 
@@ -29,17 +33,17 @@ Our asset pipeline is managed by **Webpack**, using the configuration provided b
 
 ### JS and CSS Build Process
 
-1. **CSS Files**: All `.css` or `.scss` files in the `assets/src/css` directory are collected into the build process. They are extracted into a separate CSS file in the `assets/build/css` folder.
+1. **CSS Files**: All `.css` or `.scss` files in `src/css/frontend/`, `src/css/admin/`, and `src/css/editor/` are collected into the build process. They are extracted into separate CSS files in the `assets/build/css` folder.
    
    - The main `webpack.config.js` file uses the `MiniCssExtractPlugin` to extract the CSS.
    - The extracted CSS files are minified using `CssMinimizerPlugin` in production builds.
 
-2. **JS Files**: The JavaScript files are bundled into a single file or multiple files (for split chunks). The `assets/src/js` folder contains files like `core-navigation.js`, which are part of the main entry point.
+2. **JS Files**: JavaScript files in `src/js/frontend/`, `src/js/admin/`, and `src/js/editor/` are bundled and output to `assets/build/js/`.
 
    - JavaScript files are processed using Babel to ensure compatibility with different browsers.
    - We use `webpack-remove-empty-scripts` to remove any empty JavaScript files that do not have content.
 
-3. **Modules**: Files located in `assets/src/js/modules` are treated as separate entry points. These are compiled into separate files and stored in the `assets/build/js/modules` directory.
+3. **Modules**: Files located in `src/js/frontend/modules` are treated as separate entry points. These are compiled into separate files and stored in the `assets/build/js/modules` directory.
    
    - The configuration for modules is handled through the `moduleScripts` entry in the `webpack.config.js`.
 
@@ -51,20 +55,13 @@ To add a new script or module to the build process, follow these steps:
 
 ### Adding a New Script
 
-1. Place your JavaScript file in the `assets/src/js` directory or a subdirectory.
+1. Place your JavaScript file in the appropriate context subdirectory under `src/js/`.
    
-   Example: `assets/src/js/my-script.js`
+   Example: `src/js/frontend/my-script.js`
 
-2. Edit the `webpack.config.js` file and add your script to the `scripts` entry object.
-   
-   Example:
-   ```js
-   entry: {
-     'my-new-script': path.resolve( process.cwd(), 'assets', 'src', 'js', 'my-script.js' ),
-   },
-   ```
+2. The `readAllFileEntries` helper in `webpack.config.js` automatically discovers files in `src/js/frontend/`, `src/js/admin/`, and `src/js/editor/`. No webpack config changes are needed.
 
-3. If necessary, add any required dependencies or libraries to `assets/src/js` and import them in your new script.
+3. If necessary, add any required dependencies or libraries and import them in your new script.
 
 4. Run the build script:
 
@@ -77,17 +74,17 @@ To add a new script or module to the build process, follow these steps:
 
 ### Adding a New Module
 
-1. Place your module JavaScript file in the `assets/src/js/modules` directory.
+1. Place your module JavaScript file in the `src/js/frontend/modules` directory.
 
-   Example: `assets/src/js/modules/my-module.js`
+   Example: `src/js/frontend/modules/my-module.js`
 
-2. The modules will automatically be included in the Webpack build process, but if you want to make sure it is included in the final output, ensure it’s referenced correctly in the entry object for modules:
+2. The modules will automatically be included in the Webpack build process via the `readAllFileEntries` helper:
 
    ```js
-   entry: () => readAllFileEntries( './assets/src/js/modules' ),
+   entry: () => readAllFileEntries( './src/js/frontend/modules' ),
    ```
 
-3. Add any necessary logic in your module’s JavaScript code to ensure it functions correctly within the theme. Modules are usually self-contained and independent, so make sure to export and import dependencies as needed.
+3. Add any necessary logic in your module's JavaScript code to ensure it functions correctly within the theme. Modules are usually self-contained and independent, so make sure to export and import dependencies as needed.
 
 4. Run the build script:
 
