@@ -28,9 +28,10 @@ class ComponentLoader {
 	 * @param string $name    Component name (e.g. 'Button', 'Card').
 	 * @param array  $args    Arguments to pass to the component.
 	 * @param array  $options {
-	 *     Optional. Resolution options.
+	 *     Optional. Resolution options and the enqueue for scripts and style.
 	 *
 	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
+	 *     @type array  $enqueue  The value for script and style enqueue. true or false for each. Default determined by filter.
 	 * }
 	 *
 	 * @return void
@@ -38,12 +39,45 @@ class ComponentLoader {
 	public static function render( string $name, array $args = [], array $options = [] ): void {
 
 		$file = self::get_component_file( $name, $options );
-
+		
 		if ( false === $file ) {
 			return;
 		}
 
+		/**
+		 * Filters the default enqueue settings for elementary theme components.
+		 *
+		 * This filter allows developers to modify whether scripts and styles 
+		 * should be enqueued by default for the theme component.
+		 *
+		 * @param array $defaults {
+		 * Default enqueue settings.
+		 *
+		 * @type bool $script Whether to enqueue the component's script. Default true.
+		 * @type bool $style  Whether to enqueue the component's style. Default true.
+		 * }
+		 */
+		$enqueue = apply_filters(
+			'elementary_theme_component_enqueue_defaults',
+			[
+				'script' => true,
+				'style'  => true,
+			]
+		);
+
+		$enqueue = wp_parse_args(
+			$options,
+			$enqueue
+		);
+
+		$options['script'] = $enqueue['script'];
+		$options['style']  = $enqueue['style'];
+
+		do_action( 'elementary_theme_before_get_component', $name, $args, $options );
+
 		require $file;
+
+		do_action( 'elementary_theme_after_get_component', $name, $args, $options );
 	}
 
 	/**
