@@ -35,7 +35,6 @@
 		"@wordpress/eslint-plugin": "24.2.0",
 		"@wordpress/jest-preset-default": "12.40.0",
 		"@wordpress/scripts": "31.5.0",
-		"autoprefixer": "10.5.0",
 		"browserslist": "4.28.1",
 		"copy-webpack-plugin": "10.2.4",
 		"css-minimizer-webpack-plugin": "7.0.4",
