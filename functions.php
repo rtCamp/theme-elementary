@@ -23,8 +23,8 @@ if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
-if ( ! defined( 'THEME_ELEMENTARY_ENABLE_TAILWIND' ) ) :
-	define( 'THEME_ELEMENTARY_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
+if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) :
+	define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
 endif;
 
 require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';

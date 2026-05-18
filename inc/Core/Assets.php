@@ -31,13 +31,13 @@ class Assets {
 	 * To force-enable or disable before the theme loads, define the constant in
 	 * wp-config.php or a must-use plugin:
 	 *
-	 *   define( 'THEME_ELEMENTARY_ENABLE_TAILWIND', true );
-	 *   define( 'THEME_ELEMENTARY_ENABLE_TAILWIND', false );
+	 *   define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', true );
+	 *   define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', false );
 	 *
 	 * To override at runtime (e.g. from a child theme or plugin):
 	 *
-	 *   add_filter( 'elementary_tailwind_enabled', '__return_true' );
-	 *   add_filter( 'elementary_tailwind_enabled', '__return_false' );
+	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_true' );
+	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_false' );
 	 *
 	 * @var bool
 	 */
@@ -48,8 +48,8 @@ class Assets {
 	 */
 	protected function __construct() {
 		$this->tailwind_enabled = (bool) apply_filters(
-			'elementary_tailwind_enabled',
-			THEME_ELEMENTARY_ENABLE_TAILWIND
+			'elementary_theme_tailwind_enabled',
+			ELEMENTARY_THEME_ENABLE_TAILWIND
 		);
 		// Setup hooks.
 		$this->setup_hooks();
