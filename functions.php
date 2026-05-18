@@ -23,6 +23,10 @@ if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
+if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
+	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
+endif;
+
 require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';
 
 if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {

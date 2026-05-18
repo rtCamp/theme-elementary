@@ -89,10 +89,10 @@ BS_PORT=3001
 Then define the matching constant in `wp-config.php` so PHP enqueues the client from the right URL:
 
 ```php
-define( 'THEME_ELEMENTARY_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
 ```
 
-`THEME_ELEMENTARY_BROWSER_SYNC_URL` overrides the auto-detected URL entirely, so it also works for remote setups (ddev, reverse proxy) where the BrowserSync server is on a different host or IP.
+`ELEMENTARY_THEME_BROWSER_SYNC_URL` overrides the auto-detected URL entirely, so it also works for remote setups (ddev, reverse proxy) where the BrowserSync server is on a different host or IP.
 
 ### HTTPS
 
@@ -121,7 +121,7 @@ This is required to avoid mixed content errors — the BrowserSync client script
 To disable BrowserSync without removing it from the webpack config, define this constant in `wp-config.php`:
 
 ```php
-define( 'THEME_ELEMENTARY_DISABLE_BROWSER_SYNC', true );
+define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', true );
 ```
 
 This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync server still starts (webpack still runs it), but the browser won't connect to it. Useful when working purely in the block editor and you don't want the BrowserSync client loading on the frontend.
@@ -137,7 +137,7 @@ By default, PHP constructs the client URL from the site's scheme and host:
 To override it entirely — for a non-standard port, a remote dev server, or a reverse proxy setup — define this constant in `wp-config.php`:
 
 ```php
-define( 'THEME_ELEMENTARY_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
 ```
 
 This takes precedence over the auto-detected URL.

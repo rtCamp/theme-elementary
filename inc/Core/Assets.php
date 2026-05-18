@@ -85,9 +85,9 @@ class Assets {
 	public function enqueue_assets(): void {
 		wp_enqueue_style( 'elementary-theme-styles' );
 
-		if ( 'local' === wp_get_environment_type() && ! defined( 'THEME_ELEMENTARY_DISABLE_BROWSER_SYNC' ) ) {
-			if ( defined( 'THEME_ELEMENTARY_BROWSER_SYNC_URL' ) ) {
-				$bs_url = THEME_ELEMENTARY_BROWSER_SYNC_URL;
+		if ( 'local' === wp_get_environment_type() && ! ELEMENTARY_THEME_DISABLE_BROWSER_SYNC ) {
+			if ( defined( 'ELEMENTARY_THEME_BROWSER_SYNC_URL' ) ) {
+				$bs_url = ELEMENTARY_THEME_BROWSER_SYNC_URL;
 			} else {
 				$scheme = is_ssl() ? 'https' : 'http';
 				$host   = wp_parse_url( home_url(), PHP_URL_HOST );
