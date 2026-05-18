@@ -94,7 +94,7 @@ class Assets {
 				$host   = $host ? $host : 'localhost';
 				$bs_url = "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js";
 			}
-			wp_enqueue_script( 'browser-sync', $bs_url, [], false, true );
+			wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
 		}
 	}
 }
