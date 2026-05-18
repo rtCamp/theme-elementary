@@ -1,13 +1,20 @@
-# Live Reload
+# Live Reload & Block Editor HMR
 
-This document explains how live reload works in the theme's development workflow and how to configure it for HTTPS local environments.
+This document explains how live reload and hot module replacement work in the theme's development workflow and how to configure them for HTTPS local environments.
 
 ## Overview
 
-Running `npm start` enables live reload via [BrowserSync](https://browsersync.io/) in snippet mode. Your site URL stays unchanged. BrowserSync runs a small server on port 3000 and injects a client script into the page that listens for file change events.
+Running `npm start` enables two complementary tools:
+
+- **BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
+- **webpack-dev-server / Fast Refresh** (port 8887) — hot module replacement for block editor React components. Block state is preserved across updates; no full page reload needed.
+
+For BrowserSync:
 
 - **CSS changes** inject in-place — no full page reload.
 - **PHP, HTML, and JS changes** trigger a full page reload.
+
+For block editor HMR, JS/JSX changes to block components hot-swap in the editor instantly.
 
 ---
 
@@ -29,6 +36,14 @@ The BrowserSync client script is only enqueued when `WP_ENVIRONMENT_TYPE` is set
 define( 'WP_ENVIRONMENT_TYPE', 'local' );
 ```
 
+For block editor HMR (Fast Refresh), also add:
+
+```php
+define( 'SCRIPT_DEBUG', true );
+```
+
+Without `SCRIPT_DEBUG`, WordPress does not support Fast Refresh.
+
 ---
 
 ## How It Works
@@ -37,6 +52,7 @@ define( 'WP_ENVIRONMENT_TYPE', 'local' );
 2. When a file changes, webpack rebuilds the affected assets in `assets/build/`.
 3. BrowserSync detects the change and notifies the browser via the client script.
 4. CSS changes are injected in-place. Everything else triggers a full reload.
+5. Block changes are detected in editor by the webpack-dev-server run by the `--hot` option
 
 BrowserSync watches the following:
 
@@ -98,6 +114,38 @@ This is required to avoid mixed content errors — the BrowserSync client script
 
 ---
 
-## Known Limitation
+## Advanced
 
-BrowserSync requires its own port (3000) for the client script, separate from the port your local site runs on. Using BrowserSync's proxy mode would avoid this but would change the site URL (e.g. `yoursite.local:3000` instead of `yoursite.local`), causing issues with WordPress redirects and cookie domains. Snippet mode keeps the site URL unchanged.
+### Disabling BrowserSync
+
+To disable BrowserSync without removing it from the webpack config, define this constant in `wp-config.php`:
+
+```php
+define( 'THEME_ELEMENTARY_DISABLE_BROWSER_SYNC', true );
+```
+
+This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync server still starts (webpack still runs it), but the browser won't connect to it. Useful when working purely in the block editor and you don't want the BrowserSync client loading on the frontend.
+
+### Overriding the BrowserSync client URL
+
+By default, PHP constructs the client URL from the site's scheme and host:
+
+```
+{scheme}://{host}:3000/browser-sync/browser-sync-client.js
+```
+
+To override it entirely — for a non-standard port, a remote dev server, or a reverse proxy setup — define this constant in `wp-config.php`:
+
+```php
+define( 'THEME_ELEMENTARY_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+```
+
+This takes precedence over the auto-detected URL.
+
+---
+
+## Known Limitations
+
+**BrowserSync port**: BrowserSync requires its own port (3000) separate from your local site. Snippet mode keeps the site URL unchanged — proxy mode would change the URL and break WordPress redirects and cookie domains.
+
+**WDS host validation**: WDS runs on `localhost:8887`. For custom local hostnames (e.g. `yoursite.local`), `allowedHosts: 'all'` is set in the webpack devServer config so the HMR WebSocket connection is accepted.
