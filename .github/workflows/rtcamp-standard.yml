@@ -21,48 +21,10 @@ permissions:
 jobs:
   build-artifact-gate:
     name: 'Block committed build artifacts'
-    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Fetch base branch
-        run: git fetch --depth=1 --no-tags origin "${{ github.base_ref }}"
-
-      - name: Detect committed build artifacts
-        env:
-          GATED_PATHS: ${{ inputs.build-artifact-paths }}
-        run: |
-          set -euo pipefail
-
-          PATTERN=$(printf '%s\n' "$GATED_PATHS" \
-            | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' \
-            | grep -v '^$' \
-            | sed 's/\./\\./g' \
-            | paste -sd '|' -)
-
-          if [[ -z "$PATTERN" ]]; then
-            echo "No gated paths configured; skipping."
-            exit 0
-          fi
-
-          ANCHORED="^(${PATTERN})"
-          echo "Checking changed files against: ${ANCHORED}"
-
-          CHANGED=$(git diff --name-only --diff-filter=ACMR FETCH_HEAD HEAD \
-            | grep -E "${ANCHORED}" || true)
-
-          if [[ -n "$CHANGED" ]]; then
-            echo "::error::Build artifacts must not be committed. Offending files:"
-            printf '%s\n' "$CHANGED" | sed 's/^/  - /'
-            echo
-            echo "These paths are produced by CI on merge. Remove them from the PR"
-            echo "(e.g. 'git rm --cached <file>') and ensure they are gitignored."
-            exit 1
-          fi
-
-          echo "No committed build artifacts detected."
+    uses: rtCamp/wp-shared-workflows/.github/workflows/ci-build-artifact-gate.yml@ff44a8745c5360e28a5316c39b4468c6cf5e0cb6
+    with:
+      gated-paths: ${{ inputs.build-artifact-paths }}
 
   phpstan:
     name: 'PHPStan'
