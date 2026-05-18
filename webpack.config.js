@@ -8,8 +8,9 @@ const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
 const { optimize: svgoOptimize } = require( 'svgo' );
 
+const isHot = process.argv.includes( '--hot' );
 const isWatch =
-	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' );
+	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
 
 if ( isWatch ) {
 	require( 'dotenv' ).config( { path: '.env.local' } );
@@ -119,6 +120,11 @@ const sharedConfig = {
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
+	// WDS v5 requires proxy as an array; since writeToDisk: true is set we don't need it.
+	// allowedHosts: 'all' is needed for custom local domains (e.g. elementary.local).
+	devServer: scriptConfig.devServer
+		? { ...scriptConfig.devServer, proxy: undefined, allowedHosts: 'all' }
+		: undefined,
 	plugins: [
 		...scriptConfig.plugins.map( ( plugin ) => {
 			if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
@@ -142,6 +148,7 @@ const sharedConfig = {
 // CSS / SCSS entry points from src/css/{frontend,admin,editor}/.
 const styles = {
 	...sharedConfig,
+	devServer: undefined,
 	entry: () => readAllFileEntries( './src/css' ),
 	module: {
 		...sharedConfig.module,
