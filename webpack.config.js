@@ -31,9 +31,9 @@ const CONTEXT_DIRS = [ 'frontend', 'admin', 'editor' ];
  * If two files resolve to the same entry key, the first file is kept and a
  * warning is emitted.
  *
- * @param {string}   dir                  Base directory to scan.
- * @param {Object}   options              Options.
- * @param {string[]} options.excludeDirs  Directory names to skip during recursion.
+ * @param {string}   dir                 Base directory to scan.
+ * @param {Object}   options             Options.
+ * @param {string[]} options.excludeDirs Directory names to skip during recursion.
  * @return {Object} Object mapping entry names to file paths.
  */
 const readAllFileEntries = ( dir, { excludeDirs = [] } = {} ) => {
@@ -104,6 +104,9 @@ const sharedConfig = {
 	...scriptConfig,
 	watchOptions: {
 		...( scriptConfig.watchOptions || {} ),
+		// assets/build/** must be ignored to prevent an infinite rebuild loop:
+		// Tailwind v4's content detection treats build output as potential template
+		// files, so without this, each webpack emit triggers another rebuild.
 		ignored: [ '**/node_modules/**', path.resolve( process.cwd(), 'assets', 'build', '**' ) ],
 	},
 	output: {
