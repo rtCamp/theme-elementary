@@ -28,12 +28,49 @@ const [
 	moduleConfig,
 ] = require( '@wordpress/scripts/config/webpack.config' );
 
+/**
+ * Resolve a project-relative path from the current working directory.
+ *
+ * @param {...string} parts Path segments.
+ * @return {string} Absolute path.
+ */
 const rootPath = ( ...parts ) => path.resolve( process.cwd(), ...parts );
+
+/**
+ * Get a webpack plugin constructor name.
+ *
+ * The config filters by constructor name when it needs to remove or adjust a
+ * plugin supplied by `@wordpress/scripts`.
+ *
+ * @param {Object} plugin Webpack plugin instance.
+ * @return {string} Plugin constructor name.
+ */
 const getPluginName = ( plugin ) => plugin.constructor.name;
+
+/**
+ * Create a predicate that matches one webpack plugin constructor name.
+ *
+ * @param {string} pluginName Plugin constructor name to match.
+ * @return {Function} Predicate for `Array.prototype.filter`.
+ */
 const isPlugin = ( pluginName ) => ( plugin ) =>
 	getPluginName( plugin ) === pluginName;
+
+/**
+ * Create a predicate that excludes one webpack plugin constructor name.
+ *
+ * @param {string} pluginName Plugin constructor name to exclude.
+ * @return {Function} Predicate for `Array.prototype.filter`.
+ */
 const isNotPlugin = ( pluginName ) => ( plugin ) =>
 	getPluginName( plugin ) !== pluginName;
+
+/**
+ * Create a predicate that excludes multiple webpack plugin constructor names.
+ *
+ * @param {string[]} pluginNames Plugin constructor names to exclude.
+ * @return {Function} Predicate for `Array.prototype.filter`.
+ */
 const isNotOneOfPlugins = ( pluginNames ) => ( plugin ) =>
 	! pluginNames.includes( getPluginName( plugin ) );
 
@@ -151,6 +188,15 @@ const readAllFileEntries = (
 class CleanBuildPlugin {
 	static cleaned = false;
 
+	/**
+	 * Clean the full build directory once when webpack starts.
+	 *
+	 * Multiple compilers share this plugin through `sharedConfig`; the static
+	 * flag prevents watch rebuilds or sibling compilers from deleting each
+	 * other's freshly emitted assets.
+	 *
+	 * @param {import('webpack').Compiler} compiler Webpack compiler.
+	 */
 	apply( compiler ) {
 		const clean = () => {
 			if ( CleanBuildPlugin.cleaned ) {
@@ -170,6 +216,15 @@ class CleanBuildPlugin {
 }
 
 class CssAssetRtlPlugin {
+	/**
+	 * Emit an RTL counterpart next to every compiled CSS asset.
+	 *
+	 * The stock WordPress RTL plugin writes `[name]-rtl.css` relative to the
+	 * JavaScript output path. This plugin derives the RTL filename from the
+	 * actual emitted CSS asset path, keeping files under `assets/build/css`.
+	 *
+	 * @param {import('webpack').Compiler} compiler Webpack compiler.
+	 */
 	apply( compiler ) {
 		compiler.hooks.compilation.tap( 'CssAssetRtlPlugin', ( compilation ) => {
 			compilation.hooks.processAssets.tap(
@@ -208,6 +263,12 @@ class CssAssetRtlPlugin {
 	}
 }
 
+/**
+ * Force MiniCssExtractPlugin to emit CSS into the sibling CSS build directory.
+ *
+ * @param {Object} plugin Webpack plugin instance.
+ * @return {Object} The same plugin instance.
+ */
 const setCssOutputPath = ( plugin ) => {
 	if ( isPlugin( 'MiniCssExtractPlugin' )( plugin ) ) {
 		plugin.options.filename = CSS_FILENAME;
@@ -216,6 +277,16 @@ const setCssOutputPath = ( plugin ) => {
 	return plugin;
 };
 
+/**
+ * Disable WDS/Fast Refresh behavior for compilers that should write files only.
+ *
+ * `wp-scripts --hot` injects webpack-dev-server and React Refresh into the
+ * base script config. Frontend JS, standalone CSS, and module builds need to
+ * keep writing files to disk without subscribing to editor HMR.
+ *
+ * @param {Object} config Webpack config.
+ * @return {Object} Webpack config without Fast Refresh/WDS behavior.
+ */
 const withoutFastRefresh = ( config ) => ( {
 	...config,
 	devServer: false,
@@ -226,6 +297,14 @@ const withoutFastRefresh = ( config ) => ( {
 	plugins: config.plugins.filter( isNotPlugin( 'ReactRefreshPlugin' ) ),
 } );
 
+/**
+ * Copy static theme assets into the build directory.
+ *
+ * SVG files are optimized during copy; invalid or unsupported SVGs fall back to
+ * their original content so a bad asset does not break the whole build.
+ *
+ * @return {CopyWebpackPlugin} Copy plugin instance.
+ */
 const getCopyPlugin = () =>
 	new CopyWebpackPlugin( {
 		patterns: [
@@ -269,6 +348,15 @@ const getCopyPlugin = () =>
 		],
 	} );
 
+/**
+ * Create BrowserSync only for watch mode.
+ *
+ * BrowserSync watches frontend-facing build files and template files. Generated
+ * PHP asset manifests are excluded so CSS changes can be injected without a
+ * full page reload.
+ *
+ * @return {Array} BrowserSync plugin instances.
+ */
 const getBrowserSyncPlugins = () => {
 	if ( ! isWatch ) {
 		return [];
