@@ -17,6 +17,7 @@
 
 # Enviroment
 .env
+.env.local
 .wp-env.override.json
 
 # Build
