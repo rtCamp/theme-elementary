@@ -27,7 +27,6 @@ export default [
 	// add the remaining rules from plugin:import/recommended without re-registering.
 	{
 		languageOptions: {
-			ecmaVersion: 2018,
 			sourceType: 'module',
 		},
 		rules: {
