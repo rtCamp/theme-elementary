@@ -18,6 +18,28 @@ use rtCamp\Theme\Elementary\Framework\ComponentLoader;
 class ComponentLoaderTest extends TestCase {
 
 	/**
+	 * Reset ComponentLoader request-level caches before each test.
+	 *
+	 * @return void
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+
+		self::reset_component_loader_caches();
+	}
+
+	/**
+	 * Reset ComponentLoader request-level caches after each test.
+	 *
+	 * @return void
+	 */
+	protected function tearDown(): void {
+		self::reset_component_loader_caches();
+
+		parent::tearDown();
+	}
+
+	/**
 	 * Test if ComponentLoader class exists.
 	 */
 	public function test_class_exists(): void {
@@ -243,9 +265,9 @@ class ComponentLoaderTest extends TestCase {
 	}
 
 	/**
-	 * Test the elementary_theme_component_default_priority filter is applied.
+	 * Test the default priority filter no longer overrides theme-first resolution.
 	 */
-	public function test_default_priority_filter_changes_resolution_order(): void {
+	public function test_default_priority_filter_is_ignored_by_theme_first_resolution(): void {
 		$tmp_dir     = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-priority-filter-' . uniqid( '', true );
 		$button_dir  = $tmp_dir . '/Button';
 		$button_file = $button_dir . '/Button.php';
@@ -276,8 +298,9 @@ class ComponentLoaderTest extends TestCase {
 			ComponentLoader::render( 'Button', [ 'label' => 'Test' ] );
 			$output = ob_get_clean();
 
-			// The filter returned 'plugin', so the plugin Button must be resolved first.
-			$this->assertStringContainsString( 'priority-filter-plugin-button', $output );
+			$this->assertStringContainsString( 'Test', $output );
+			$this->assertStringContainsString( 'elementary-button', $output );
+			$this->assertStringNotContainsString( 'priority-filter-plugin-button', $output );
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $paths_callback );
 			remove_filter( 'elementary_theme_component_default_priority', $priority_callback );
@@ -321,9 +344,9 @@ class ComponentLoaderTest extends TestCase {
 	}
 
 	/**
-	 * Test that plugin paths are checked first when priority is 'plugin'.
+	 * Test that plugin priority does not override theme components.
 	 */
-	public function test_plugin_priority_checks_plugin_path_first(): void {
+	public function test_plugin_priority_does_not_override_theme_component(): void {
 		$tmp_dir       = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-plugin-components-' . uniqid( '', true );
 		$button_dir    = $tmp_dir . '/Button';
 		$button_file   = $button_dir . '/Button.php';
@@ -347,12 +370,10 @@ class ComponentLoaderTest extends TestCase {
 		add_filter( 'elementary_theme_component_paths', $callback );
 
 		try {
-			// With priority='plugin', the plugin Button should be used.
 			ob_start();
 			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
 			$plugin_output = ob_get_clean();
 
-			// With priority='theme', the theme Button should be used.
 			ob_start();
 			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'theme' ] );
 			$theme_output = ob_get_clean();
@@ -372,8 +393,590 @@ class ComponentLoaderTest extends TestCase {
 			}
 		}
 
-		$this->assertStringContainsString( 'plugin-button', $plugin_output );
+		$this->assertStringContainsString( 'elementary-button', $plugin_output );
+		$this->assertStringNotContainsString( 'plugin-button', $plugin_output );
 		$this->assertStringContainsString( 'elementary-button', $theme_output );
+	}
+
+	/**
+	 * Test child theme templates resolve before plugin components.
+	 */
+	public function test_child_theme_component_resolves_before_plugin_component(): void {
+		$tmp_dir          = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-child-theme-component-' . uniqid( '', true );
+		$child_root       = $tmp_dir . '/child';
+		$parent_root      = $tmp_dir . '/parent';
+		$plugin_root      = $tmp_dir . '/plugin';
+		$child_component  = $child_root . '/components/ChildFirst';
+		$plugin_component = $plugin_root . '/ChildFirst';
+		$child_file       = $child_component . '/ChildFirst.php';
+		$plugin_file      = $plugin_component . '/ChildFirst.php';
+
+		mkdir( $child_component, 0755, true ); // phpcs:ignore
+		mkdir( $parent_root, 0755, true ); // phpcs:ignore
+		mkdir( $plugin_component, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $child_file, '<?php echo "child-theme-component";' ); // phpcs:ignore
+		file_put_contents( $plugin_file, '<?php echo "plugin-component";' ); // phpcs:ignore
+
+		$paths_callback      = function ( $paths ) use ( $plugin_root ) {
+			$paths['theme']['php'] = 'components';
+			$paths['plugin']       = [
+				'php' => $plugin_root,
+			];
+			return $paths;
+		};
+		$stylesheet_callback = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$template_callback   = function () use ( $parent_root ) {
+			return $parent_root;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'template_directory', $template_callback );
+
+		try {
+			$output = ComponentLoader::get( 'ChildFirst', [], [ 'priority' => 'plugin' ] );
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'template_directory', $template_callback );
+
+			foreach ( [ $child_file, $plugin_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $child_component, $plugin_component, $child_root . '/components', $child_root, $parent_root, $plugin_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'child-theme-component', $output );
+		$this->assertStringNotContainsString( 'plugin-component', $output );
+	}
+
+	/**
+	 * Test parent theme templates resolve when child theme does not provide one.
+	 */
+	public function test_parent_theme_component_resolves_before_plugin_component(): void {
+		$tmp_dir          = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-parent-theme-component-' . uniqid( '', true );
+		$child_root       = $tmp_dir . '/child';
+		$parent_root      = $tmp_dir . '/parent';
+		$plugin_root      = $tmp_dir . '/plugin';
+		$parent_component = $parent_root . '/components/ParentFirst';
+		$plugin_component = $plugin_root . '/ParentFirst';
+		$parent_file      = $parent_component . '/ParentFirst.php';
+		$plugin_file      = $plugin_component . '/ParentFirst.php';
+
+		mkdir( $child_root, 0755, true ); // phpcs:ignore
+		mkdir( $parent_component, 0755, true ); // phpcs:ignore
+		mkdir( $plugin_component, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $parent_file, '<?php echo "parent-theme-component";' ); // phpcs:ignore
+		file_put_contents( $plugin_file, '<?php echo "plugin-component";' ); // phpcs:ignore
+
+		$paths_callback      = function ( $paths ) use ( $plugin_root ) {
+			$paths['theme']['php'] = 'components';
+			$paths['plugin']       = [
+				'php' => $plugin_root,
+			];
+			return $paths;
+		};
+		$stylesheet_callback = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$template_callback   = function () use ( $parent_root ) {
+			return $parent_root;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'template_directory', $template_callback );
+
+		try {
+			$output = ComponentLoader::get( 'ParentFirst', [], [ 'priority' => 'plugin' ] );
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'template_directory', $template_callback );
+
+			foreach ( [ $parent_file, $plugin_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $parent_component, $plugin_component, $parent_root . '/components', $child_root, $parent_root, $plugin_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'parent-theme-component', $output );
+		$this->assertStringNotContainsString( 'plugin-component', $output );
+	}
+
+	/**
+	 * Test plugin components resolve when no child or parent theme template exists.
+	 */
+	public function test_plugin_component_resolves_when_theme_template_is_absent(): void {
+		$tmp_dir          = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-plugin-fallback-component-' . uniqid( '', true );
+		$child_root       = $tmp_dir . '/child';
+		$parent_root      = $tmp_dir . '/parent';
+		$plugin_root      = $tmp_dir . '/plugin';
+		$plugin_component = $plugin_root . '/PluginFallback';
+		$plugin_file      = $plugin_component . '/PluginFallback.php';
+
+		mkdir( $child_root, 0755, true ); // phpcs:ignore
+		mkdir( $parent_root, 0755, true ); // phpcs:ignore
+		mkdir( $plugin_component, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $plugin_file, '<?php echo "plugin-fallback-component";' ); // phpcs:ignore
+
+		$paths_callback      = function ( $paths ) use ( $plugin_root ) {
+			$paths['theme']['php'] = 'components';
+			$paths['plugin']       = [
+				'php' => $plugin_root,
+			];
+			return $paths;
+		};
+		$stylesheet_callback = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$template_callback   = function () use ( $parent_root ) {
+			return $parent_root;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'template_directory', $template_callback );
+
+		try {
+			$output = ComponentLoader::get( 'PluginFallback' );
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'template_directory', $template_callback );
+
+			if ( is_file( $plugin_file ) ) {
+				unlink( $plugin_file ); // phpcs:ignore
+			}
+
+			foreach ( [ $plugin_component, $child_root, $parent_root, $plugin_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'plugin-fallback-component', $output );
+	}
+
+	/**
+	 * Test fixture PromoBanner resolves from theme override before plugin-key source.
+	 */
+	public function test_fixture_promo_banner_resolves_from_theme_override(): void {
+		$component_meta  = null;
+		$paths_callback  = function ( $paths ) {
+			$paths['plugin'] = [
+				'php'    => ELEMENTARY_THEME_TEMP_DIR . '/plugins-theme/Components',
+				'style'  => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/css/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/css/plugin-components',
+				],
+				'script' => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/js/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/js/plugin-components',
+				],
+			];
+			return $paths;
+		};
+		$action_callback = function ( $name, $args, $options ) use ( &$component_meta ) {
+			$component_meta = $options['component'] ?? null;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'PromoBanner',
+				[
+					'title'       => 'Theme Promo',
+					'description' => 'Theme override wins.',
+				]
+			);
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'elementary-promo-banner--theme', $output );
+		$this->assertStringContainsString( 'data-component-source="theme"', $output );
+		$this->assertIsArray( $component_meta );
+		$this->assertSame( 'theme', $component_meta['source'] );
+	}
+
+	/**
+	 * Test fixture PromoBanner falls back to plugin-key source when theme path is absent.
+	 */
+	public function test_fixture_promo_banner_falls_back_to_plugin_key_source(): void {
+		$component_meta  = null;
+		$paths_callback  = function ( $paths ) {
+			$paths['theme']['php'] = 'src/MissingComponents';
+			$paths['plugin']       = [
+				'php'    => ELEMENTARY_THEME_TEMP_DIR . '/plugins-theme/Components',
+				'style'  => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/css/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/css/plugin-components',
+				],
+				'script' => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/js/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/js/plugin-components',
+				],
+			];
+			return $paths;
+		};
+		$action_callback = function ( $name, $args, $options ) use ( &$component_meta ) {
+			$component_meta = $options['component'] ?? null;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'PromoBanner',
+				[
+					'title'       => 'Plugin Promo',
+					'description' => 'Plugin fixture wins when theme is absent.',
+				]
+			);
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'plugin-promo-banner', $output );
+		$this->assertStringContainsString( 'data-component-source="plugin"', $output );
+		$this->assertIsArray( $component_meta );
+		$this->assertSame( 'plugin', $component_meta['source'] );
+	}
+
+	/**
+	 * Test fixture FeaturePanel resolves from plugin-key source and shared asset cascade.
+	 */
+	public function test_fixture_feature_panel_resolves_from_plugin_key_source_with_shared_asset_cascade(): void {
+		$component_assets = null;
+		$paths_callback   = function ( $paths ) {
+			$paths['plugin'] = [
+				'php'    => ELEMENTARY_THEME_TEMP_DIR . '/plugins-theme/Components',
+				'style'  => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/css/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/css/plugin-components',
+				],
+				'script' => [
+					'dir' => ELEMENTARY_THEME_BUILD_DIR . '/js/plugin-components',
+					'url' => ELEMENTARY_THEME_BUILD_URI . '/js/plugin-components',
+				],
+			];
+			return $paths;
+		};
+		$action_callback  = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'FeaturePanel',
+				[
+					'title'       => 'Plugin Feature',
+					'description' => 'Plugin-key fixture.',
+				]
+			);
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'plugin-feature-panel', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertSame( ELEMENTARY_THEME_BUILD_DIR . '/css/plugin-components/featurepanel.css', $component_assets['style']['file'] );
+		$this->assertSame( ELEMENTARY_THEME_BUILD_DIR . '/js/plugin-components/featurepanel.js', $component_assets['script']['file'] );
+	}
+
+	/**
+	 * Test child theme built assets override parent theme assets.
+	 */
+	public function test_child_theme_asset_overrides_are_independent(): void {
+		$tmp_dir          = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-child-theme-assets-' . uniqid( '', true );
+		$child_root       = $tmp_dir . '/child';
+		$child_css_dir    = $child_root . '/assets/build/css/components';
+		$child_js_dir     = $child_root . '/assets/build/js/components';
+		$component_assets = null;
+
+		foreach ( [ $child_css_dir, $child_js_dir ] as $dir ) {
+			mkdir( $dir, 0755, true ); // phpcs:ignore
+		}
+
+		file_put_contents( $child_css_dir . '/featurepanel.css', '.child-feature-panel { color: red; }' ); // phpcs:ignore
+		file_put_contents( $child_js_dir . '/featurepanel.js', 'window.childFeaturePanel = true;' ); // phpcs:ignore
+
+		$stylesheet_callback       = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$stylesheet_uri_callback   = function () {
+			return 'https://child.example';
+		};
+		$before_component_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+		add_action( 'elementary_theme_before_get_component', $before_component_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'FeaturePanel',
+				[
+					'title'       => 'Child Asset Feature',
+					'description' => 'Child assets should win.',
+				]
+			);
+		} finally {
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+			remove_action( 'elementary_theme_before_get_component', $before_component_callback );
+
+			foreach (
+				[
+					$child_css_dir . '/featurepanel.css',
+					$child_js_dir . '/featurepanel.js',
+				] as $file
+			) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach (
+				[
+					$child_css_dir,
+					$child_root . '/assets/build/css',
+					$child_js_dir,
+					$child_root . '/assets/build/js',
+					$child_root . '/assets/build',
+					$child_root . '/assets',
+					$child_root,
+					$tmp_dir,
+				] as $dir
+			) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'Child Asset Feature', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertSame( $child_css_dir . '/featurepanel.css', $component_assets['style']['file'] );
+		$this->assertSame( 'https://child.example/assets/build/css/components/featurepanel.css', $component_assets['style']['url'] );
+		$this->assertSame( $child_js_dir . '/featurepanel.js', $component_assets['script']['file'] );
+		$this->assertSame( 'https://child.example/assets/build/js/components/featurepanel.js', $component_assets['script']['url'] );
+	}
+
+	/**
+	 * Test child theme asset lookup derives from the configured theme asset directory.
+	 */
+	public function test_child_theme_asset_lookup_uses_theme_asset_config(): void {
+		$tmp_dir          = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-child-theme-config-assets-' . uniqid( '', true );
+		$parent_root      = $tmp_dir . '/parent';
+		$child_root       = $tmp_dir . '/child';
+		$plugin_root      = $tmp_dir . '/plugin-components';
+		$child_css_dir    = $child_root . '/custom-build/styles';
+		$component_dir    = $plugin_root . '/ConfiguredAsset';
+		$component_file   = $component_dir . '/ConfiguredAsset.php';
+		$child_css_file   = $child_css_dir . '/configuredasset.css';
+		$component_assets = null;
+
+		foreach ( [ $child_css_dir, $component_dir ] as $dir ) {
+			mkdir( $dir, 0755, true ); // phpcs:ignore
+		}
+
+		file_put_contents( $component_file, '<?php echo "configured-asset-component";' ); // phpcs:ignore
+		file_put_contents( $child_css_file, '.configured-asset-component { color: green; }' ); // phpcs:ignore
+
+		$template_callback         = function () use ( $parent_root ) {
+			return $parent_root;
+		};
+		$template_uri_callback     = function () {
+			return 'https://parent.example';
+		};
+		$stylesheet_callback       = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$stylesheet_uri_callback   = function () {
+			return 'https://child.example';
+		};
+		$paths_callback            = function ( $paths ) use ( $plugin_root ) {
+			$paths['theme']['style'] = 'custom-build/styles';
+			$paths['plugin']         = [
+				'php' => $plugin_root,
+			];
+			return $paths;
+		};
+		$before_component_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'template_directory', $template_callback );
+		add_filter( 'template_directory_uri', $template_uri_callback );
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_action( 'elementary_theme_before_get_component', $before_component_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'ConfiguredAsset',
+				[],
+				[
+					'style'  => true,
+					'script' => false,
+				]
+			);
+		} finally {
+			remove_filter( 'template_directory', $template_callback );
+			remove_filter( 'template_directory_uri', $template_uri_callback );
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_action( 'elementary_theme_before_get_component', $before_component_callback );
+
+			foreach ( [ $child_css_file, $component_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach (
+				[
+					$component_dir,
+					$plugin_root,
+					$child_css_dir,
+					$child_root . '/custom-build',
+					$child_root,
+					$parent_root,
+					$tmp_dir,
+				] as $dir
+			) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'configured-asset-component', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertSame( $child_css_file, $component_assets['style']['file'] );
+		$this->assertSame( 'https://child.example/custom-build/styles/configuredasset.css', $component_assets['style']['url'] );
+		$this->assertArrayNotHasKey( 'script', $component_assets );
+	}
+
+	/**
+	 * Test plugin assets backfill missing theme assets for theme-resolved components.
+	 */
+	public function test_plugin_asset_backfills_missing_theme_asset(): void {
+		$tmp_dir           = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-plugin-asset-backfill-' . uniqid( '', true );
+		$parent_root       = $tmp_dir . '/parent';
+		$child_root        = $tmp_dir . '/child';
+		$plugin_script_dir = $tmp_dir . '/plugin-js';
+		$component_assets  = null;
+
+		mkdir( $parent_root, 0755, true ); // phpcs:ignore
+		mkdir( $child_root, 0755, true ); // phpcs:ignore
+		mkdir( $plugin_script_dir, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $plugin_script_dir . '/featurepanel.js', 'window.pluginFeaturePanelBackfill = true;' ); // phpcs:ignore
+
+		$template_callback       = function () use ( $parent_root ) {
+			return $parent_root;
+		};
+		$template_uri_callback   = function () {
+			return 'https://parent.example';
+		};
+		$stylesheet_callback     = function () use ( $child_root ) {
+			return $child_root;
+		};
+		$stylesheet_uri_callback = function () {
+			return 'https://child.example';
+		};
+		$paths_callback          = function ( $paths ) use ( $plugin_script_dir ) {
+			$paths['theme']['script'] = 'theme-js';
+			$paths['plugin']          = [
+				'php'    => ELEMENTARY_THEME_TEMP_DIR . '/plugins-theme/Components',
+				'script' => [
+					'dir' => $plugin_script_dir,
+					'url' => 'https://plugin.example/js/plugin-components',
+				],
+			];
+			return $paths;
+		};
+		$action_callback         = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'template_directory', $template_callback );
+		add_filter( 'template_directory_uri', $template_uri_callback );
+		add_filter( 'stylesheet_directory', $stylesheet_callback );
+		add_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'FeaturePanel',
+				[ 'title' => 'Plugin Asset Backfill' ],
+				[
+					'script' => true,
+					'style'  => false,
+				]
+			);
+		} finally {
+			remove_filter( 'template_directory', $template_callback );
+			remove_filter( 'template_directory_uri', $template_uri_callback );
+			remove_filter( 'stylesheet_directory', $stylesheet_callback );
+			remove_filter( 'stylesheet_directory_uri', $stylesheet_uri_callback );
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+
+			if ( is_file( $plugin_script_dir . '/featurepanel.js' ) ) {
+				unlink( $plugin_script_dir . '/featurepanel.js' ); // phpcs:ignore
+			}
+
+			foreach ( [ $parent_root, $child_root, $plugin_script_dir, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'Plugin Asset Backfill', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertArrayHasKey( 'script', $component_assets );
+		$this->assertArrayNotHasKey( 'style', $component_assets );
+		$this->assertSame( $plugin_script_dir . '/featurepanel.js', $component_assets['script']['file'] );
+		$this->assertSame( 'https://plugin.example/js/plugin-components/featurepanel.js', $component_assets['script']['url'] );
 	}
 
 	/**
@@ -381,8 +984,8 @@ class ComponentLoaderTest extends TestCase {
 	 */
 	public function test_php_only_component_path_config_renders_without_assets(): void {
 		$tmp_dir     = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-php-only-components-' . uniqid( '', true );
-		$button_dir  = $tmp_dir . '/Button';
-		$button_file = $button_dir . '/Button.php';
+		$button_dir  = $tmp_dir . '/PhpOnly';
+		$button_file = $button_dir . '/PhpOnly.php';
 
 		mkdir( $button_dir, 0755, true ); // phpcs:ignore
 
@@ -402,7 +1005,7 @@ class ComponentLoaderTest extends TestCase {
 
 		try {
 			ob_start();
-			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			ComponentLoader::render( 'PhpOnly', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
 			$output = ob_get_clean();
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $callback );
@@ -430,10 +1033,10 @@ class ComponentLoaderTest extends TestCase {
 		$tmp_dir         = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-malformed-asset-meta-' . uniqid( '', true );
 		$component_root  = $tmp_dir . '/components';
 		$style_root      = $tmp_dir . '/css';
-		$button_dir      = $component_root . '/Button';
-		$button_file     = $button_dir . '/Button.php';
-		$button_css_file = $style_root . '/button.css';
-		$button_asset    = $style_root . '/button.asset.php';
+		$button_dir      = $component_root . '/MalformedAsset';
+		$button_file     = $button_dir . '/MalformedAsset.php';
+		$button_css_file = $style_root . '/malformedasset.css';
+		$button_asset    = $style_root . '/malformedasset.asset.php';
 
 		mkdir( $button_dir, 0755, true ); // phpcs:ignore
 		mkdir( $style_root, 0755, true ); // phpcs:ignore
@@ -468,7 +1071,7 @@ class ComponentLoaderTest extends TestCase {
 
 		try {
 			ob_start();
-			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			ComponentLoader::render( 'MalformedAsset', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
 			$output = ob_get_clean();
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $callback );
@@ -599,10 +1202,10 @@ class ComponentLoaderTest extends TestCase {
 		$component_root = $tmp_dir . '/components';
 		$style_root     = $tmp_dir . '/css';
 		$script_root    = $tmp_dir . '/js';
-		$button_dir     = $component_root . '/Button';
-		$button_file    = $button_dir . '/Button.php';
-		$button_css     = $style_root . '/button.css';
-		$button_js      = $script_root . '/button.js';
+		$button_dir     = $component_root . '/DisabledAsset';
+		$button_file    = $button_dir . '/DisabledAsset.php';
+		$button_css     = $style_root . '/disabledasset.css';
+		$button_js      = $script_root . '/disabledasset.js';
 
 		mkdir( $button_dir, 0755, true ); // phpcs:ignore
 		mkdir( $style_root, 0755, true ); // phpcs:ignore
@@ -637,15 +1240,15 @@ class ComponentLoaderTest extends TestCase {
 		add_filter( 'elementary_theme_component_paths', $paths_callback );
 		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
 
-		self::reset_component_asset_handles( 'button' );
+		self::reset_component_asset_handles( 'disabledasset' );
 
 		try {
-			$output = ComponentLoader::get( 'Button', [ 'label' => 'No Enqueue' ], [ 'priority' => 'plugin' ] );
+			$output = ComponentLoader::get( 'DisabledAsset', [ 'label' => 'No Enqueue' ], [ 'priority' => 'plugin' ] );
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $paths_callback );
 			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
 
-			self::reset_component_asset_handles( 'button' );
+			self::reset_component_asset_handles( 'disabledasset' );
 
 			foreach ( [ $button_js, $button_css, $button_file ] as $file ) {
 				if ( is_file( $file ) ) {
@@ -661,8 +1264,8 @@ class ComponentLoaderTest extends TestCase {
 		}
 
 		$this->assertStringContainsString( 'disabled-asset-enqueue-button', $output );
-		$this->assertFalse( wp_style_is( 'elementary-theme-component-button-style', 'enqueued' ) );
-		$this->assertFalse( wp_script_is( 'elementary-theme-component-button-script', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'elementary-theme-component-disabledasset-style', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'elementary-theme-component-disabledasset-script', 'enqueued' ) );
 	}
 
 	/**
@@ -673,10 +1276,10 @@ class ComponentLoaderTest extends TestCase {
 		$component_root = $tmp_dir . '/components';
 		$style_root     = $tmp_dir . '/css';
 		$script_root    = $tmp_dir . '/js';
-		$button_dir     = $component_root . '/Button';
-		$button_file    = $button_dir . '/Button.php';
-		$button_css     = $style_root . '/button.css';
-		$button_js      = $script_root . '/button.js';
+		$button_dir     = $component_root . '/OverrideAsset';
+		$button_file    = $button_dir . '/OverrideAsset.php';
+		$button_css     = $style_root . '/overrideasset.css';
+		$button_js      = $script_root . '/overrideasset.js';
 
 		mkdir( $button_dir, 0755, true ); // phpcs:ignore
 		mkdir( $style_root, 0755, true ); // phpcs:ignore
@@ -711,11 +1314,11 @@ class ComponentLoaderTest extends TestCase {
 		add_filter( 'elementary_theme_component_paths', $paths_callback );
 		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
 
-		self::reset_component_asset_handles( 'button' );
+		self::reset_component_asset_handles( 'overrideasset' );
 
 		try {
 			$output = ComponentLoader::get(
-				'Button',
+				'OverrideAsset',
 				[ 'label' => 'Script Override' ],
 				[
 					'priority' => 'plugin',
@@ -723,11 +1326,15 @@ class ComponentLoaderTest extends TestCase {
 					'style'    => false,
 				]
 			);
+
+			$this->assertStringContainsString( 'override-asset-enqueue-button', $output );
+			$this->assertTrue( wp_script_is( 'elementary-theme-component-overrideasset-script', 'enqueued' ) );
+			$this->assertFalse( wp_style_is( 'elementary-theme-component-overrideasset-style', 'enqueued' ) );
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $paths_callback );
 			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
 
-			self::reset_component_asset_handles( 'button' );
+			self::reset_component_asset_handles( 'overrideasset' );
 
 			foreach ( [ $button_js, $button_css, $button_file ] as $file ) {
 				if ( is_file( $file ) ) {
@@ -741,10 +1348,6 @@ class ComponentLoaderTest extends TestCase {
 				}
 			}
 		}
-
-		$this->assertStringContainsString( 'override-asset-enqueue-button', $output );
-		$this->assertTrue( wp_script_is( 'elementary-theme-component-button-script', 'enqueued' ) );
-		$this->assertFalse( wp_style_is( 'elementary-theme-component-button-style', 'enqueued' ) );
 	}
 
 	/**
@@ -801,10 +1404,10 @@ class ComponentLoaderTest extends TestCase {
 		$second_tmp_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-cache-second-' . uniqid( '', true );
 		$active_tmp_dir = $first_tmp_dir;
 
-		$first_button_dir   = $first_tmp_dir . '/Button';
-		$second_button_dir  = $second_tmp_dir . '/Button';
-		$first_button_file  = $first_button_dir . '/Button.php';
-		$second_button_file = $second_button_dir . '/Button.php';
+		$first_button_dir   = $first_tmp_dir . '/CacheProbe';
+		$second_button_dir  = $second_tmp_dir . '/CacheProbe';
+		$first_button_file  = $first_button_dir . '/CacheProbe.php';
+		$second_button_file = $second_button_dir . '/CacheProbe.php';
 
 		mkdir( $first_button_dir, 0755, true ); // phpcs:ignore
 		mkdir( $second_button_dir, 0755, true ); // phpcs:ignore
@@ -829,9 +1432,9 @@ class ComponentLoaderTest extends TestCase {
 		add_filter( 'elementary_theme_component_paths', $callback );
 
 		try {
-			$first_output   = ComponentLoader::get( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			$first_output   = ComponentLoader::get( 'CacheProbe', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
 			$active_tmp_dir = $second_tmp_dir;
-			$second_output  = ComponentLoader::get( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			$second_output  = ComponentLoader::get( 'CacheProbe', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
 		} finally {
 			remove_filter( 'elementary_theme_component_paths', $callback );
 
@@ -896,5 +1499,24 @@ class ComponentLoaderTest extends TestCase {
 		wp_deregister_style( $style_handle );
 		wp_dequeue_script( $script_handle );
 		wp_deregister_script( $script_handle );
+	}
+
+	/**
+	 * Reset ComponentLoader private static caches between tests.
+	 *
+	 * @return void
+	 */
+	private static function reset_component_loader_caches(): void {
+		$reflection = new ReflectionClass( ComponentLoader::class );
+
+		foreach ( [ 'component_data_cache', 'asset_meta_cache' ] as $property_name ) {
+			if ( ! $reflection->hasProperty( $property_name ) ) {
+				continue;
+			}
+
+			$property = $reflection->getProperty( $property_name );
+			$property->setAccessible( true );
+			$property->setValue( null, [] );
+		}
 	}
 }

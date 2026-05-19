@@ -2,7 +2,7 @@
 /**
  * Component loader for resolving and rendering PHP component partials.
  *
- * Resolves components from theme or plugin paths with configurable priority.
+ * Resolves components from child theme, parent theme, then plugin paths.
  * Components are render-only PHP files that receive data as arguments and output HTML.
  *
  * @package rtCamp\Theme\Elementary
@@ -29,7 +29,7 @@ class ComponentLoader {
 	/**
 	 * Render a component by name.
 	 *
-	 * Resolves the component file based on registered paths and priority,
+	 * Resolves the component file from child theme, parent theme, or plugin paths,
 	 * then includes it with the provided arguments available in scope.
 	 *
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
@@ -37,7 +37,7 @@ class ComponentLoader {
 	 * @param array<string, mixed> $options {
 	 *     Optional. Resolution and asset enqueue options.
 	 *
-	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
+	 *     @type string $priority Deprecated. Ignored; components always resolve from child/parent theme before plugin paths.
 	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
 	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
@@ -119,7 +119,7 @@ class ComponentLoader {
 	 * @param array<string, mixed> $options {
 	 *     Optional. Resolution options.
 	 *
-	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
+	 *     @type string $priority Deprecated. Ignored; components always resolve from child/parent theme before plugin paths.
 	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
 	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
@@ -150,8 +150,9 @@ class ComponentLoader {
 	/**
 	 * Resolve the component file path.
 	 *
-	 * Checks registered paths in priority order and returns the first match.
-	 * Path format: {source_path}/{Name}/{Name}.php
+	 * Checks the theme path first, then the plugin path, and returns the first match.
+	 * Theme path format: {relative_theme_path}/{Name}/{Name}.php.
+	 * Plugin path format: {absolute_source_path}/{Name}/{Name}.php.
 	 *
 	 * @param string               $name    Component name.
 	 * @param array<string, mixed> $options Resolution options.
@@ -166,13 +167,12 @@ class ComponentLoader {
 			return false;
 		}
 
-		$priority = self::get_priority( $options );
-
 		/**
 		 * Filters the registered component paths.
 		 *
-		 * Each entry is keyed by source type ('theme', 'plugin') and maps
-		 * to a path config with PHP, style, and script locations.
+		 * Supported source keys are 'theme' and 'plugin'. Theme PHP, style, and
+		 * script paths are relative to the theme root. Plugin PHP paths are
+		 * absolute, and plugin assets use absolute dir/url config.
 		 *
 		 * @since 1.0.0
 		 *
@@ -184,15 +184,9 @@ class ComponentLoader {
 			'elementary_theme_component_paths',
 			[
 				'theme' => [
-					'php'    => ELEMENTARY_THEME_TEMP_DIR . '/src/Components',
-					'style'  => [
-						'dir' => ELEMENTARY_THEME_BUILD_DIR . '/css/components',
-						'url' => ELEMENTARY_THEME_BUILD_URI . '/css/components',
-					],
-					'script' => [
-						'dir' => ELEMENTARY_THEME_BUILD_DIR . '/js/components',
-						'url' => ELEMENTARY_THEME_BUILD_URI . '/js/components',
-					],
+					'php'    => 'src/Components',
+					'style'  => 'assets/build/css/components',
+					'script' => 'assets/build/js/components',
 				],
 			],
 			$component_name,
@@ -203,38 +197,33 @@ class ComponentLoader {
 			return false;
 		}
 
-		$cache_key = self::get_cache_key( [ $component_name, $priority, $paths, $options['script'] ?? false, $options['style'] ?? false ] );
+		$cache_key = self::get_cache_key(
+			[
+				$component_name,
+				$paths,
+				$options['script'] ?? false,
+				$options['style'] ?? false,
+			]
+		);
 
 		if ( isset( self::$component_data_cache[ $cache_key ] ) ) {
 			return self::$component_data_cache[ $cache_key ];
 		}
 
-		// Order sources based on priority.
-		$order = self::get_source_order( $priority, $paths );
+		if ( ! empty( $paths['theme'] ) && is_array( $paths['theme'] ) ) {
+			$component = self::get_theme_component_data( $component_name, $paths['theme'], $paths, $options );
 
-		foreach ( $order as $source ) {
+			if ( false !== $component ) {
+				self::$component_data_cache[ $cache_key ] = $component;
 
-			if (
-				empty( $paths[ $source ] ) ||
-				! is_array( $paths[ $source ] ) ||
-				empty( $paths[ $source ]['php'] ) ||
-				! is_string( $paths[ $source ]['php'] )
-			) {
-				continue;
+				return $component;
 			}
+		}
 
-			$file = trailingslashit( $paths[ $source ]['php'] ) . $component_name . '/' . $component_name . '.php';
+		if ( ! empty( $paths['plugin'] ) && is_array( $paths['plugin'] ) ) {
+			$component = self::get_plugin_component_data( $component_name, $paths['plugin'], $paths, $options );
 
-			if ( file_exists( $file ) && is_readable( $file ) ) {
-				$component = [
-					'name'   => $component_name,
-					'source' => $source,
-					'file'   => $file,
-					'root'   => $paths[ $source ]['php'],
-					'paths'  => $paths[ $source ],
-					'assets' => self::get_component_assets( $component_name, $paths[ $source ], $options ),
-				];
-
+			if ( false !== $component ) {
 				self::$component_data_cache[ $cache_key ] = $component;
 
 				return $component;
@@ -245,10 +234,73 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Get component asset metadata.
+	 * Resolve theme component data through locate_template().
 	 *
 	 * @param string               $component_name Component name.
-	 * @param array<string, mixed> $paths          Component path config.
+	 * @param array<string, mixed> $paths          Theme path config.
+	 * @param array<string, mixed> $all_paths      All filtered path configs.
+	 * @param array<string, mixed> $options        Component render options.
+	 *
+	 * @return array<string, mixed>|false Component metadata on success, false if not found.
+	 */
+	private static function get_theme_component_data( string $component_name, array $paths, array $all_paths, array $options ): array|false {
+		if ( empty( $paths['php'] ) || ! is_string( $paths['php'] ) ) {
+			return false;
+		}
+
+		$relative_file = trim( $paths['php'], '/\\' ) . '/' . $component_name . '/' . $component_name . '.php';
+		$file          = locate_template( [ $relative_file ], false, false );
+
+		if ( empty( $file ) || ! is_readable( $file ) ) {
+			return false;
+		}
+
+		return [
+			'name'   => $component_name,
+			'source' => 'theme',
+			'file'   => $file,
+			'root'   => $paths['php'],
+			'paths'  => $paths,
+			'assets' => self::get_component_assets( $component_name, $all_paths, $options ),
+		];
+	}
+
+	/**
+	 * Resolve plugin component data from an absolute source path.
+	 *
+	 * @param string               $component_name Component name.
+	 * @param array<string, mixed> $paths          Plugin path config.
+	 * @param array<string, mixed> $all_paths      All filtered path configs.
+	 * @param array<string, mixed> $options        Component render options.
+	 *
+	 * @return array<string, mixed>|false Component metadata on success, false if not found.
+	 */
+	private static function get_plugin_component_data( string $component_name, array $paths, array $all_paths, array $options ): array|false {
+		if ( empty( $paths['php'] ) || ! is_string( $paths['php'] ) ) {
+			return false;
+		}
+
+		$file = trailingslashit( $paths['php'] ) . $component_name . '/' . $component_name . '.php';
+
+		if ( ! is_readable( $file ) ) {
+			return false;
+		}
+
+		return [
+			'name'   => $component_name,
+			'source' => 'plugin',
+			'file'   => $file,
+			'root'   => $paths['php'],
+			'paths'  => $paths,
+			'assets' => self::get_component_assets( $component_name, $all_paths, $options ),
+		];
+	}
+
+	/**
+	 * Get component asset metadata from child theme, parent theme, then plugin.
+	 *
+	 * @param string               $component_name Component name.
+	 * @param array<string, mixed> $paths          All filtered path configs.
 	 * @param array<string, mixed> $options        Component render options.
 	 *
 	 * @return array<string, array<string, string>> Asset metadata.
@@ -270,14 +322,43 @@ class ComponentLoader {
 				continue;
 			}
 
-			if ( empty( $paths[ $asset_type ]['dir'] ) || empty( $paths[ $asset_type ]['url'] ) ) {
-				continue;
+			$asset_file_name = strtolower( $component_name ) . '.' . $extension;
+
+			if ( ! empty( $paths['theme'][ $asset_type ] ) && is_string( $paths['theme'][ $asset_type ] ) ) {
+				$relative_asset_dir = trim( $paths['theme'][ $asset_type ], '/\\' );
+				$child_asset_file   = trailingslashit( get_stylesheet_directory() ) . $relative_asset_dir . '/' . $asset_file_name;
+
+				if ( is_readable( $child_asset_file ) ) {
+					$assets[ $asset_type ] = [
+						'file' => $child_asset_file,
+						'url'  => trailingslashit( get_stylesheet_directory_uri() ) . $relative_asset_dir . '/' . $asset_file_name,
+					];
+
+					continue;
+				}
+
+				$theme_asset_file = trailingslashit( get_template_directory() ) . $relative_asset_dir . '/' . $asset_file_name;
+
+				if ( is_readable( $theme_asset_file ) ) {
+					$assets[ $asset_type ] = [
+						'file' => $theme_asset_file,
+						'url'  => trailingslashit( get_template_directory_uri() ) . $relative_asset_dir . '/' . $asset_file_name,
+					];
+
+					continue;
+				}
 			}
 
-			$assets[ $asset_type ] = [
-				'file' => trailingslashit( $paths[ $asset_type ]['dir'] ) . strtolower( $component_name ) . '.' . $extension,
-				'url'  => trailingslashit( $paths[ $asset_type ]['url'] ) . strtolower( $component_name ) . '.' . $extension,
-			];
+			if ( ! empty( $paths['plugin'][ $asset_type ]['dir'] ) && ! empty( $paths['plugin'][ $asset_type ]['url'] ) ) {
+				$plugin_asset_file = trailingslashit( (string) $paths['plugin'][ $asset_type ]['dir'] ) . $asset_file_name;
+
+				if ( is_readable( $plugin_asset_file ) ) {
+					$assets[ $asset_type ] = [
+						'file' => $plugin_asset_file,
+						'url'  => trailingslashit( (string) $paths['plugin'][ $asset_type ]['url'] ) . $asset_file_name,
+					];
+				}
+			}
 		}
 
 		return $assets;
@@ -467,65 +548,4 @@ class ComponentLoader {
 		return $name;
 	}
 
-	/**
-	 * Get the resolution priority.
-	 *
-	 * @param array<string, mixed> $options Options array potentially containing 'priority'.
-	 *
-	 * @return string 'theme' or 'plugin'.
-	 */
-	private static function get_priority( array $options ): string {
-
-		if ( ! empty( $options['priority'] ) && in_array( $options['priority'], [ 'theme', 'plugin' ], true ) ) {
-			return $options['priority'];
-		}
-
-		/**
-		 * Filters the default component resolution priority.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string $priority Default priority. Accepts 'theme' or 'plugin'.
-		 */
-		$default = apply_filters( 'elementary_theme_component_default_priority', 'theme' );
-
-		if ( in_array( $default, [ 'theme', 'plugin' ], true ) ) {
-			return $default;
-		}
-
-		return 'theme';
-	}
-
-	/**
-	 * Get the source resolution order based on priority.
-	 *
-	 * @param string               $priority 'theme' or 'plugin'.
-	 * @param array<string, mixed> $paths    Registered paths keyed by source.
-	 *
-	 * @return array<int, string> Ordered list of source keys to check.
-	 */
-	private static function get_source_order( string $priority, array $paths ): array {
-
-		$sources = array_keys( $paths );
-
-		if ( 'plugin' === $priority ) {
-			// Move 'plugin' to front if it exists.
-			$key = array_search( 'plugin', $sources, true );
-
-			if ( false !== $key ) {
-				unset( $sources[ $key ] );
-				array_unshift( $sources, 'plugin' );
-			}
-		} else {
-			// Move 'theme' to front if it exists.
-			$key = array_search( 'theme', $sources, true );
-
-			if ( false !== $key ) {
-				unset( $sources[ $key ] );
-				array_unshift( $sources, 'theme' );
-			}
-		}
-
-		return array_values( $sources );
-	}
 }
