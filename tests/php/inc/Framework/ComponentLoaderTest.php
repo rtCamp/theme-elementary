@@ -258,7 +258,9 @@ class ComponentLoaderTest extends TestCase {
 		);
 
 		$paths_callback = function ( $paths ) use ( $tmp_dir ) {
-			$paths['plugin'] = $tmp_dir;
+			$paths['plugin'] = [
+				'php' => $tmp_dir,
+			];
 			return $paths;
 		};
 
@@ -322,9 +324,9 @@ class ComponentLoaderTest extends TestCase {
 	 * Test that plugin paths are checked first when priority is 'plugin'.
 	 */
 	public function test_plugin_priority_checks_plugin_path_first(): void {
-		$tmp_dir      = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-plugin-components-' . uniqid( '', true );
-		$button_dir   = $tmp_dir . '/Button';
-		$button_file  = $button_dir . '/Button.php';
+		$tmp_dir       = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-plugin-components-' . uniqid( '', true );
+		$button_dir    = $tmp_dir . '/Button';
+		$button_file   = $button_dir . '/Button.php';
 		$plugin_output = '';
 		$theme_output  = '';
 
@@ -336,7 +338,9 @@ class ComponentLoaderTest extends TestCase {
 		);
 
 		$callback = function ( $paths ) use ( $tmp_dir ) {
-			$paths['plugin'] = $tmp_dir;
+			$paths['plugin'] = [
+				'php' => $tmp_dir,
+			];
 			return $paths;
 		};
 
@@ -373,6 +377,482 @@ class ComponentLoaderTest extends TestCase {
 	}
 
 	/**
+	 * Test PHP-only path configs render without asset config.
+	 */
+	public function test_php_only_component_path_config_renders_without_assets(): void {
+		$tmp_dir     = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-php-only-components-' . uniqid( '', true );
+		$button_dir  = $tmp_dir . '/Button';
+		$button_file = $button_dir . '/Button.php';
+
+		mkdir( $button_dir, 0755, true ); // phpcs:ignore
+
+		file_put_contents( // phpcs:ignore
+			$button_file,
+			'<?php echo "php-only-button";'
+		);
+
+		$callback = function ( $paths ) use ( $tmp_dir ) {
+			$paths['plugin'] = [
+				'php' => $tmp_dir,
+			];
+			return $paths;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $callback );
+
+		try {
+			ob_start();
+			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			$output = ob_get_clean();
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $callback );
+
+			if ( is_file( $button_file ) ) {
+				unlink( $button_file ); // phpcs:ignore
+			}
+
+			if ( is_dir( $button_dir ) ) {
+				rmdir( $button_dir ); // phpcs:ignore
+			}
+
+			if ( is_dir( $tmp_dir ) ) {
+				rmdir( $tmp_dir ); // phpcs:ignore
+			}
+		}
+
+		$this->assertStringContainsString( 'php-only-button', $output );
+	}
+
+	/**
+	 * Test malformed asset metadata falls back safely.
+	 */
+	public function test_malformed_component_asset_metadata_falls_back_safely(): void {
+		$tmp_dir         = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-malformed-asset-meta-' . uniqid( '', true );
+		$component_root  = $tmp_dir . '/components';
+		$style_root      = $tmp_dir . '/css';
+		$button_dir      = $component_root . '/Button';
+		$button_file     = $button_dir . '/Button.php';
+		$button_css_file = $style_root . '/button.css';
+		$button_asset    = $style_root . '/button.asset.php';
+
+		mkdir( $button_dir, 0755, true ); // phpcs:ignore
+		mkdir( $style_root, 0755, true ); // phpcs:ignore
+
+		file_put_contents( // phpcs:ignore
+			$button_file,
+			'<?php echo "malformed-asset-meta-button";'
+		);
+
+		file_put_contents( // phpcs:ignore
+			$button_css_file,
+			'.malformed-asset-meta-button { color: inherit; }'
+		);
+
+		file_put_contents( // phpcs:ignore
+			$button_asset,
+			'<?php return [ "dependencies" => "bad-deps", "version" => [ "bad-version" ] ];'
+		);
+
+		$callback = function ( $paths ) use ( $component_root, $style_root ) {
+			$paths['plugin'] = [
+				'php'   => $component_root,
+				'style' => [
+					'dir' => $style_root,
+					'url' => 'https://example.com/css',
+				],
+			];
+			return $paths;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $callback );
+
+		try {
+			ob_start();
+			ComponentLoader::render( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			$output = ob_get_clean();
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $callback );
+
+			foreach ( [ $button_asset, $button_css_file, $button_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $button_dir, $style_root, $component_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'malformed-asset-meta-button', $output );
+	}
+
+	/**
+	 * Test enqueue defaults prevent disabled assets from being collected.
+	 */
+	public function test_enqueue_defaults_disable_asset_collection(): void {
+		$component_assets = null;
+
+		$enqueue_callback = function () {
+			return [
+				'script' => false,
+				'style'  => false,
+			];
+		};
+
+		$action_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get( 'Button', [ 'label' => 'No Assets' ] );
+		} finally {
+			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'No Assets', $output );
+		$this->assertSame( [], $component_assets );
+	}
+
+	/**
+	 * Test render options override enqueue defaults for asset collection.
+	 */
+	public function test_enqueue_options_override_defaults_for_asset_collection(): void {
+		$component_assets = null;
+
+		$enqueue_callback = function () {
+			return [
+				'script' => false,
+				'style'  => false,
+			];
+		};
+
+		$action_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'Button',
+				[ 'label' => 'Style Only' ],
+				[
+					'script' => false,
+					'style'  => true,
+				]
+			);
+		} finally {
+			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'Style Only', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertArrayHasKey( 'style', $component_assets );
+		$this->assertArrayNotHasKey( 'script', $component_assets );
+	}
+
+	/**
+	 * Test script-only enqueue options collect only script assets.
+	 */
+	public function test_script_only_enqueue_options_collect_only_script_assets(): void {
+		$component_assets = null;
+
+		$action_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets = $options['component']['assets'] ?? null;
+		};
+
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'Button',
+				[ 'label' => 'Script Only' ],
+				[
+					'script' => true,
+					'style'  => false,
+				]
+			);
+		} finally {
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'Script Only', $output );
+		$this->assertIsArray( $component_assets );
+		$this->assertArrayHasKey( 'script', $component_assets );
+		$this->assertArrayNotHasKey( 'style', $component_assets );
+	}
+
+	/**
+	 * Test enqueue defaults prevent disabled assets from being enqueued.
+	 */
+	public function test_enqueue_defaults_disable_asset_enqueueing(): void {
+		$tmp_dir        = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-disabled-asset-enqueue-' . uniqid( '', true );
+		$component_root = $tmp_dir . '/components';
+		$style_root     = $tmp_dir . '/css';
+		$script_root    = $tmp_dir . '/js';
+		$button_dir     = $component_root . '/Button';
+		$button_file    = $button_dir . '/Button.php';
+		$button_css     = $style_root . '/button.css';
+		$button_js      = $script_root . '/button.js';
+
+		mkdir( $button_dir, 0755, true ); // phpcs:ignore
+		mkdir( $style_root, 0755, true ); // phpcs:ignore
+		mkdir( $script_root, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $button_file, '<?php echo "disabled-asset-enqueue-button";' ); // phpcs:ignore
+		file_put_contents( $button_css, '.disabled-asset-enqueue-button { color: inherit; }' ); // phpcs:ignore
+		file_put_contents( $button_js, 'window.elementaryDisabledAssetEnqueueButton = true;' ); // phpcs:ignore
+
+		$paths_callback = function ( $paths ) use ( $component_root, $style_root, $script_root ) {
+			$paths['plugin'] = [
+				'php'    => $component_root,
+				'style'  => [
+					'dir' => $style_root,
+					'url' => 'https://example.com/css',
+				],
+				'script' => [
+					'dir' => $script_root,
+					'url' => 'https://example.com/js',
+				],
+			];
+			return $paths;
+		};
+
+		$enqueue_callback = function () {
+			return [
+				'script' => false,
+				'style'  => false,
+			];
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+
+		self::reset_component_asset_handles( 'button' );
+
+		try {
+			$output = ComponentLoader::get( 'Button', [ 'label' => 'No Enqueue' ], [ 'priority' => 'plugin' ] );
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+
+			self::reset_component_asset_handles( 'button' );
+
+			foreach ( [ $button_js, $button_css, $button_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $button_dir, $style_root, $script_root, $component_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'disabled-asset-enqueue-button', $output );
+		$this->assertFalse( wp_style_is( 'elementary-theme-component-button-style', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'elementary-theme-component-button-script', 'enqueued' ) );
+	}
+
+	/**
+	 * Test render options override enqueue defaults before assets are enqueued.
+	 */
+	public function test_enqueue_options_override_defaults_before_enqueueing_assets(): void {
+		$tmp_dir        = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-override-asset-enqueue-' . uniqid( '', true );
+		$component_root = $tmp_dir . '/components';
+		$style_root     = $tmp_dir . '/css';
+		$script_root    = $tmp_dir . '/js';
+		$button_dir     = $component_root . '/Button';
+		$button_file    = $button_dir . '/Button.php';
+		$button_css     = $style_root . '/button.css';
+		$button_js      = $script_root . '/button.js';
+
+		mkdir( $button_dir, 0755, true ); // phpcs:ignore
+		mkdir( $style_root, 0755, true ); // phpcs:ignore
+		mkdir( $script_root, 0755, true ); // phpcs:ignore
+
+		file_put_contents( $button_file, '<?php echo "override-asset-enqueue-button";' ); // phpcs:ignore
+		file_put_contents( $button_css, '.override-asset-enqueue-button { color: inherit; }' ); // phpcs:ignore
+		file_put_contents( $button_js, 'window.elementaryOverrideAssetEnqueueButton = true;' ); // phpcs:ignore
+
+		$paths_callback = function ( $paths ) use ( $component_root, $style_root, $script_root ) {
+			$paths['plugin'] = [
+				'php'    => $component_root,
+				'style'  => [
+					'dir' => $style_root,
+					'url' => 'https://example.com/css',
+				],
+				'script' => [
+					'dir' => $script_root,
+					'url' => 'https://example.com/js',
+				],
+			];
+			return $paths;
+		};
+
+		$enqueue_callback = function () {
+			return [
+				'script' => false,
+				'style'  => false,
+			];
+		};
+
+		add_filter( 'elementary_theme_component_paths', $paths_callback );
+		add_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+
+		self::reset_component_asset_handles( 'button' );
+
+		try {
+			$output = ComponentLoader::get(
+				'Button',
+				[ 'label' => 'Script Override' ],
+				[
+					'priority' => 'plugin',
+					'script'   => true,
+					'style'    => false,
+				]
+			);
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $paths_callback );
+			remove_filter( 'elementary_theme_component_enqueue_defaults', $enqueue_callback );
+
+			self::reset_component_asset_handles( 'button' );
+
+			foreach ( [ $button_js, $button_css, $button_file ] as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $button_dir, $style_root, $script_root, $component_root, $tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'override-asset-enqueue-button', $output );
+		$this->assertTrue( wp_script_is( 'elementary-theme-component-button-script', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'elementary-theme-component-button-style', 'enqueued' ) );
+	}
+
+	/**
+	 * Test nested components inherit disabled enqueue options.
+	 */
+	public function test_nested_components_inherit_disabled_enqueue_options(): void {
+		$component_assets = [];
+
+		$action_callback = function ( $name, $args, $options ) use ( &$component_assets ) {
+			$component_assets[ $name ] = $options['component']['assets'] ?? null;
+		};
+
+		add_action( 'elementary_theme_before_get_component', $action_callback, 10, 3 );
+
+		try {
+			$output = ComponentLoader::get(
+				'Card',
+				[
+					'title' => 'Nested Disabled Assets',
+					'url'   => 'https://example.com',
+				],
+				[
+					'script' => false,
+					'style'  => false,
+				]
+			);
+		} finally {
+			remove_action( 'elementary_theme_before_get_component', $action_callback );
+		}
+
+		$this->assertStringContainsString( 'Nested Disabled Assets', $output );
+		$this->assertSame( [], $component_assets['Card'] );
+		$this->assertSame( [], $component_assets['Button'] );
+	}
+
+	/**
+	 * Test repeated renders use fresh arguments when lookup data is cached.
+	 */
+	public function test_repeated_renders_use_fresh_arguments(): void {
+		$first_output  = ComponentLoader::get( 'Button', [ 'label' => 'First Render' ] );
+		$second_output = ComponentLoader::get( 'Button', [ 'label' => 'Second Render' ] );
+
+		$this->assertStringContainsString( 'First Render', $first_output );
+		$this->assertStringNotContainsString( 'Second Render', $first_output );
+		$this->assertStringContainsString( 'Second Render', $second_output );
+		$this->assertStringNotContainsString( 'First Render', $second_output );
+	}
+
+	/**
+	 * Test cached lookup data stays sensitive to filtered path changes.
+	 */
+	public function test_component_lookup_cache_is_sensitive_to_filtered_paths(): void {
+		$first_tmp_dir  = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-cache-first-' . uniqid( '', true );
+		$second_tmp_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/elementary-test-cache-second-' . uniqid( '', true );
+		$active_tmp_dir = $first_tmp_dir;
+
+		$first_button_dir   = $first_tmp_dir . '/Button';
+		$second_button_dir  = $second_tmp_dir . '/Button';
+		$first_button_file  = $first_button_dir . '/Button.php';
+		$second_button_file = $second_button_dir . '/Button.php';
+
+		mkdir( $first_button_dir, 0755, true ); // phpcs:ignore
+		mkdir( $second_button_dir, 0755, true ); // phpcs:ignore
+
+		file_put_contents( // phpcs:ignore
+			$first_button_file,
+			'<?php echo "cache-first-button";'
+		);
+
+		file_put_contents( // phpcs:ignore
+			$second_button_file,
+			'<?php echo "cache-second-button";'
+		);
+
+		$callback = function ( $paths ) use ( &$active_tmp_dir ) {
+			$paths['plugin'] = [
+				'php' => $active_tmp_dir,
+			];
+			return $paths;
+		};
+
+		add_filter( 'elementary_theme_component_paths', $callback );
+
+		try {
+			$first_output   = ComponentLoader::get( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+			$active_tmp_dir = $second_tmp_dir;
+			$second_output  = ComponentLoader::get( 'Button', [ 'label' => 'Test' ], [ 'priority' => 'plugin' ] );
+		} finally {
+			remove_filter( 'elementary_theme_component_paths', $callback );
+
+			foreach ( [ $first_button_file, $second_button_file ] as $button_file ) {
+				if ( is_file( $button_file ) ) {
+					unlink( $button_file ); // phpcs:ignore
+				}
+			}
+
+			foreach ( [ $first_button_dir, $second_button_dir, $first_tmp_dir, $second_tmp_dir ] as $dir ) {
+				if ( is_dir( $dir ) ) {
+					rmdir( $dir ); // phpcs:ignore
+				}
+			}
+		}
+
+		$this->assertStringContainsString( 'cache-first-button', $first_output );
+		$this->assertStringContainsString( 'cache-second-button', $second_output );
+	}
+
+	/**
 	 * Test that the global wrapper function exists.
 	 */
 	public function test_global_wrapper_function_exists(): void {
@@ -399,5 +879,22 @@ class ComponentLoaderTest extends TestCase {
 
 		$this->assertStringContainsString( 'Global Buffered', $markup );
 		$this->assertStringContainsString( '<button', $markup );
+	}
+
+	/**
+	 * Reset component asset handles between enqueue assertions.
+	 *
+	 * @param string $slug Component slug.
+	 *
+	 * @return void
+	 */
+	private static function reset_component_asset_handles( string $slug ): void {
+		$style_handle  = 'elementary-theme-component-' . $slug . '-style';
+		$script_handle = 'elementary-theme-component-' . $slug . '-script';
+
+		wp_dequeue_style( $style_handle );
+		wp_deregister_style( $style_handle );
+		wp_dequeue_script( $script_handle );
+		wp_deregister_script( $script_handle );
 	}
 }

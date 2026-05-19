@@ -20,37 +20,65 @@ namespace rtCamp\Theme\Elementary\Framework;
 class ComponentLoader {
 
 	/**
+	 * Resolved component metadata cache.
+	 *
+	 * @var array<string, array<string, mixed>>
+	 */
+	private static array $component_data_cache = [];
+
+	/**
 	 * Render a component by name.
 	 *
 	 * Resolves the component file based on registered paths and priority,
 	 * then includes it with the provided arguments available in scope.
 	 *
-	 * @param string $name    Component name (e.g. 'Button', 'Card').
-	 * @param array  $args    Arguments to pass to the component.
-	 * @param array  $options {
-	 *     Optional. Resolution options and the enqueue for scripts and style.
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options {
+	 *     Optional. Resolution and asset enqueue options.
 	 *
 	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
-	 *     @type array  $enqueue  The value for script and style enqueue. true or false for each. Default determined by filter.
+	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
+	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
 	 *
 	 * @return void
 	 */
 	public static function render( string $name, array $args = [], array $options = [] ): void {
 
+		$options   = self::get_render_options( $options );
 		$component = self::get_component_data( $name, $options );
 
 		if ( false === $component ) {
 			return;
 		}
 
+		$options['component'] = $component;
+
+		do_action( 'elementary_theme_before_get_component', $name, $args, $options );
+
+		self::require_component_file( (string) $component['file'], $args, $options );
+
+		self::enqueue_component_assets( $component, $options );
+
+		do_action( 'elementary_theme_after_get_component', $name, $args, $options );
+	}
+
+	/**
+	 * Get normalized render options.
+	 *
+	 * @param array<string, mixed> $options Render options.
+	 *
+	 * @return array<string, mixed> Render options with enqueue settings resolved.
+	 */
+	private static function get_render_options( array $options ): array {
 		/**
 		 * Filters the default enqueue settings for elementary theme components.
 		 *
-		 * This filter allows developers to modify whether scripts and styles 
+		 * This filter allows developers to modify whether scripts and styles
 		 * should be enqueued by default for the theme component.
 		 *
-		 * @param array $defaults {
+		 * @param array<string, bool> $defaults {
 		 * Default enqueue settings.
 		 *
 		 * @type bool $script Whether to enqueue the component's script. Default true.
@@ -65,22 +93,19 @@ class ComponentLoader {
 			]
 		);
 
+		if ( ! is_array( $enqueue ) ) {
+			$enqueue = [];
+		}
+
 		$enqueue = wp_parse_args(
 			$options,
 			$enqueue
 		);
 
-		$options['script']    = $enqueue['script'];
-		$options['style']     = $enqueue['style'];
-		$options['component'] = $component;
+		$options['script'] = ! empty( $enqueue['script'] );
+		$options['style']  = ! empty( $enqueue['style'] );
 
-		do_action( 'elementary_theme_before_get_component', $name, $args, $options );
-
-		require $component['file'];
-
-		self::enqueue_component_assets( $component, $options );
-
-		do_action( 'elementary_theme_after_get_component', $name, $args, $options );
+		return $options;
 	}
 
 	/**
@@ -89,12 +114,14 @@ class ComponentLoader {
 	 * Uses output buffering to capture the component output instead of
 	 * sending it directly to the browser.
 	 *
-	 * @param string $name    Component name (e.g. 'Button', 'Card').
-	 * @param array  $args    Arguments to pass to the component.
-	 * @param array  $options {
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options {
 	 *     Optional. Resolution options.
 	 *
 	 *     @type string $priority Resolution priority: 'theme' or 'plugin'. Default determined by filter.
+	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
+	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
 	 *
 	 * @return string Rendered component HTML, or empty string if not found.
@@ -108,13 +135,26 @@ class ComponentLoader {
 	}
 
 	/**
+	 * Require a component file in render scope.
+	 *
+	 * @param string               $file    Component file path.
+	 * @param array<string, mixed> $args    Component arguments.
+	 * @param array<string, mixed> $options Component render options.
+	 *
+	 * @return void
+	 */
+	private static function require_component_file( string $file, array $args, array $options ): void {
+		require $file;
+	}
+
+	/**
 	 * Resolve the component file path.
 	 *
 	 * Checks registered paths in priority order and returns the first match.
 	 * Path format: {source_path}/{Name}/{Name}.php
 	 *
-	 * @param string $name    Component name.
-	 * @param array  $options Resolution options.
+	 * @param string               $name    Component name.
+	 * @param array<string, mixed> $options Resolution options.
 	 *
 	 * @return array<string, mixed>|false Component metadata on success, false if not found.
 	 */
@@ -132,14 +172,13 @@ class ComponentLoader {
 		 * Filters the registered component paths.
 		 *
 		 * Each entry is keyed by source type ('theme', 'plugin') and maps
-		 * to either a component PHP directory path or a path config with
-		 * PHP, style, and script locations.
+		 * to a path config with PHP, style, and script locations.
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array  $paths    Associative array of source => path config.
-		 * @param string $name     Component name being resolved.
-		 * @param array  $options  Options passed to render().
+		 * @param array<string, array<string, mixed>> $paths   Associative array of source => path config.
+		 * @param string                              $name    Component name being resolved.
+		 * @param array<string, mixed>                $options Options passed to render().
 		 */
 		$paths = apply_filters(
 			'elementary_theme_component_paths',
@@ -160,8 +199,14 @@ class ComponentLoader {
 			$options
 		);
 
-		if ( empty( $paths ) ) {
+		if ( empty( $paths ) || ! is_array( $paths ) ) {
 			return false;
+		}
+
+		$cache_key = self::get_cache_key( [ $component_name, $priority, $paths, $options['script'] ?? false, $options['style'] ?? false ] );
+
+		if ( isset( self::$component_data_cache[ $cache_key ] ) ) {
+			return self::$component_data_cache[ $cache_key ];
 		}
 
 		// Order sources based on priority.
@@ -169,21 +214,30 @@ class ComponentLoader {
 
 		foreach ( $order as $source ) {
 
-			if ( empty( $paths[ $source ]['php'] ) ) {
+			if (
+				empty( $paths[ $source ] ) ||
+				! is_array( $paths[ $source ] ) ||
+				empty( $paths[ $source ]['php'] ) ||
+				! is_string( $paths[ $source ]['php'] )
+			) {
 				continue;
 			}
 
 			$file = trailingslashit( $paths[ $source ]['php'] ) . $component_name . '/' . $component_name . '.php';
 
 			if ( file_exists( $file ) && is_readable( $file ) ) {
-				return [
+				$component = [
 					'name'   => $component_name,
 					'source' => $source,
 					'file'   => $file,
 					'root'   => $paths[ $source ]['php'],
 					'paths'  => $paths[ $source ],
-					'assets' => self::get_component_assets( $component_name, $paths[ $source ] ),
+					'assets' => self::get_component_assets( $component_name, $paths[ $source ], $options ),
 				];
+
+				self::$component_data_cache[ $cache_key ] = $component;
+
+				return $component;
 			}
 		}
 
@@ -195,10 +249,15 @@ class ComponentLoader {
 	 *
 	 * @param string               $component_name Component name.
 	 * @param array<string, mixed> $paths          Component path config.
+	 * @param array<string, mixed> $options        Component render options.
 	 *
 	 * @return array<string, array<string, string>> Asset metadata.
 	 */
-	private static function get_component_assets( string $component_name, array $paths ): array {
+	private static function get_component_assets( string $component_name, array $paths, array $options ): array {
+		if ( empty( $options['style'] ) && empty( $options['script'] ) ) {
+			return [];
+		}
+
 		$assets = [];
 
 		foreach (
@@ -207,6 +266,10 @@ class ComponentLoader {
 				'script' => 'js',
 			] as $asset_type => $extension
 		) {
+			if ( empty( $options[ $asset_type ] ) ) {
+				continue;
+			}
+
 			if ( empty( $paths[ $asset_type ]['dir'] ) || empty( $paths[ $asset_type ]['url'] ) ) {
 				continue;
 			}
@@ -218,6 +281,19 @@ class ComponentLoader {
 		}
 
 		return $assets;
+	}
+
+	/**
+	 * Create a stable cache key for request-level lookup caches.
+	 *
+	 * @param array<mixed> $parts Cache key parts.
+	 *
+	 * @return string Cache key.
+	 */
+	private static function get_cache_key( array $parts ): string {
+		$encoded_parts = wp_json_encode( $parts );
+
+		return md5( is_string( $encoded_parts ) ? $encoded_parts : '' );
 	}
 
 	/**
@@ -235,7 +311,11 @@ class ComponentLoader {
 
 		$slug = sanitize_key( (string) $component['name'] );
 
-		if ( ! empty( $options['style'] ) ) {
+		if (
+			! empty( $options['style'] ) &&
+			! empty( $component['assets']['style'] ) &&
+			is_array( $component['assets']['style'] )
+		) {
 			$handle = 'elementary-theme-component-' . $slug . '-style';
 
 			if ( self::register_component_style( $handle, $component['assets']['style'] ) ) {
@@ -243,7 +323,11 @@ class ComponentLoader {
 			}
 		}
 
-		if ( ! empty( $options['script'] ) ) {
+		if (
+			! empty( $options['script'] ) &&
+			! empty( $component['assets']['script'] ) &&
+			is_array( $component['assets']['script'] )
+		) {
 			$handle = 'elementary-theme-component-' . $slug . '-script';
 
 			if ( self::register_component_script( $handle, $component['assets']['script'] ) ) {
@@ -255,11 +339,11 @@ class ComponentLoader {
 	/**
 	 * Register a component script.
 	 *
-	 * @param string           $handle    Name of the script. Should be unique.
-	 * @param array            $asset     Component asset metadata.
-	 * @param array<string>    $deps      Optional. An array of registered script handles this script depends on. Default empty array.
-	 * @param string|bool|null $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
-	 * @param bool             $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
+	 * @param string               $handle    Name of the script. Should be unique.
+	 * @param array<string, mixed> $asset     Component asset metadata.
+	 * @param array<string>        $deps      Optional. An array of registered script handles this script depends on. Default empty array.
+	 * @param string|bool|null     $ver       Optional. String specifying script version number, if not set, filetime will be used as version number.
+	 * @param bool                 $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 *
 	 * @return bool Whether the script has been registered.
 	 */
@@ -280,11 +364,11 @@ class ComponentLoader {
 	/**
 	 * Register a component stylesheet.
 	 *
-	 * @param string           $handle Name of the stylesheet. Should be unique.
-	 * @param array            $asset  Component asset metadata.
-	 * @param array<string>    $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-	 * @param string|bool|null $ver    Optional. String specifying style version number, if not set, filetime will be used as version number.
-	 * @param string           $media  Optional. The media for which this stylesheet has been defined.
+	 * @param string               $handle Name of the stylesheet. Should be unique.
+	 * @param array<string, mixed> $asset  Component asset metadata.
+	 * @param array<string>        $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+	 * @param string|bool|null     $ver    Optional. String specifying style version number, if not set, filetime will be used as version number.
+	 * @param string               $media  Optional. The media for which this stylesheet has been defined.
 	 *
 	 * @return bool Whether the style has been registered.
 	 */
@@ -309,23 +393,34 @@ class ComponentLoader {
 	 * @param array<string>    $deps Asset dependencies to merge with.
 	 * @param string|bool|null $ver  Asset version string.
 	 *
-	 * @return array<string, mixed> Asset meta information including dependencies and version.
+	 * @return array{dependencies: array<string>, version: string|bool} Asset meta information including dependencies and version.
 	 */
 	private static function get_component_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
 		$normalized_file   = ltrim( str_replace( '\\', '/', $file ), '/' );
 		$asset_meta_target = preg_replace( '/\.[^\/.]+$/', '', $normalized_file );
 		$asset_meta_target = ! empty( $asset_meta_target ) ? $asset_meta_target : $normalized_file;
 		$asset_meta_file   = '/' . $asset_meta_target . '.asset.php';
-		$asset_meta        = is_readable( $asset_meta_file )
-			? require $asset_meta_file
-			: [
-				'dependencies' => [],
-				'version'      => self::get_component_file_version( $file, $ver ),
-			];
+		$asset_meta        = is_readable( $asset_meta_file ) ? require $asset_meta_file : [];
 
-		$asset_meta['dependencies'] = array_merge( $deps, $asset_meta['dependencies'] );
+		if ( ! is_array( $asset_meta ) ) {
+			$asset_meta = [];
+		}
 
-		return $asset_meta;
+		$dependencies = $asset_meta['dependencies'] ?? [];
+		$version      = $asset_meta['version'] ?? self::get_component_file_version( $file, $ver );
+
+		if ( ! is_array( $dependencies ) ) {
+			$dependencies = [];
+		}
+
+		$dependencies = array_values( array_filter( $dependencies, 'is_string' ) );
+
+		return [
+			'dependencies' => array_merge( $deps, $dependencies ),
+			'version'      => is_string( $version ) || is_bool( $version )
+				? $version
+				: ( is_int( $version ) ? (string) $version : self::get_component_file_version( $file, $ver ) ),
+		];
 	}
 
 	/**
@@ -334,9 +429,9 @@ class ComponentLoader {
 	 * @param string           $file File path.
 	 * @param string|bool|null $ver  File version.
 	 *
-	 * @return int|string|bool File version based on file modification time or provided version.
+	 * @return string|bool File version based on file modification time or provided version.
 	 */
-	private static function get_component_file_version( string $file, string|bool|null $ver = false ): int|string|bool {
+	private static function get_component_file_version( string $file, string|bool|null $ver = false ): string|bool {
 		if ( ! empty( $ver ) ) {
 			return $ver;
 		}
@@ -375,7 +470,7 @@ class ComponentLoader {
 	/**
 	 * Get the resolution priority.
 	 *
-	 * @param array $options Options array potentially containing 'priority'.
+	 * @param array<string, mixed> $options Options array potentially containing 'priority'.
 	 *
 	 * @return string 'theme' or 'plugin'.
 	 */
@@ -404,10 +499,10 @@ class ComponentLoader {
 	/**
 	 * Get the source resolution order based on priority.
 	 *
-	 * @param string $priority 'theme' or 'plugin'.
-	 * @param array  $paths    Registered paths keyed by source.
+	 * @param string               $priority 'theme' or 'plugin'.
+	 * @param array<string, mixed> $paths    Registered paths keyed by source.
 	 *
-	 * @return array Ordered list of source keys to check.
+	 * @return array<int, string> Ordered list of source keys to check.
 	 */
 	private static function get_source_order( string $priority, array $paths ): array {
 
