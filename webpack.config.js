@@ -99,6 +99,35 @@ const readAllFileEntries = ( dir, { excludeDirs = [] } = {} ) => {
 	return entries;
 };
 
+/**
+ * Read component file entries from a components directory.
+ *
+ * @param {string} dir Base directory to scan (e.g., './src/Components').
+ * @param {RegExp} extFilter Regex to match file extensions.
+ * @return {Object} Object mapping entry names to file paths.
+ */
+const getComponentEntries = ( dir, extFilter ) => {
+	const entries = {};
+	if ( ! fs.existsSync( dir ) ) {
+		return entries;
+	}
+	const resolvedDir = path.resolve( dir );
+	fs.readdirSync( resolvedDir, { withFileTypes: true } ).forEach( ( entry ) => {
+		if ( entry.isDirectory() && ! entry.name.startsWith( '_' ) && ! entry.name.startsWith( '.' ) ) {
+			const compName = entry.name;
+			const compDir = path.join( resolvedDir, compName );
+			fs.readdirSync( compDir ).forEach( ( file ) => {
+				if ( file.startsWith( compName ) && file.match( extFilter ) ) {
+					const entryName = `components/${ compName.toLowerCase() }`;
+					entries[ entryName ] = path.join( compDir, file );
+				}
+			} );
+		}
+	} );
+	return entries;
+};
+
+
 // Extend the default config.
 const sharedConfig = {
 	...scriptConfig,
@@ -131,7 +160,10 @@ const sharedConfig = {
 // CSS / SCSS entry points from src/css/{frontend,admin,editor}/.
 const styles = {
 	...sharedConfig,
-	entry: () => readAllFileEntries( './src/css' ),
+	entry: () => ( {
+		...readAllFileEntries( './src/css' ),
+		...getComponentEntries( './src/Components', /\.(sc|sa|c)ss$/ ),
+	} ),
 	module: {
 		...sharedConfig.module,
 	},
@@ -145,7 +177,10 @@ const styles = {
 // Standard JS entry points from src/js/{frontend,admin,editor}/.
 const scripts = {
 	...sharedConfig,
-	entry: () => readAllFileEntries( './src/js', { excludeDirs: [ 'modules' ] } ),
+	entry: () => ( {
+		...readAllFileEntries( './src/js', { excludeDirs: [ 'modules' ] } ),
+		...getComponentEntries( './src/Components', /\.js$/ ),
+	} ),
 	plugins: [
 		...sharedConfig.plugins,
 		new CopyWebpackPlugin( {
