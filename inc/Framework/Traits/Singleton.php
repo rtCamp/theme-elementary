@@ -22,11 +22,18 @@
  *
  * If you specifically need multiple objects, then use a normal class.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
 
-namespace Elementary_Theme\Traits;
+declare( strict_types = 1 );
 
+namespace rtCamp\Theme\Elementary\Framework\Traits;
+
+/**
+ * Trait Singleton
+ *
+ * @since 1.0.0
+ */
 trait Singleton {
 
 	/**
@@ -50,14 +57,15 @@ trait Singleton {
 	 * of the class for which it is called. This method is set
 	 * as final intentionally, it is not meant to be overridden.
 	 *
-	 * @return object Singleton instance of the class.
+	 * @return static Singleton instance of the class.
+	 *
+	 * @since 1.0.0
 	 */
-	final public static function get_instance() {
-
+	final public static function get_instance(): static {
 		/**
 		 * Collection of instance.
 		 *
-		 * @var array
+		 * @var array<class-string, object>
 		 */
 		static $instance = [];
 
@@ -82,6 +90,14 @@ trait Singleton {
 
 		}
 
-		return $instance[ $called_class ];
+		/**
+		 * This assignment is necessary to make sure that the returned instance is of the correct type,
+		 * as the $instance array is typed as array<class-string, object>.
+		 *
+		 * @var static $singleton
+		 */
+		$singleton = $instance[ $called_class ];
+
+		return $singleton;
 	}
 }

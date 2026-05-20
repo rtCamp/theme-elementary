@@ -2,7 +2,9 @@
 /**
  * Define custom functions for the theme.
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 // Define custom functions here.

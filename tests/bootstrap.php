@@ -2,8 +2,10 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
+
+declare( strict_types = 1 );
 
 define( 'TESTS_THEME_DIR', __DIR__ );
 
@@ -29,10 +31,8 @@ require_once $_test_root . '/includes/functions.php';
 
 /**
  * Registers theme.
- *
- * @return void
  */
-function _register_theme() {
+function _register_theme(): void {
 	$theme_dir     = dirname( __DIR__ );
 	$current_theme = basename( $theme_dir );
 	$theme_root    = dirname( $theme_dir );

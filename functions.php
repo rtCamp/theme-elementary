@@ -4,7 +4,7 @@
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
 
 if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) :
@@ -23,7 +23,15 @@ if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
-require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
+if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
+	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
+endif;
+
+require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';
+
+if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
+	return;
+}
 
 /**
  * Theme bootstrap instance.
@@ -33,7 +41,8 @@ require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
  * @return object Theme bootstrap instance.
  */
 function elementary_theme_instance() {
-	return Elementary_Theme\Elementary_Theme::get_instance();
+
+	return rtCamp\Theme\Elementary\Main::get_instance();
 }
 
 // Instantiate theme.

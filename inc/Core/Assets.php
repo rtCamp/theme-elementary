@@ -1,0 +1,100 @@
+<?php
+/**
+ * Theme bootstrap file.
+ *
+ * @package rtCamp\Theme\Elementary
+ */
+
+declare( strict_types = 1 );
+
+namespace rtCamp\Theme\Elementary\Core;
+
+use rtCamp\Theme\Elementary\Framework\Traits\AssetLoaderTrait;
+use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
+
+/**
+ * Class Assets
+ *
+ * @since 1.0.0
+ */
+class Assets {
+
+	use AssetLoaderTrait;
+	use Singleton;
+
+	/**
+	 * Constructor.
+	 */
+	protected function __construct() {
+		// Setup hooks.
+		$this->setup_hooks();
+	}
+
+	/**
+	 * Setup hooks.
+	 *
+	 * @since 1.0.0
+	 */
+	public function setup_hooks(): void {
+		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
+	}
+
+	/**
+	 * Register assets.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action wp_enqueue_scripts
+	 */
+	public function register_assets(): void {
+		$this->register_script( 'core-navigation', 'js/frontend/core-navigation.js' );
+		$this->register_style( 'core-navigation', 'css/frontend/core-navigation.css' );
+		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles.css' );
+	}
+
+	/**
+	 * Enqueue block specific assets.
+	 *
+	 * @param string               $markup Markup of the block.
+	 * @param array<string, mixed> $block  Array with block information.
+	 *
+	 * @return string Updated markup.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action render_block
+	 */
+	public function enqueue_block_specific_assets( string $markup, array $block ): string {
+		if ( ! empty( $block['blockName'] ) && 'core/navigation' === $block['blockName'] ) {
+			wp_enqueue_script( 'core-navigation' );
+			wp_enqueue_style( 'core-navigation' );
+		}
+
+		return $markup;
+	}
+
+	/**
+	 * Enqueue JS and CSS in frontend.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action wp_enqueue_scripts
+	 */
+	public function enqueue_assets(): void {
+		wp_enqueue_style( 'elementary-theme-styles' );
+
+		if ( 'local' === wp_get_environment_type() && ! ELEMENTARY_THEME_DISABLE_BROWSER_SYNC ) {
+			if ( defined( 'ELEMENTARY_THEME_BROWSER_SYNC_URL' ) ) {
+				$bs_url = ELEMENTARY_THEME_BROWSER_SYNC_URL;
+			} else {
+				$scheme = is_ssl() ? 'https' : 'http';
+				$host   = wp_parse_url( home_url(), PHP_URL_HOST );
+				$host   = $host ? $host : 'localhost';
+				$bs_url = "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js";
+			}
+			wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
+		}
+	}
+}
