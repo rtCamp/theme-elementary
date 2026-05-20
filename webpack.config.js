@@ -102,7 +102,7 @@ const readAllFileEntries = ( dir, { excludeDirs = [] } = {} ) => {
 /**
  * Read component file entries from a components directory.
  *
- * @param {string} dir Base directory to scan (e.g., './src/Components').
+ * @param {string} dir Base directory to scan (e.g., './src/components').
  * @param {RegExp} extFilter Regex to match file extensions.
  * @return {Object} Object mapping entry names to file paths.
  */
@@ -162,7 +162,7 @@ const styles = {
 	...sharedConfig,
 	entry: () => ( {
 		...readAllFileEntries( './src/css' ),
-		...getComponentEntries( './src/Components', /\.(sc|sa|c)ss$/ ),
+		...getComponentEntries( './src/components', /\.(sc|sa|c)ss$/ ),
 	} ),
 	module: {
 		...sharedConfig.module,
@@ -179,7 +179,7 @@ const scripts = {
 	...sharedConfig,
 	entry: () => ( {
 		...readAllFileEntries( './src/js', { excludeDirs: [ 'modules' ] } ),
-		...getComponentEntries( './src/Components', /\.js$/ ),
+		...getComponentEntries( './src/components', /\.js$/ ),
 	} ),
 	plugins: [
 		...sharedConfig.plugins,

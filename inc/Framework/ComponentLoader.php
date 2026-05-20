@@ -184,7 +184,7 @@ class ComponentLoader {
 			'elementary_theme_component_paths',
 			[
 				'theme' => [
-					'php'    => 'src/Components',
+					'php'    => 'src/components',
 					'style'  => 'assets/build/css/components',
 					'script' => 'assets/build/js/components',
 				],
