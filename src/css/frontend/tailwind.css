@@ -1,9 +1,10 @@
+/* Auto-generated from theme.json by GenerateTailwindThemePlugin */
+@source "../../../";
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
-
 	/* palette */
 	--color-foreground: var(--wp--preset--color--foreground);
 	--color-background: var(--wp--preset--color--background);
