@@ -27,6 +27,10 @@ if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) :
 	define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
 endif;
 
+if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
+	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
+endif;
+
 require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';
 
 if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
