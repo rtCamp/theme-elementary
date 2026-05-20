@@ -248,8 +248,16 @@ class ComponentLoader {
 			return false;
 		}
 
-		$relative_file = trim( $paths['php'], '/\\' ) . '/' . $component_name . '/' . $component_name . '.php';
-		$file          = locate_template( [ $relative_file ], false, false );
+		$component_slug = strtolower( $component_name );
+		$component_root = trim( $paths['php'], '/\\' );
+		$file           = locate_template(
+			[
+				$component_root . '/' . $component_slug . '/' . $component_slug . '.php',
+				$component_root . '/' . $component_name . '/' . $component_name . '.php',
+			],
+			false,
+			false
+		);
 
 		if ( empty( $file ) || ! is_readable( $file ) ) {
 			return false;
@@ -280,7 +288,12 @@ class ComponentLoader {
 			return false;
 		}
 
-		$file = trailingslashit( $paths['php'] ) . $component_name . '/' . $component_name . '.php';
+		$component_slug = strtolower( $component_name );
+		$file           = trailingslashit( $paths['php'] ) . $component_slug . '/' . $component_slug . '.php';
+
+		if ( ! is_readable( $file ) ) {
+			$file = trailingslashit( $paths['php'] ) . $component_name . '/' . $component_name . '.php';
+		}
 
 		if ( ! is_readable( $file ) ) {
 			return false;
