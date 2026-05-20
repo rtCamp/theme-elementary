@@ -116,7 +116,7 @@ class Assets {
 
 		if ( $this->tailwind_enabled ) {
 			wp_enqueue_style( 'elementary-theme-tailwind' );
-    }
+		}
 
 		if ( 'local' === wp_get_environment_type() && ! ELEMENTARY_THEME_DISABLE_BROWSER_SYNC ) {
 			if ( defined( 'ELEMENTARY_THEME_BROWSER_SYNC_URL' ) ) {
