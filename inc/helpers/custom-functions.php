@@ -18,9 +18,9 @@ if ( ! function_exists( 'elementary_theme_component' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $name    Component name (e.g. 'Button', 'Card').
-	 * @param array  $args    Arguments to pass to the component.
-	 * @param array  $options Optional. Resolution options. See ComponentLoader::render().
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options Optional. Resolution options. See ComponentLoader::render().
 	 *
 	 * @return void
 	 */
@@ -38,9 +38,9 @@ if ( ! function_exists( 'elementary_theme_get_component' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $name    Component name (e.g. 'Button', 'Card').
-	 * @param array  $args    Arguments to pass to the component.
-	 * @param array  $options Optional. Resolution options. See ComponentLoader::get().
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options Optional. Resolution options. See ComponentLoader::get().
 	 *
 	 * @return string Rendered component HTML.
 	 */

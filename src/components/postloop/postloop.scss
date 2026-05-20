@@ -1,0 +1,35 @@
+.elementary-post-loop {
+
+	&__list {
+		display: grid;
+		gap: 1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	&__link {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: #111827;
+		text-decoration: none;
+
+		&:hover,
+		&:focus {
+			color: #005177;
+			text-decoration: underline;
+		}
+	}
+
+	&__excerpt,
+	&__empty-message {
+		margin: 0.5rem 0 0;
+		color: #4b5563;
+		line-height: 1.6;
+	}
+}

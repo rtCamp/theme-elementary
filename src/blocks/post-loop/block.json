@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rtcamp/post-loop",
+	"title": "Post Loop (rtCamp)",
+	"category": "theme",
+	"icon": "list-view",
+	"description": "A query-backed post loop block that renders through the shared PostLoop component.",
+	"attributes": {
+		"postType": {
+			"type": "string",
+			"default": "post"
+		},
+		"postsPerPage": {
+			"type": "number",
+			"default": 3
+		},
+		"orderBy": {
+			"type": "string",
+			"default": "date"
+		},
+		"order": {
+			"type": "string",
+			"default": "desc"
+		},
+		"displayExcerpt": {
+			"type": "boolean",
+			"default": true
+		},
+		"emptyMessage": {
+			"type": "string",
+			"default": "No posts found."
+		}
+	},
+	"editorScript": "file:./edit.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

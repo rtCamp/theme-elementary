@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rtcamp/navigation",
+	"title": "Navigation (rtCamp)",
+	"category": "theme",
+	"icon": "menu",
+	"description": "A simple navigation block backed by the shared Navigation component.",
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Primary navigation"
+		},
+		"items": {
+			"type": "array",
+			"default": [
+				{
+					"label": "Home",
+					"url": "/",
+					"current": false
+				}
+			]
+		}
+	},
+	"editorScript": "file:./edit.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

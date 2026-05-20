@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rtcamp/hero",
+	"title": "Hero (rtCamp)",
+	"category": "design",
+	"icon": "cover-image",
+	"description": "A hero block.",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Hero Title"
+		},
+		"subtitle": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonUrl": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./edit.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

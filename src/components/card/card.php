@@ -11,29 +11,35 @@
  * @param array $args {
  *     Component arguments.
  *
- *     @type string $title       Card title. Required.
- *     @type string $description Card description text. Optional.
- *     @type string $image_url   Card image URL. Optional.
- *     @type string $url         Card link URL. Optional.
+ *     @type string $title        Card title. Required.
+ *     @type string $description  Card description text. Optional.
+ *     @type string $image_url    Card image URL. Optional.
+ *     @type string $image_alt    Card image alt text. Optional.
+ *     @type string $url          Card link URL. Optional.
+ *     @type string $button_label Card action label. Optional.
+ *     @type string $class        Additional CSS classes. Optional.
  * }
  */
 
-use rtCamp\Theme\Elementary\Framework\ComponentLoader;
-
-$title       = $args['title'] ?? '';
-$description = $args['description'] ?? '';
-$image_url   = $args['image_url'] ?? '';
-$url         = $args['url'] ?? '';
+$title        = isset( $args['title'] ) ? (string) $args['title'] : '';
+$description  = isset( $args['description'] ) ? (string) $args['description'] : '';
+$image_url    = isset( $args['image_url'] ) ? (string) $args['image_url'] : '';
+$image_alt    = isset( $args['image_alt'] ) ? (string) $args['image_alt'] : '';
+$url          = isset( $args['url'] ) ? (string) $args['url'] : '';
+$button_label = isset( $args['button_label'] ) ? (string) $args['button_label'] : __( 'Read more', 'elementary-theme' );
+$class        = isset( $args['class'] ) ? (string) $args['class'] : '';
 
 if ( empty( $title ) ) {
 	return;
 }
 
+$css_class = trim( 'elementary-card ' . $class );
+
 ?>
-<div class="elementary-card">
+<article class="<?php echo esc_attr( $css_class ); ?>">
 	<?php if ( ! empty( $image_url ) ) : ?>
 		<div class="elementary-card__image">
-			<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" />
+			<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" />
 		</div>
 	<?php endif; ?>
 
@@ -44,20 +50,26 @@ if ( empty( $title ) ) {
 			<p class="elementary-card__description"><?php echo esc_html( $description ); ?></p>
 		<?php endif; ?>
 
-		<?php if ( ! empty( $url ) ) : ?>
-			<div class="elementary-card__action">
-				<?php
-				ComponentLoader::render(
-					'Button',
-					[
-						'label' => $title,
-						'url'   => $url,
-						'class' => 'elementary-card__button',
-					]
-				);
-				?>
-			</div>
-		<?php endif; ?>
+			<?php if ( ! empty( $url ) ) : ?>
+				<div class="elementary-card__action">
+					<?php
+					elementary_theme_component(
+						'Button',
+						[
+							'label'      => $button_label,
+							'url'        => $url,
+							'class'      => 'elementary-card__button',
+							'variant'    => 'secondary',
+							'aria_label' => sprintf(
+								/* translators: %s: Card title. */
+								__( 'Read more about %s', 'elementary-theme' ),
+								$title
+							),
+						]
+					);
+					?>
+				</div>
+			<?php endif; ?>
 	</div>
-</div>
+</article>
 <?php

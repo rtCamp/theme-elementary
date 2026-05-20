@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary;
 
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
+use rtCamp\Theme\Elementary\Modules\Blocks\Registrar;
 use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
 use rtCamp\Theme\Elementary\Core\Assets;
 
@@ -60,5 +61,6 @@ class Main {
 	 */
 	public function block_extensions(): void {
 		MediaTextInteractive::get_instance();
+		Registrar::get_instance();
 	}
 }

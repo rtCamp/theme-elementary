@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "rtcamp/card",
+	"title": "Card (rtCamp)",
+	"category": "design",
+	"icon": "index-card",
+	"description": "A card block backed by the shared Card component.",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Card title"
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		},
+		"imageUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": ""
+		},
+		"url": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonLabel": {
+			"type": "string",
+			"default": "Read more"
+		}
+	},
+	"editorScript": "file:./edit.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

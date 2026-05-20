@@ -138,6 +138,10 @@ const sharedConfig = {
 	},
 	plugins: [
 		...scriptConfig.plugins
+			.filter(
+				( plugin ) =>
+					! [ 'CopyPlugin', 'CopyWebpackPlugin' ].includes( plugin.constructor.name ),
+			)
 			.map(
 				( plugin ) => {
 					if ( plugin.constructor.name === 'MiniCssExtractPlugin' ) {
