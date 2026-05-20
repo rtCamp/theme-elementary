@@ -18,7 +18,12 @@ const TEST_FILES = [
 
 export default [
 	{
-		ignores: [ '**/*.min.js', '**/node_modules/**', '**/vendor/**', 'build/*' ],
+		ignores: [
+			'**/*.min.js',
+			'**/node_modules/**',
+			'**/vendor/**',
+			'assets/build/**',
+		],
 	},
 
 	...wordpressPlugin.configs[ 'recommended-with-formatting' ],
@@ -56,5 +61,11 @@ export default [
 	{
 		files: TEST_FILES,
 		...jestPlugin.configs[ 'flat/all' ],
+	},
+
+	{
+		settings: {
+			'import/resolver': { node: true },
+		},
 	},
 ];
