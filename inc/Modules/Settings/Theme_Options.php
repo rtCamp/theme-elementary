@@ -5,12 +5,12 @@
  * Demonstrates how to use Abstract_Settings_Page from wp-framework.
  * Registers a settings page under Settings → Elementary with a few options.
  *
- * @package rtCamp\Theme\Elementary
+ * @package rtCamp\Theme\Elementary\Modules\Settings
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\Theme\Elementary\Settings;
+namespace rtCamp\Theme\Elementary\Modules\Settings;
 
 use Override;
 use rtCamp\WPFramework\Contracts\Abstracts\Abstract_Settings_Page;
@@ -36,14 +36,14 @@ class Theme_Options extends Abstract_Settings_Page {
 	 * {@inheritDoc}
 	 */
 	protected function get_page_title(): string {
-		return __( 'Elementary Theme Settings', 'theme-elementary' );
+		return __( 'Elementary Theme Settings', 'elementary-theme' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	protected function get_menu_title(): string {
-		return __( 'Elementary', 'theme-elementary' );
+		return __( 'Elementary', 'elementary-theme' );
 	}
 
 	/**
@@ -66,9 +66,10 @@ class Theme_Options extends Abstract_Settings_Page {
 		];
 	}
 
-	#[Override]
-	protected function get_parent_slug(): ?string
-	{
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_parent_slug(): ?string {
 		return null;
 	}
 
@@ -86,7 +87,7 @@ class Theme_Options extends Abstract_Settings_Page {
 				?>
 				<table class="form-table">
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Enable Portfolio', 'theme-elementary' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Enable Portfolio', 'elementary-theme' ); ?></th>
 						<td>
 							<input
 								type="checkbox"
@@ -97,7 +98,7 @@ class Theme_Options extends Abstract_Settings_Page {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Footer Text', 'theme-elementary' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Footer Text', 'elementary-theme' ); ?></th>
 						<td>
 							<input
 								type="text"
