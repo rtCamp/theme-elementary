@@ -1,0 +1,59 @@
+name: rtCamp Standard
+
+on:
+  workflow_call:
+    inputs:
+      build-artifact-paths:
+        description: 'Newline-separated paths whose contents must not be committed.'
+        required: false
+        type: string
+        default: |
+          assets/build/
+      run-phpstan:
+        description: 'Whether to run the PHPStan job.'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-artifact-gate:
+    name: 'Block committed build artifacts'
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: rtCamp/wp-shared-workflows/.github/workflows/ci-build-artifact-gate.yml@ff44a8745c5360e28a5316c39b4468c6cf5e0cb6
+    with:
+      gated-paths: ${{ inputs.build-artifact-paths }}
+
+  phpstan:
+    name: 'PHPStan'
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run-phpstan }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Configure Composer cache
+        uses: actions/cache@v5.0.3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
+
+      - name: Run PHPStan
+        run: composer phpstan

@@ -61,7 +61,7 @@ jobs:
           MODIFIED_FILES_DATA=$(node .github/bin/determine-modified-files-count.js "$IGNORE_PATH_REGEX" "$MODIFIED_FILES" "all")
           CSS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.s?css|package\.json|package-lock\.json" "$MODIFIED_FILES")
           JS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.(js|snap)|package\.json|package-lock\.json" "$MODIFIED_FILES")
-          PHP_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.php|composer\.(json|lock)|phpstan\.neon\.dist" "$MODIFIED_FILES")
+          PHP_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.php|composer\.(json|lock)|phpstan\.neon\.dist|phpstan-baseline\.neon" "$MODIFIED_FILES")
           GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/(workflows|actions)\/.+\.yml)" "$MODIFIED_FILES")
 
           echo "Changed file count: $MODIFIED_FILES_DATA"
@@ -218,3 +218,11 @@ jobs:
         run: npm run build:prod
         env:
           CI: true
+
+  rtcamp-standard:
+    name: 'rtCamp Standard'
+    needs: pre-run
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/rtcamp-standard.yml
+    with:
+      run-phpstan: ${{ fromJSON(needs.pre-run.outputs.changed-php-count) > 0 }}
