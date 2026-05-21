@@ -12,7 +12,7 @@ namespace rtCamp\Theme\Elementary;
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\Assets;
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
-use rtCamp\Theme\Elementary\Modules\Settings\Theme_Options;
+use rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions;
 
 /**
  * Class Main
@@ -32,7 +32,7 @@ class Main {
 			[
 				Assets::class,
 				MediaTextInteractive::class,
-				Theme_Options::class,
+				ThemeOptions::class,
 			] 
 		);
 

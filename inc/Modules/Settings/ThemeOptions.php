@@ -2,7 +2,7 @@
 /**
  * Example Settings Page: Theme Options.
  *
- * Demonstrates how to use Abstract_Settings_Page from wp-framework.
+ * Demonstrates how to use AbstractSettingsPage from wp-framework.
  * Registers a settings page under Settings → Elementary with a few options.
  *
  * @package rtCamp\Theme\Elementary\Modules\Settings
@@ -13,12 +13,12 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\Settings;
 
 use Override;
-use rtCamp\WPFramework\Contracts\Abstracts\Abstract_Settings_Page;
+use rtCamp\WPFramework\Contracts\Abstracts\AbstractSettingsPage;
 
 /**
- * Class Theme_Options
+ * Class ThemeOptions
  */
-class Theme_Options extends Abstract_Settings_Page {
+class ThemeOptions extends AbstractSettingsPage {
 
 	/**
 	 * Option key prefix.
@@ -69,9 +69,7 @@ class Theme_Options extends Abstract_Settings_Page {
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function get_parent_slug(): ?string {
-		return null;
-	}
+	
 
 	/**
 	 * {@inheritDoc}

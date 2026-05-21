@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:rtCamp/wp-framework.git",
-                "reference": "a9c8cefe967f8f05bf87560bc15a53501bec5c41"
+                "reference": "f90373b867266e4e12959b487b600c383b4c3328"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/a9c8cefe967f8f05bf87560bc15a53501bec5c41",
-                "reference": "a9c8cefe967f8f05bf87560bc15a53501bec5c41",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/f90373b867266e4e12959b487b600c383b4c3328",
+                "reference": "f90373b867266e4e12959b487b600c383b4c3328",
                 "shasum": ""
             },
             "require": {
@@ -72,7 +72,7 @@
                 "source": "https://github.com/rtCamp/wp-framework/tree/framework",
                 "issues": "https://github.com/rtCamp/wp-framework/issues"
             },
-            "time": "2026-05-21T18:00:59+00:00"
+            "time": "2026-05-21T20:47:25+00:00"
         }
     ],
     "packages-dev": [
@@ -3192,12 +3192,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "2ed4a7115b847de6f87c4bb06d22b2db693a4e09"
+                "reference": "4177cb58ca649407e390a264aa19577a4125fdfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/2ed4a7115b847de6f87c4bb06d22b2db693a4e09",
-                "reference": "2ed4a7115b847de6f87c4bb06d22b2db693a4e09",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/4177cb58ca649407e390a264aa19577a4125fdfe",
+                "reference": "4177cb58ca649407e390a264aa19577a4125fdfe",
                 "shasum": ""
             },
             "require": {
@@ -3268,7 +3268,7 @@
                 "issues": "https://github.com/wp-cli/wp-cli/issues",
                 "source": "https://github.com/wp-cli/wp-cli"
             },
-            "time": "2026-05-19T10:12:33+00:00"
+            "time": "2026-05-21T20:19:24+00:00"
         },
         {
             "name": "wp-coding-standards/wpcs",
