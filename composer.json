@@ -7,8 +7,7 @@
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "https://github.com/rtCamp/wp-framework.git",
-			"no-api": true
+			"url": "https://github.com/rtCamp/wp-framework.git"
 		}
 	],
 	"require": {

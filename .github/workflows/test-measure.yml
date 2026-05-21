@@ -161,6 +161,7 @@ jobs:
           php-version: '8.2'
           coverage: none
           tools: cs2pr
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
