@@ -9,9 +9,14 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary;
 
-use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
-use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
+use rtCamp\WPFramework\Contracts\Traits\Singleton;
+use rtCamp\WPFramework\Contracts\Traits\Loader;
 use rtCamp\Theme\Elementary\Core\Assets;
+use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
+use rtCamp\Theme\Elementary\Post_Types\Portfolio;
+use rtCamp\Theme\Elementary\Settings\Theme_Options;
+use rtCamp\Theme\Elementary\Shortcodes\Current_Year;
+use rtCamp\Theme\Elementary\Taxonomies\Project_Type;
 
 /**
  * Class Main
@@ -21,17 +26,22 @@ use rtCamp\Theme\Elementary\Core\Assets;
 class Main {
 
 	use Singleton;
+	use Loader;
 
 	/**
 	 * Constructor.
 	 */
 	protected function __construct() {
-		// Instantiate classes.
-		Assets::get_instance();
+		$this->load( [
+			Assets::class,
+			MediaTextInteractive::class,
+			Portfolio::class,
+			Project_Type::class,
+			Current_Year::class,
+			Theme_Options::class,
+		] );
 
-		// Setup hooks.
 		$this->setup_hooks();
-		$this->block_extensions();
 	}
 
 	/**
@@ -49,16 +59,6 @@ class Main {
 	 * @since 1.0.0
 	 */
 	public function elementary_theme_support(): void {
-		// Add support for core block styles.
 		add_theme_support( 'wp-block-styles' );
-	}
-
-	/**
-	 * Block extensions
-	 *
-	 * @since 1.0.0
-	 */
-	public function block_extensions(): void {
-		MediaTextInteractive::get_instance();
 	}
 }

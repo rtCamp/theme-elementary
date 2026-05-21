@@ -1,6 +1,6 @@
 <?php
 /**
- * Autoloader for PHP classes inside a Theme Elementary.
+ * Autoloader for PHP classes inside Theme Elementary.
  *
  * Wraps the Composer autoloader to provide graceful failure if it is missing.
  *
@@ -11,9 +11,11 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary;
 
-if ( ! trait_exists( 'rtCamp\Theme\Elementary\Framework\Traits\AutoloaderTrait' ) ) {
-	require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Framework/Traits/AutoloaderTrait.php';
+if ( ! trait_exists( 'rtCamp\WPFramework\AutoloaderTrait' ) ) {
+	require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/rtcamp/wp-framework/inc/AutoloaderTrait.php';
 }
+
+use rtCamp\WPFramework\AutoloaderTrait;
 
 /**
  * Class Autoloader
@@ -22,7 +24,8 @@ if ( ! trait_exists( 'rtCamp\Theme\Elementary\Framework\Traits\AutoloaderTrait' 
  */
 final class Autoloader {
 
-	use Framework\Traits\AutoloaderTrait;
+	use AutoloaderTrait;
+
 	/**
 	 * Attempts to autoload the Composer dependencies.
 	 *
