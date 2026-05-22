@@ -175,6 +175,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
+      - name: Ensure git is installed
+        run: which git || (sudo apt-get update && sudo apt-get install -y git)
+
       - name: Install Composer dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
 
