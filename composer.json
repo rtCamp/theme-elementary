@@ -7,7 +7,8 @@
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "https://github.com/rtCamp/wp-framework.git"
+			"url": "https://github.com/rtCamp/wp-framework.git",
+			"no-api": true
 		}
 	],
 	"require": {
@@ -41,10 +42,7 @@
 	"autoload": {
 		"psr-4": {
 			"rtCamp\\Theme\\Elementary\\": "inc/"
-		},
-		"files": [
-			"inc/helpers/custom-functions.php"
-		]
+		}
 	},
 	"autoload-dev": {
 		"psr-4": {

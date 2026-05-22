@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c06d2133e4ca5db89754e6392a00aa00",
+    "content-hash": "5c9d115741ba03076111d8506b4f0895",
     "packages": [
         {
             "name": "rtcamp/wp-framework",
             "version": "dev-framework",
             "source": {
                 "type": "git",
-                "url": "git@github.com:rtCamp/wp-framework.git",
+                "url": "https://github.com/rtCamp/wp-framework.git",
                 "reference": "de18dff78d39b4a4cc5a6aaef39251db19751c32"
             },
             "dist": {
@@ -68,10 +68,6 @@
                 "GPL-2.0-or-later"
             ],
             "description": "A reusable WordPress framework providing composable traits, abstract classes, and interfaces for plugins and themes.",
-            "support": {
-                "source": "https://github.com/rtCamp/wp-framework/tree/framework",
-                "issues": "https://github.com/rtCamp/wp-framework/issues"
-            },
             "time": "2026-05-21T23:13:32+00:00"
         }
     ],
