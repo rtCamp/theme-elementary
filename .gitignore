@@ -29,3 +29,6 @@ phpcs.xml
 
 # Cache
 .phpunit.result.cache
+
+# Tailwind theme
+_tailwind-theme.css

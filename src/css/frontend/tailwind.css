@@ -1,28 +1,8 @@
+/* Tailwind CSS entry — edit freely. WordPress preset tokens live in _tailwind-theme.css. */
 @source "../../../";
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
+@import "./_tailwind-theme.css";
 
-@theme {
-	/* palette */
-	--color-foreground: var(--wp--preset--color--foreground);
-	--color-background: var(--wp--preset--color--background);
-	--color-primary: var(--wp--preset--color--primary);
-	--color-secondary: var(--wp--preset--color--secondary);
-	--color-tertiary: var(--wp--preset--color--tertiary);
-
-	/* fontSizes */
-	--text-small: var(--wp--preset--font-size--small);
-	--text-medium: var(--wp--preset--font-size--medium);
-	--text-large: var(--wp--preset--font-size--large);
-	--text-x-large: var(--wp--preset--font-size--x-large);
-	--text-xx-large: var(--wp--preset--font-size--xx-large);
-
-	/* fontFamilies */
-	--font-system-font: var(--wp--preset--font-family--system-font);
-	--font-source-serif-pro: var(--wp--preset--font-family--source-serif-pro);
-
-	/* layout */
-	--max-width-content: var(--wp--style--global--content-size);
-	--max-width-wide: var(--wp--style--global--wide-size);
-}
+@theme {}
