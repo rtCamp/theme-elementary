@@ -381,6 +381,7 @@ const getBrowserSyncPlugins = () => {
 				notify: false,
 				open: false,
 				logSnippet: false,
+				ghostMode: false,
 			},
 			{
 				injectCss: true,
