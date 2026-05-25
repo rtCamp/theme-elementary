@@ -241,21 +241,15 @@ class CssAssetRtlPlugin {
 							continue;
 						}
 
-						const rtlFilename = filename.replace(
-							/\.css$/,
-							'-rtl.css',
-						);
+						const rtlFilename = filename.replace( /\.css$/, '-rtl.css' );
 
 						if ( compilation.assets[ rtlFilename ] ) {
 							continue;
 						}
 
-						compilation.assets[ rtlFilename ] =
-							new webpack.sources.RawSource(
-								rtlcss.process(
-									compilation.assets[ filename ].source(),
-								),
-							);
+						compilation.assets[ rtlFilename ] = new webpack.sources.RawSource(
+							rtlcss.process( compilation.assets[ filename ].source() ),
+						);
 					}
 				},
 			);
@@ -325,10 +319,7 @@ const getCopyPlugin = () =>
 						try {
 							const result = svgoOptimize( content.toString() );
 
-							if (
-								typeof result?.data === 'string' &&
-								result.data.length > 0
-							) {
+							if ( typeof result?.data === 'string' && result.data.length > 0 ) {
 								return result.data;
 							}
 
@@ -381,6 +372,7 @@ const getBrowserSyncPlugins = () => {
 				notify: false,
 				open: false,
 				logSnippet: false,
+				ghostMode: false,
 			},
 			{
 				injectCss: true,
@@ -392,6 +384,16 @@ const getBrowserSyncPlugins = () => {
 // Extend the default config.
 const sharedConfig = {
 	...scriptConfig,
+	watchOptions: {
+		...( scriptConfig.watchOptions || {} ),
+		// assets/build/** must be ignored to prevent an infinite rebuild loop:
+		// Tailwind v4's content detection treats build output as potential template
+		// files, so without this, each webpack emit triggers another rebuild.
+		ignored: [
+			'**/node_modules/**',
+			path.resolve( process.cwd(), 'assets', 'build', '**' ),
+		],
+	},
 	output: {
 		path: JS_BUILD_DIR,
 		filename: '[name].js',

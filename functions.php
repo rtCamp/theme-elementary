@@ -23,6 +23,10 @@ if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
 	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
 endif;
 
+if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) :
+	define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
+endif;
+
 if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
 	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
 endif;
