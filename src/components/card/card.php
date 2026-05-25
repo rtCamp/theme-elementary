@@ -18,7 +18,7 @@
  * }
  */
 
-use rtCamp\Theme\Elementary\Framework\ComponentLoader;
+declare( strict_types = 1 );
 
 $title       = $args['title'] ?? '';
 $description = $args['description'] ?? '';
@@ -47,13 +47,20 @@ if ( empty( $title ) ) {
 		<?php if ( ! empty( $url ) ) : ?>
 			<div class="elementary-card__action">
 				<?php
-				ComponentLoader::render(
+				elementary_theme_component(
 					'Button',
 					[
 						'label' => $title,
 						'url'   => $url,
 						'class' => 'elementary-card__button',
-					]
+					],
+					array_intersect_key(
+						$options,
+						[
+							'script' => true,
+							'style'  => true,
+						]
+					)
 				);
 				?>
 			</div>

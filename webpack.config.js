@@ -117,7 +117,7 @@ const getComponentEntries = ( dir, extFilter ) => {
 			const compName = entry.name;
 			const compDir = path.join( resolvedDir, compName );
 			fs.readdirSync( compDir ).forEach( ( file ) => {
-				if ( file.startsWith( compName ) && file.match( extFilter ) ) {
+				if ( file.match( extFilter ) && path.parse( file ).name === compName ) {
 					const entryName = `components/${ compName.toLowerCase() }`;
 					entries[ entryName ] = path.join( compDir, file );
 				}
@@ -236,4 +236,10 @@ const moduleScripts = {
 	},
 };
 
-module.exports = [ scripts, styles, moduleScripts ];
+const configs = [ scripts, styles, moduleScripts ];
+
+Object.defineProperty( configs, 'getComponentEntries', {
+	value: getComponentEntries,
+} );
+
+module.exports = configs;

@@ -27,6 +27,13 @@ class ComponentLoader {
 	private static array $component_data_cache = [];
 
 	/**
+	 * Component asset metadata cache.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private static array $asset_meta_cache = [];
+
+	/**
 	 * Render a component by name.
 	 *
 	 * Resolves the component file from child theme, parent theme, or plugin paths,
@@ -37,7 +44,6 @@ class ComponentLoader {
 	 * @param array<string, mixed> $options {
 	 *     Optional. Resolution and asset enqueue options.
 	 *
-	 *     @type string $priority Deprecated. Ignored; components always resolve from child/parent theme before plugin paths.
 	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
 	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
@@ -50,6 +56,16 @@ class ComponentLoader {
 		$component = self::get_component_data( $name, $options );
 
 		if ( false === $component ) {
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf(
+					/* translators: %s: Component name. */
+					esc_html__( 'Component "%s" could not be resolved.', 'elementary-theme' ),
+					esc_html( $name )
+				),
+				'1.0.0'
+			);
+
 			return;
 		}
 
@@ -119,7 +135,6 @@ class ComponentLoader {
 	 * @param array<string, mixed> $options {
 	 *     Optional. Resolution options.
 	 *
-	 *     @type string $priority Deprecated. Ignored; components always resolve from child/parent theme before plugin paths.
 	 *     @type bool   $script   Whether to enqueue the component's script. Default determined by filter.
 	 *     @type bool   $style    Whether to enqueue the component's style. Default determined by filter.
 	 * }
@@ -450,6 +465,10 @@ class ComponentLoader {
 			return false;
 		}
 
+		if ( wp_script_is( $handle, 'registered' ) ) {
+			return true;
+		}
+
 		$asset_meta = self::get_component_asset_meta( (string) $asset['file'], $deps, $ver );
 
 		return wp_register_script( $handle, (string) $asset['url'], $asset_meta['dependencies'], $asset_meta['version'], $in_footer );
@@ -475,6 +494,10 @@ class ComponentLoader {
 			return false;
 		}
 
+		if ( wp_style_is( $handle, 'registered' ) ) {
+			return true;
+		}
+
 		$asset_meta = self::get_component_asset_meta( (string) $asset['file'], $deps, $ver );
 
 		return wp_register_style( $handle, (string) $asset['url'], $asset_meta['dependencies'], $asset_meta['version'], $media );
@@ -490,11 +513,14 @@ class ComponentLoader {
 	 * @return array{dependencies: array<string>, version: string|bool} Asset meta information including dependencies and version.
 	 */
 	private static function get_component_asset_meta( string $file, array $deps = [], string|bool|null $ver = false ): array {
-		$normalized_file   = ltrim( str_replace( '\\', '/', $file ), '/' );
-		$asset_meta_target = preg_replace( '/\.[^\/.]+$/', '', $normalized_file );
-		$asset_meta_target = ! empty( $asset_meta_target ) ? $asset_meta_target : $normalized_file;
-		$asset_meta_file   = '/' . $asset_meta_target . '.asset.php';
-		$asset_meta        = is_readable( $asset_meta_file ) ? require $asset_meta_file : [];
+		$asset_meta_file = preg_replace( '/\.[^\/\\\\.]+$/', '.asset.php', $file );
+		$asset_meta_file = ! empty( $asset_meta_file ) ? $asset_meta_file : $file . '.asset.php';
+
+		if ( ! array_key_exists( $asset_meta_file, self::$asset_meta_cache ) ) {
+			self::$asset_meta_cache[ $asset_meta_file ] = is_readable( $asset_meta_file ) ? require $asset_meta_file : [];
+		}
+
+		$asset_meta = self::$asset_meta_cache[ $asset_meta_file ];
 
 		if ( ! is_array( $asset_meta ) ) {
 			$asset_meta = [];

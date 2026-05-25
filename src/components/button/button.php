@@ -16,6 +16,8 @@
  * }
  */
 
+declare( strict_types = 1 );
+
 $label = $args['label'] ?? '';
 $url   = $args['url'] ?? '';
 $class = $args['class'] ?? '';
