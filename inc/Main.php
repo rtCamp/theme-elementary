@@ -33,7 +33,7 @@ class Main {
 				Assets::class,
 				MediaTextInteractive::class,
 				ThemeOptions::class,
-			] 
+			]
 		);
 
 		$this->setup_hooks();

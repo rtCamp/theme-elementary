@@ -25,7 +25,7 @@ class Assets implements Registrable {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->base_dir   = ELEMENTARY_THEME_PATH . '/';
+		$this->base_dir   = trailingslashit( ELEMENTARY_THEME_PATH );
 		$this->base_url   = trailingslashit( get_template_directory_uri() );
 		$this->assets_dir = 'assets/build';
 	}

@@ -94,6 +94,8 @@ class ThemeOptions extends AbstractSettingsPage {
 	 *
 	 * Derives the register_setting() args from get_fields() by stripping
 	 * the UI-only keys.
+	 * 
+	 * @return array<string, array> Array of option names to their register_setting() args.
 	 */
 	protected function get_settings(): array {
 		$settings = [];
