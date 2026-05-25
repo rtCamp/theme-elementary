@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "de18dff78d39b4a4cc5a6aaef39251db19751c32"
+                "reference": "80d8ed747ef41f92fd055c8dc68f24c24803280d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/de18dff78d39b4a4cc5a6aaef39251db19751c32",
-                "reference": "de18dff78d39b4a4cc5a6aaef39251db19751c32",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/80d8ed747ef41f92fd055c8dc68f24c24803280d",
+                "reference": "80d8ed747ef41f92fd055c8dc68f24c24803280d",
                 "shasum": ""
             },
             "require": {
@@ -67,8 +67,13 @@
             "license": [
                 "GPL-2.0-or-later"
             ],
-            "description": "A reusable WordPress framework providing composable traits, abstract classes, and interfaces for plugins and themes.",
-            "time": "2026-05-21T23:13:32+00:00"
+            "description": "Shared PHP utilities for rtCamp WordPress projects",
+            "homepage": "https://github.com/rtCamp/wp-framework",
+            "support": {
+                "issues": "https://github.com/rtCamp/wp-framework/issues",
+                "source": "https://github.com/rtCamp/wp-framework"
+            },
+            "time": "2026-05-25T09:57:14+00:00"
         }
     ],
     "packages-dev": [
@@ -1849,6 +1854,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2020-10-26T13:08:54+00:00"
         },
         {
@@ -1904,6 +1910,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2020-09-28T05:30:19+00:00"
         },
         {
@@ -3188,12 +3195,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "4177cb58ca649407e390a264aa19577a4125fdfe"
+                "reference": "f041deb97d8637a1c78de8e9194125e05e35b466"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/4177cb58ca649407e390a264aa19577a4125fdfe",
-                "reference": "4177cb58ca649407e390a264aa19577a4125fdfe",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/f041deb97d8637a1c78de8e9194125e05e35b466",
+                "reference": "f041deb97d8637a1c78de8e9194125e05e35b466",
                 "shasum": ""
             },
             "require": {
@@ -3264,7 +3271,7 @@
                 "issues": "https://github.com/wp-cli/wp-cli/issues",
                 "source": "https://github.com/wp-cli/wp-cli"
             },
-            "time": "2026-05-21T20:19:24+00:00"
+            "time": "2026-05-25T16:00:52+00:00"
         },
         {
             "name": "wp-coding-standards/wpcs",

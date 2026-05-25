@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\WPFramework\AssetLoaderTrait;
+use rtCamp\WPFramework\Contracts\Traits\AssetLoaderTrait;
 use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
 /**
@@ -25,8 +25,8 @@ class Assets implements Registrable {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->plugin_dir = ELEMENTARY_THEME_TEMP_DIR . '/';
-		$this->plugin_url = trailingslashit( get_template_directory_uri() ) . '/';
+		$this->base_dir   = ELEMENTARY_THEME_PATH . '/';
+		$this->base_url   = trailingslashit( get_template_directory_uri() );
 		$this->assets_dir = 'assets/build';
 	}
 
