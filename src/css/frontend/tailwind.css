@@ -1,4 +1,3 @@
-/* Auto-generated from theme.json by GenerateTailwindThemePlugin */
 @source "../../../";
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);

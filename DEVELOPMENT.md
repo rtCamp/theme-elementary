@@ -95,6 +95,6 @@ Tailwind CSS v4 is integrated into the webpack build pipeline via PostCSS (`post
 
 **Design tokens:** The `@theme {}` block in `tailwind.css` maps Tailwind utility names to WordPress CSS custom properties generated from `theme.json` (e.g. `--color-primary: var(--wp--preset--color--primary)`). This means tokens stay in sync with `theme.json` automatically — no manual duplication.
 
-**Content detection:** Tailwind v4 automatically detects template files. No explicit content globs are needed.
+**Content detection:** `tailwind.css` contains an `@source` directive pointing from the CSS file's directory back to the project root (e.g. `@source "../../../";`). This is generated automatically by `GenerateTailwindThemePlugin` using `path.relative(cssDir, process.cwd())` — `process.cwd()` is assumed to be the project root (where webpack is invoked). Tailwind v4 auto-detection is not relied on.
 
 **Opt-in:** The stylesheet is only enqueued when `src/css/frontend/tailwind.css` is present. The init script (TASK-008) controls whether this file is created during project setup.
