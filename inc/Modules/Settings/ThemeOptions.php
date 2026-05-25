@@ -117,6 +117,10 @@ class ThemeOptions extends AbstractSettingsPage {
 	public function register_settings(): void {
 		parent::register_settings();
 
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		add_settings_section(
 			self::SECTION,
 			__( 'Theme Options', 'elementary-theme' ),
