@@ -1,4 +1,2 @@
 parameters:
-	ignoreErrors:
-		- identifier: booleanNot.alwaysTrue
-		  path: inc/Core/Assets.php
+	ignoreErrors: []

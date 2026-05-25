@@ -95,7 +95,7 @@ class ThemeOptions extends AbstractSettingsPage {
 	 * Derives the register_setting() args from get_fields() by stripping
 	 * the UI-only keys.
 	 * 
-	 * @return array<string, array> Array of option names to their register_setting() args.
+	 * @return array<string, array<string, mixed>> Array of option names to their register_setting() args.
 	 */
 	protected function get_settings(): array {
 		$settings = [];
@@ -156,7 +156,7 @@ class ThemeOptions extends AbstractSettingsPage {
 	 * Render a single text input. To support additional input types
 	 * (checkbox, select, …), branch on a `type` arg here.
 	 *
-	 * @param array $args Field args passed via add_settings_field().
+	 * @param array<string, mixed> $args Field args passed via add_settings_field().
 	 */
 	public function render_field( array $args ): void {
 		$name  = $args['name'];
