@@ -42,7 +42,7 @@ if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\El
  *
  * @since 1.0.0
  *
- * @return object Theme bootstrap instance.
+ * @return rtCamp\Theme\Elementary\Main Theme bootstrap instance.
  */
 function elementary_theme_instance() {
 
