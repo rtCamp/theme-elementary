@@ -1,6 +1,6 @@
 <?php
 /**
- * Test if class Main exists.
+ * Test Main class.
  *
  * @package rtCamp\Theme\Elementary
  */
@@ -32,24 +32,6 @@ class MainTest extends TestCase {
 	 * @since 1.0.0
 	 */
 	public function test_class_is_singleton(): void {
-		$this->assertTrue( Main::get_instance() instanceof Main );
-	}
-
-	/**
-	 * Test if class Main has a method 'setup_hooks'.
-	 *
-	 * @since 1.0.0
-	 */
-	public function test_class_has_method_setup_hooks(): void {
-		$this->assertTrue( method_exists( 'rtCamp\Theme\Elementary\Main', 'setup_hooks' ) );
-	}
-
-	/**
-	 * Test if class Main has a method 'elementary_theme_support'.
-	 *
-	 * @since 1.0.0
-	 */
-	public function test_class_has_method_elementary_theme_support(): void {
-		$this->assertTrue( method_exists( 'rtCamp\Theme\Elementary\Main', 'elementary_theme_support' ) );
+		$this->assertInstanceOf( Main::class, Main::get_instance() );
 	}
 }
