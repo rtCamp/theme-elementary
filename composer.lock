@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5c9d115741ba03076111d8506b4f0895",
+    "content-hash": "db06e940e3f311fbccbb71fc2828d672",
     "packages": [
         {
             "name": "rtcamp/wp-framework",
-            "version": "dev-framework",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "2d0dcff8d8322db867bbcace4f4584f48a0cf4a8"
+                "reference": "e3d6522692d091b2cc8014862413bd277a63aec2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/2d0dcff8d8322db867bbcace4f4584f48a0cf4a8",
-                "reference": "2d0dcff8d8322db867bbcace4f4584f48a0cf4a8",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/e3d6522692d091b2cc8014862413bd277a63aec2",
+                "reference": "e3d6522692d091b2cc8014862413bd277a63aec2",
                 "shasum": ""
             },
             "require": {
@@ -34,6 +34,7 @@
                 "wp-coding-standards/wpcs": "^3.1",
                 "yoast/phpunit-polyfills": "^4.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -73,7 +74,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-05-25T19:12:27+00:00"
+            "time": "2026-05-26T09:38:33+00:00"
         }
     ],
     "packages-dev": [
