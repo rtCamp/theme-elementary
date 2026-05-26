@@ -86,6 +86,7 @@ const CSS_FILENAME = '../css/[name].css';
 const FRONTEND_AND_ADMIN_DIRS = [ 'frontend', 'admin' ];
 const EDITOR_DIRS = [ 'editor' ];
 const MODULES_DIR = 'modules';
+const COMPONENTS_DIR = rootPath( 'src', 'components' );
 const STYLE_ONLY_IGNORED_PLUGINS = [
 	'DependencyExtractionWebpackPlugin',
 	'RtlCssPlugin',
@@ -185,6 +186,44 @@ const readAllFileEntries = (
 	return entries;
 };
 
+/**
+ * Read component entry files from src/components/{component}/{component}.{ext}.
+ *
+ * @param {string} dir     Component source directory.
+ * @param {RegExp} pattern File extension pattern to match.
+ * @return {Object} Object mapping component entry names to file paths.
+ */
+const getComponentEntries = ( dir = COMPONENTS_DIR, pattern = /\.(js|s[ac]ss)$/ ) => {
+	const entries = {};
+
+	if ( ! fs.existsSync( dir ) ) {
+		return entries;
+	}
+
+	fs.readdirSync( dir, { withFileTypes: true } ).forEach( ( entry ) => {
+		if ( ! entry.isDirectory() || entry.name.startsWith( '_' ) || entry.name.startsWith( '.' ) ) {
+			return;
+		}
+
+		const componentFile = path.join( dir, entry.name, entry.name );
+		const matchedFile   = fs
+			.readdirSync( path.join( dir, entry.name ), { withFileTypes: true } )
+			.find( ( file ) => {
+				if ( ! file.isFile() || ! pattern.test( file.name ) ) {
+					return false;
+				}
+
+				return path.join( dir, entry.name, file.name ).replace( /\.[^/.]+$/, '' ) === componentFile;
+			} );
+
+		if ( matchedFile ) {
+			entries[ `components/${ entry.name }` ] = path.join( dir, entry.name, matchedFile.name );
+		}
+	} );
+
+	return entries;
+};
+
 class CleanBuildPlugin {
 	static cleaned = false;
 
@@ -249,6 +288,41 @@ class CssAssetRtlPlugin {
 
 						compilation.assets[ rtlFilename ] = new webpack.sources.RawSource(
 							rtlcss.process( compilation.assets[ filename ].source() ),
+						);
+					}
+				},
+			);
+		} );
+	}
+}
+
+class CssAssetMetadataPlugin {
+	/**
+	 * Emit a minimal WordPress asset metadata file next to each component CSS file.
+	 *
+	 * @param {import('webpack').Compiler} compiler Webpack compiler.
+	 */
+	apply( compiler ) {
+		compiler.hooks.compilation.tap( 'CssAssetMetadataPlugin', ( compilation ) => {
+			compilation.hooks.processAssets.tap(
+				{
+					name: 'CssAssetMetadataPlugin',
+					stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+				},
+				() => {
+					for ( const filename of Object.keys( compilation.assets ) ) {
+						if (
+							path.extname( filename ) !== '.css' ||
+							filename.endsWith( '-rtl.css' ) ||
+							! filename.includes( '/components/' )
+						) {
+							continue;
+						}
+
+						const assetFilename = filename.replace( /\.css$/, '.asset.php' );
+
+						compilation.assets[ assetFilename ] = new webpack.sources.RawSource(
+							`<?php return array('dependencies' => array(), 'version' => '${ compilation.hash }');\n`,
 						);
 					}
 				},
@@ -453,6 +527,31 @@ const scripts = {
 	],
 };
 
+// Component JS entry points from src/components/{component}/{component}.js.
+const componentScripts = {
+	...sharedNonHotConfig,
+	entry: () => getComponentEntries( COMPONENTS_DIR, /\.js$/ ),
+	plugins: [
+		...sharedNonHotConfig.plugins.filter( isNotPlugin( 'RtlCssPlugin' ) ),
+	],
+};
+
+// Component SCSS entry points from src/components/{component}/{component}.scss.
+const componentStyles = {
+	...sharedNonHotConfig,
+	entry: () => getComponentEntries( COMPONENTS_DIR, /\.s[ac]ss$/ ),
+	module: {
+		...sharedNonHotConfig.module,
+	},
+	plugins: [
+		...sharedNonHotConfig.plugins.filter(
+			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
+		),
+		new CssAssetMetadataPlugin(),
+		new CssAssetRtlPlugin(),
+	],
+};
+
 // Editor JS entry points keep webpack-dev-server HMR/Fast Refresh.
 const editorScripts = {
 	...sharedConfig,
@@ -480,4 +579,7 @@ const moduleScripts = {
 	},
 };
 
-module.exports = [ scripts, editorScripts, styles, moduleScripts ];
+const configs = [ scripts, componentScripts, editorScripts, styles, componentStyles, moduleScripts ];
+
+module.exports = configs;
+module.exports.getComponentEntries = getComponentEntries;
