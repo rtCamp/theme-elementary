@@ -18,6 +18,7 @@
 
 # Enviroment
 .env
+.env.local
 .wp-env.override.json
 
 # Build
@@ -28,3 +29,6 @@ phpcs.xml
 
 # Cache
 .phpunit.result.cache
+
+# Tailwind theme
+_tailwind-theme.css

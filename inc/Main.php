@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary;
 
-use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
-use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
-use rtCamp\Theme\Elementary\Core\Assets;
+use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
+use rtCamp\Theme\Elementary\Core\{Assets, Menu, ThemeSetup};
+use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive,Settings\ThemeOptions};
 
 /**
  * Class Main
@@ -21,44 +21,23 @@ use rtCamp\Theme\Elementary\Core\Assets;
 class Main {
 
 	use Singleton;
+	use Loader;
+
+	/**
+	 * List of classes to load.
+	 */
+	const CLASSES = [
+		Assets::class,
+		Menu::class,
+		ThemeSetup::class,
+		MediaTextInteractive::class,
+		ThemeOptions::class,
+	];
 
 	/**
 	 * Constructor.
 	 */
 	protected function __construct() {
-		// Instantiate classes.
-		Assets::get_instance();
-
-		// Setup hooks.
-		$this->setup_hooks();
-		$this->block_extensions();
-	}
-
-	/**
-	 * Setup hooks.
-	 *
-	 * @since 1.0.0
-	 */
-	public function setup_hooks(): void {
-		add_action( 'after_setup_theme', [ $this, 'elementary_theme_support' ] );
-	}
-
-	/**
-	 * Add required theme support.
-	 *
-	 * @since 1.0.0
-	 */
-	public function elementary_theme_support(): void {
-		// Add support for core block styles.
-		add_theme_support( 'wp-block-styles' );
-	}
-
-	/**
-	 * Block extensions
-	 *
-	 * @since 1.0.0
-	 */
-	public function block_extensions(): void {
-		MediaTextInteractive::get_instance();
+		$this->load( self::CLASSES );
 	}
 }

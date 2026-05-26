@@ -88,7 +88,7 @@ jobs:
 
           [[ "${{ steps.determine-file-counts.outputs.css-count }}" -le 0 ]] && SKIPPED+=("lint-css")
           [[ "${{ steps.determine-file-counts.outputs.js-count }}" -le 0 ]] && SKIPPED+=("lint-js" "unit-tests-js" "build-prod")
-          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 ]] && SKIPPED+=("lint-php" "unit-test-php")
+          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 ]] && SKIPPED+=("lint-php")
 
           if [[ ${#SKIPPED[@]} -gt 0 ]]; then
             echo "The following jobs will be skipped as no relevant files were changed:"
@@ -161,6 +161,7 @@ jobs:
           php-version: '8.2'
           coverage: none
           tools: cs2pr
+          github-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -174,6 +175,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
+      - name: Ensure git is installed
+        run: which git || (sudo apt-get update && sudo apt-get install -y git)
+
       - name: Install Composer dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
 
@@ -182,24 +186,6 @@ jobs:
 
       - name: Detect coding standard violations (PHPCS)
         run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 | cs2pr --graceful-warnings
-
-  unit-test-php:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0
-    name: "PHP Unit test"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Start WP environment
-        run: npm run wp-env start
-
-      - name: Run tests
-        run: npm run test:php
 
   build-prod:
     needs: pre-run
@@ -218,3 +204,24 @@ jobs:
         run: npm run build:prod
         env:
           CI: true
+
+  unit-test-php:
+    needs: pre-run
+    if: needs.pre-run.outputs.changed-php-count > 0
+    name: 'PHP Unit test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node with cache
+        uses: ./.github/actions/setup-node-with-cache
+
+      - name: Start WP environment
+        run: npm run wp-env start
+
+      - name: Configure Composer GitHub auth in wp-env
+        run: npx wp-env run cli -- composer config --global github-oauth.github.com "${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}"
+
+      - name: Run tests
+        run: npm run test:php

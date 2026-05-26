@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Framework\ComponentLoader;
+use rtCamp\WPFramework\Components\ComponentLoader;
 
 if ( ! function_exists( 'elementary_theme_component' ) ) {
 
