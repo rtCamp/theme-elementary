@@ -11,6 +11,8 @@ namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\Assets;
+use rtCamp\Theme\Elementary\Core\Menu;
+use rtCamp\Theme\Elementary\Core\ThemeSetup;
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
 use rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions;
 
@@ -31,29 +33,11 @@ class Main {
 		$this->load(
 			[
 				Assets::class,
+				Menu::class,
+				ThemeSetup::class,
 				MediaTextInteractive::class,
 				ThemeOptions::class,
 			]
 		);
-
-		$this->setup_hooks();
-	}
-
-	/**
-	 * Setup hooks.
-	 *
-	 * @since 1.0.0
-	 */
-	public function setup_hooks(): void {
-		add_action( 'after_setup_theme', [ $this, 'elementary_theme_support' ] );
-	}
-
-	/**
-	 * Add required theme support.
-	 *
-	 * @since 1.0.0
-	 */
-	public function elementary_theme_support(): void {
-		add_theme_support( 'wp-block-styles' );
 	}
 }
