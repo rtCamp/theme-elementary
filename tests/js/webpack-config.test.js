@@ -7,17 +7,13 @@ const path = require( 'path' );
 
 jest.mock( '@wordpress/scripts/config/webpack.config', () => [
 	{
-		module: {},
 		optimization: {
 			minimizer: [],
 			splitChunks: {},
 		},
-		output: {},
 		plugins: [],
 	},
-	{
-		output: {},
-	},
+	{},
 ] );
 
 const { getComponentEntries } = require( '../../webpack.config' );
