@@ -1,85 +1,142 @@
 # Development Guide
 
-## PSR-4 Namespace Convention
+## Architecture overview
 
-All namespaced PHP classes live under `inc/` using the `rtCamp\Theme\Elementary\` root namespace.
-The file path must map to the namespace and class name.
+The theme is split into two layers:
 
-Examples:
+- **`vendor/rtcamp/wp-framework/`** — The upstream framework, installed as a Composer dependency. Provides reusable scaffolding (`Singleton`, `Loader`, `Container`, `AssetLoaderTrait`, `TemplateLoaderTrait`) and abstract base classes (`AbstractSettingsPage`, `AbstractPostType`, etc.). **Do not modify.** Changes belong in the framework repository.
+- **`inc/`** — All theme-specific code. Extends framework abstracts, registers theme services, and bootstraps the theme.
 
-- `inc/Main.php` → `rtCamp\Theme\Elementary\Main`
-- `inc/Core/Assets.php` → `rtCamp\Theme\Elementary\Core\Assets`
-- `inc/BlockExtensions/MediaTextInteractive.php` → `rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive`
-- `inc/Framework/Traits/Singleton.php` → `rtCamp\Theme\Elementary\Framework\Traits\Singleton`
+The `vendor/` boundary enforces the rule by convention: editing files there gets blown away on every `composer install`.
 
-## Directory tree
+## PSR-4 namespace convention
 
-The `inc/` directory follows a PSR-4 structure and is split into meaningful areas:
+Single PSR-4 root, declared in `composer.json`:
 
-- `inc/Framework/`
-  - Upstream-owned framework code.
-  - Base traits, contracts, and utilities.
-  - Do not modify in downstream themes unless there is no other option.
-- `inc/Main.php`
-  - Theme bootstrap entry point.
-  - Defines the primary theme class under `rtCamp\Theme\Elementary`.
-- `inc/Core/`
-  - Project-specific core classes.
-  - Example: asset loading, theme setup, shared services.
-- `inc/BlockExtensions/`
-  - Project-specific block extension classes.
-  - Example: block render filters, block-specific integrations.
-- `inc/helpers/`
-  - Non-namespaced helper files.
-  - Loaded via Composer `files` autoload and not subject to PSR-4 class name rules.
-
-## Two-layer model
-
-The repository is split into two layers:
-
-- `inc/Framework/` — upstream-owned framework code. Do not modify in downstream projects.
-- `inc/` (outside `Framework/`) — project-specific implementation and customizations.
-
-### `inc/Framework/`
-
-This is the base layer. It should contain only reusable traits, interfaces, and low-level utilities.
-Treat it like vendored code. If you need to change behavior, extend the framework class in `inc/` instead.
-
-### `inc/`
-
-This is the application layer for this theme. Add new feature classes, hooks, and theme-specific behavior here.
-
-## Adding a new class
-
-1. Create a new PHP file under `inc/` using PascalCase file names.
-2. Use the matching namespace path.
-3. Define the class name to match the filename exactly.
-4. If the class belongs to a feature group, create a subdirectory and namespace that group.
-
-Example:
-
-`inc/Example/Feature.php`
-
-```php
-namespace rtCamp\Theme\Elementary\Example;
-
-class Feature {
-    // ...
+```json
+"autoload": {
+    "psr-4": {
+        "rtCamp\\Theme\\Elementary\\": "inc/"
+    }
 }
 ```
 
-## Existing non-namespaced file
+Directory segments map 1:1 to namespace segments. Files are PascalCase.
 
-`inc/helpers/custom-functions.php` is intentionally not namespaced and remains loaded through Composer `files` autoload.
+| Namespace                                                              | File                                                  |
+|------------------------------------------------------------------------|-------------------------------------------------------|
+| `rtCamp\Theme\Elementary\Main`                                         | `inc/Main.php`                                        |
+| `rtCamp\Theme\Elementary\Autoloader`                                   | `inc/Autoloader.php`                                  |
+| `rtCamp\Theme\Elementary\Core\Assets`                                  | `inc/Core/Assets.php`                                 |
+| `rtCamp\Theme\Elementary\Core\Menu`                                    | `inc/Core/Menu.php`                                   |
+| `rtCamp\Theme\Elementary\Core\ThemeSetup`                              | `inc/Core/ThemeSetup.php`                             |
+| `rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive` | `inc/Modules/BlockExtensions/MediaTextInteractive.php`|
+| `rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions`                | `inc/Modules/Settings/ThemeOptions.php`               |
+| `rtCamp\Theme\Elementary\Helpers\Util`                                 | `inc/Helpers/Util.php`                                |
 
-## Running autoload generation
+## Directory layout
 
-After moving or adding namespaced classes, regenerate Composer autoload files:
+```
+inc/
+├── Autoloader.php              # Wraps vendor/autoload.php with graceful failure
+├── Main.php                    # Theme bootstrap — loads services
+├── Helpers/                    # Stateless static utility classes (final, private __construct)
+│   └── Util.php                # General-purpose helpers (add static methods as needed)
+├── Core/                       # Theme-wide infrastructure
+│   ├── Assets.php              # Asset registration (uses AssetLoaderTrait)
+│   ├── Menu.php                # Navigation menu registration
+│   └── ThemeSetup.php          # Theme support, image sizes, textdomain
+└── Modules/                    # Feature areas
+    ├── BlockExtensions/        # Block render filters and integrations
+    │   └── MediaTextInteractive.php
+    └── Settings/               # Admin settings pages (extend AbstractSettingsPage)
+        └── ThemeOptions.php
+```
+
+## Helpers
+
+`inc/Helpers/` is the home for stateless utility classes — `final`, `private __construct()`, static methods only. Today it holds one class, `Util`, kept as a placeholder for theme-wide helpers that don't earn their own dedicated class. Add siblings (e.g. `Str`, `Cache`, `Url`) as cross-cutting helpers accumulate, rather than letting `Util` grow into a grab-bag.
+
+## Picking a base
+
+| Feature                                  | Extends / implements                |
+|------------------------------------------|-------------------------------------|
+| Settings page                            | `AbstractSettingsPage`              |
+| Admin (non-settings) page                | `AbstractAdminPage`                 |
+| Dynamic block (server-side render)       | `AbstractBlock`                     |
+| REST controller                          | `AbstractRESTController`            |
+| Shortcode                                | `AbstractShortcode`                 |
+| Anything else that just wires hooks      | `Registrable` interface             |
+| Same, but registration is conditional    | `ConditionallyRegistrable` interface|
+
+## Adding a new class
+
+1. Pick the right abstract or interface from the table above.
+2. Drop the file in the matching `inc/Modules/<Area>/` directory (or `inc/Core/` if it's theme-wide infrastructure).
+3. Add it to the `Main::CLASSES` constant.
+4. Run `composer dump-autoload`.
+
+Example:
+
+```php
+// inc/Modules/Example/Feature.php
+namespace rtCamp\Theme\Elementary\Modules\Example;
+
+use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+
+final class Feature implements Registrable {
+    public function register_hooks(): void {
+        add_action( 'init', [ $this, 'do_something' ] );
+    }
+
+    public function do_something(): void {
+        // ...
+    }
+}
+```
+
+Then in `Main::CLASSES`:
+
+```php
+const CLASSES = [
+    Assets::class,
+    Menu::class,
+    ThemeSetup::class,
+    MediaTextInteractive::class,
+    ThemeOptions::class,
+    \rtCamp\Theme\Elementary\Modules\Example\Feature::class,
+];
+```
+
+## Conditional registration
+
+A class can opt out of registration at runtime by implementing `ConditionallyRegistrable` instead of `Registrable`:
+
+```php
+final class DevToolbarExtension implements ConditionallyRegistrable {
+    public function can_register(): bool {
+        return defined( 'WP_DEBUG' ) && WP_DEBUG;
+    }
+
+    public function register_hooks(): void {
+        // Wire dev-only hooks here.
+    }
+}
+```
+
+The `Loader` calls `can_register()` first and skips `register_hooks()` when it returns false.
+
+## Running Composer
 
 ```bash
+# First-time setup
+composer install
+
+# After adding, renaming, or moving a class
 composer dump-autoload
 ```
 
+If `vendor/autoload.php` is missing at runtime, the theme shows an admin notice instead of fataling — see `inc/Autoloader.php` and `AutoloaderTrait` in the framework.
 ## Notes
 
 - Do not use `classmap` autoloading for namespaced classes.

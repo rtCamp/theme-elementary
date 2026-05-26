@@ -10,26 +10,17 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
+use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
 /**
  * Class MediaTextInteractive
  */
-class MediaTextInteractive {
-
-	use Singleton;
+class MediaTextInteractive implements Registrable {
 
 	/**
-	 * Constructor.
+	 * Register hooks.
 	 */
-	protected function __construct() {
-		$this->setup_hooks();
-	}
-
-	/**
-	 * Setup hooks.
-	 */
-	public function setup_hooks(): void {
+	public function register_hooks(): void {
 		add_filter( 'render_block_core/button', [ $this, 'render_block_core_button' ], 10, 2 );
 		add_filter( 'render_block_core/columns', [ $this, 'render_block_core_columns' ], 10, 2 );
 		add_filter( 'render_block_core/video', [ $this, 'render_block_core_video' ], 10, 2 );

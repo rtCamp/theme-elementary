@@ -1,6 +1,6 @@
 <?php
 /**
- * Theme bootstrap file.
+ * Theme assets registration.
  *
  * @package rtCamp\Theme\Elementary
  */
@@ -9,18 +9,17 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\Theme\Elementary\Framework\Traits\AssetLoaderTrait;
-use rtCamp\Theme\Elementary\Framework\Traits\Singleton;
+use rtCamp\WPFramework\Contracts\Traits\AssetLoaderTrait;
+use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
 /**
  * Class Assets
  *
  * @since 1.0.0
  */
-class Assets {
+class Assets implements Registrable {
 
 	use AssetLoaderTrait;
-	use Singleton;
 
 	/**
 	 * Whether Tailwind CSS is enabled for this theme.
@@ -46,21 +45,23 @@ class Assets {
 	/**
 	 * Constructor.
 	 */
-	protected function __construct() {
+	public function __construct() {
+		$this->base_dir   = trailingslashit( ELEMENTARY_THEME_PATH );
+		$this->base_url   = trailingslashit( get_template_directory_uri() );
+		$this->assets_dir = 'assets/build';
+
 		$this->tailwind_enabled = (bool) apply_filters(
 			'elementary_theme_tailwind_enabled',
 			ELEMENTARY_THEME_ENABLE_TAILWIND
 		);
-		// Setup hooks.
-		$this->setup_hooks();
 	}
 
 	/**
-	 * Setup hooks.
+	 * Register hooks.
 	 *
 	 * @since 1.0.0
 	 */
-	public function setup_hooks(): void {
+	public function register_hooks(): void {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
@@ -74,12 +75,12 @@ class Assets {
 	 * @action wp_enqueue_scripts
 	 */
 	public function register_assets(): void {
-		$this->register_script( 'core-navigation', 'js/frontend/core-navigation.js' );
-		$this->register_style( 'core-navigation', 'css/frontend/core-navigation.css' );
-		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles.css' );
+		$this->register_script( 'core-navigation', 'js/frontend/core-navigation' );
+		$this->register_style( 'core-navigation', 'css/frontend/core-navigation' );
+		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles' );
 
 		if ( $this->tailwind_enabled ) {
-			$this->register_style( 'elementary-theme-tailwind', 'css/frontend/tailwind.css' );
+			$this->register_style( 'elementary-theme-tailwind', 'css/frontend/tailwind' );
 		}
 	}
 

@@ -11,8 +11,8 @@ if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) :
 	define( 'ELEMENTARY_THEME_VERSION', wp_get_theme()->get( 'Version' ) );
 endif;
 
-if ( ! defined( 'ELEMENTARY_THEME_TEMP_DIR' ) ) :
-	define( 'ELEMENTARY_THEME_TEMP_DIR', untrailingslashit( get_template_directory() ) );
+if ( ! defined( 'ELEMENTARY_THEME_PATH' ) ) :
+	define( 'ELEMENTARY_THEME_PATH', untrailingslashit( get_template_directory() ) );
 endif;
 
 if ( ! defined( 'ELEMENTARY_THEME_BUILD_URI' ) ) :
@@ -31,7 +31,7 @@ if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
 	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
 endif;
 
-require_once ELEMENTARY_THEME_TEMP_DIR . '/inc/Autoloader.php';
+require_once ELEMENTARY_THEME_PATH . '/inc/Autoloader.php';
 
 if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
 	return;
@@ -42,7 +42,7 @@ if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\El
  *
  * @since 1.0.0
  *
- * @return object Theme bootstrap instance.
+ * @return rtCamp\Theme\Elementary\Main Theme bootstrap instance.
  */
 function elementary_theme_instance() {
 

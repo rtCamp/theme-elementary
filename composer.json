@@ -4,8 +4,16 @@
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
 	"license": "GPL-2.0-or-later",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/rtCamp/wp-framework.git",
+			"no-api": true
+		}
+	],
 	"require": {
-		"php": ">=8.2"
+		"php": ">=8.2",
+		"rtcamp/wp-framework": "dev-main"
 	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^2.3",
@@ -34,10 +42,7 @@
 	"autoload": {
 		"psr-4": {
 			"rtCamp\\Theme\\Elementary\\": "inc/"
-		},
-		"files": [
-			"inc/helpers/custom-functions.php"
-		]
+		}
 	},
 	"autoload-dev": {
 		"psr-4": {
