@@ -35,10 +35,9 @@ class ThemeSetup implements Registrable {
 	 * @since 1.0.0
 	 */
 	public function add_theme_support(): void {
-		add_theme_support( 'wp-block-styles' );
 		add_theme_support( 'responsive-embeds' );
+		add_theme_support( 'custom-spacing' );
 		add_theme_support( 'align-wide' );
-		add_theme_support( 'post-thumbnails' );
 	}
 
 	/**

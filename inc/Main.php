@@ -10,11 +10,8 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
-use rtCamp\Theme\Elementary\Core\Assets;
-use rtCamp\Theme\Elementary\Core\Menu;
-use rtCamp\Theme\Elementary\Core\ThemeSetup;
-use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
-use rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions;
+use rtCamp\Theme\Elementary\Core\{Assets, Menu, ThemeSetup};
+use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive,Settings\ThemeOptions};
 
 /**
  * Class Main
@@ -26,18 +23,18 @@ class Main {
 	use Singleton;
 	use Loader;
 
+	const CLASSES = [
+		Assets::class,
+		Menu::class,
+		ThemeSetup::class,
+		MediaTextInteractive::class,
+		ThemeOptions::class,
+	];
+
 	/**
 	 * Constructor.
 	 */
 	protected function __construct() {
-		$this->load(
-			[
-				Assets::class,
-				Menu::class,
-				ThemeSetup::class,
-				MediaTextInteractive::class,
-				ThemeOptions::class,
-			]
-		);
+		$this->load( self::CLASSES );
 	}
 }

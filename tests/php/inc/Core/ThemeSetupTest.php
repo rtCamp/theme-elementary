@@ -63,10 +63,9 @@ class ThemeSetupTest extends TestCase {
 	public function test_add_theme_support(): void {
 		$this->instance->add_theme_support();
 
-		$this->assertTrue( current_theme_supports( 'wp-block-styles' ) );
 		$this->assertTrue( current_theme_supports( 'responsive-embeds' ) );
+		$this->assertTrue( current_theme_supports( 'custom-spacing' ) );
 		$this->assertTrue( current_theme_supports( 'align-wide' ) );
-		$this->assertTrue( current_theme_supports( 'post-thumbnails' ) );
 	}
 
 	/**

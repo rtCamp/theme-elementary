@@ -34,4 +34,15 @@ class MainTest extends TestCase {
 	public function test_class_is_singleton(): void {
 		$this->assertInstanceOf( Main::class, Main::get_instance() );
 	}
+
+	/**
+	 * Test all classes registered in CLASSES constant exist.
+	 *
+	 * @since 1.0.0
+	 */
+	public function test_registered_classes_exist(): void {
+		foreach ( Main::CLASSES as $class ) {
+			$this->assertTrue( class_exists( $class ), "Class {$class} does not exist." );
+		}
+	}
 }
