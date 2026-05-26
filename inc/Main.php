@@ -23,6 +23,9 @@ class Main {
 	use Singleton;
 	use Loader;
 
+	/**
+	 * List of classes to load.
+	 */
 	const CLASSES = [
 		Assets::class,
 		Menu::class,

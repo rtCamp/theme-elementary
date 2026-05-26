@@ -28,6 +28,8 @@ Directory segments map 1:1 to namespace segments. Files are PascalCase.
 | `rtCamp\Theme\Elementary\Main`                                         | `inc/Main.php`                                        |
 | `rtCamp\Theme\Elementary\Autoloader`                                   | `inc/Autoloader.php`                                  |
 | `rtCamp\Theme\Elementary\Core\Assets`                                  | `inc/Core/Assets.php`                                 |
+| `rtCamp\Theme\Elementary\Core\Menu`                                    | `inc/Core/Menu.php`                                   |
+| `rtCamp\Theme\Elementary\Core\ThemeSetup`                              | `inc/Core/ThemeSetup.php`                             |
 | `rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive` | `inc/Modules/BlockExtensions/MediaTextInteractive.php`|
 | `rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions`                | `inc/Modules/Settings/ThemeOptions.php`               |
 | `rtCamp\Theme\Elementary\Helpers\Util`                                 | `inc/Helpers/Util.php`                                |
@@ -41,7 +43,9 @@ inc/
 ├── Helpers/                    # Stateless static utility classes (final, private __construct)
 │   └── Util.php                # General-purpose helpers (add static methods as needed)
 ├── Core/                       # Theme-wide infrastructure
-│   └── Assets.php              # Asset registration (uses AssetLoaderTrait)
+│   ├── Assets.php              # Asset registration (uses AssetLoaderTrait)
+│   ├── Menu.php                # Navigation menu registration
+│   └── ThemeSetup.php          # Theme support, image sizes, textdomain
 └── Modules/                    # Feature areas
     ├── BlockExtensions/        # Block render filters and integrations
     │   └── MediaTextInteractive.php
@@ -69,7 +73,7 @@ inc/
 
 1. Pick the right abstract or interface from the table above.
 2. Drop the file in the matching `inc/Modules/<Area>/` directory (or `inc/Core/` if it's theme-wide infrastructure).
-3. Register it in `Main::__construct()`'s `$this->load( [ … ] )` call.
+3. Add it to the `Main::CLASSES` constant.
 4. Run `composer dump-autoload`.
 
 Example:
@@ -91,15 +95,17 @@ final class Feature implements Registrable {
 }
 ```
 
-Then in `Main::__construct()`:
+Then in `Main::CLASSES`:
 
 ```php
-$this->load( [
+const CLASSES = [
     Assets::class,
+    Menu::class,
+    ThemeSetup::class,
     MediaTextInteractive::class,
     ThemeOptions::class,
     \rtCamp\Theme\Elementary\Modules\Example\Feature::class,
-] );
+];
 ```
 
 ## Conditional registration

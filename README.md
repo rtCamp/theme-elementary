@@ -38,7 +38,7 @@ Reusable scaffolding (singleton, autoloader, asset loader, template loader, and 
 │   ├── Autoloader.php (Wraps vendor/autoload.php with graceful failure)
 │   ├── Main.php (Theme bootstrap — loads services)
 │   ├── Helpers/ (Stateless static utility classes)
-│   ├── Core/ (Theme-wide infrastructure — assets, etc.)
+│   ├── Core/ (Theme-wide infrastructure — assets, menus, theme setup)
 │   └── Modules/ (Feature areas)
 │       ├── BlockExtensions/ (Block render filters and integrations)
 │       └── Settings/ (Admin settings pages — extend AbstractSettingsPage)
