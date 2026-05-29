@@ -108,7 +108,7 @@ class AssetsTest extends TestCase {
 		add_filter( 'elementary_theme_tailwind_enabled', '__return_true' );
 		$instance = new Assets();
 
-		wp_register_style( 'elementary-theme-tailwind', 'https://example.com/tailwind.css' );
+		wp_register_style( 'elementary-theme-tailwind', 'https://example.com/tailwind.css', [], false );
 		$instance->enqueue_assets();
 
 		remove_filter( 'elementary_theme_tailwind_enabled', '__return_true' );
@@ -123,7 +123,7 @@ class AssetsTest extends TestCase {
 		add_filter( 'elementary_theme_tailwind_enabled', '__return_false' );
 		$instance = new Assets();
 
-		wp_register_style( 'elementary-theme-tailwind', 'https://example.com/tailwind.css' );
+		wp_register_style( 'elementary-theme-tailwind', 'https://example.com/tailwind.css', [], false );
 		$instance->enqueue_assets();
 
 		remove_filter( 'elementary_theme_tailwind_enabled', '__return_false' );
