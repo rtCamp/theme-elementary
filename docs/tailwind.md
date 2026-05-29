@@ -6,21 +6,21 @@ Tailwind v4 support is opt-in. When enabled, `GenerateTailwindThemePlugin` reads
 
 **1. Install the plugin package**
 ```bash
-npm install --save-dev @rtcamp/wp-tooling tailwindcss @tailwindcss/postcss
+npm install --save-dev @rtcamp/tailwind-config
 ```
 
 **2. Configure PostCSS**
 
 Create or update `postcss.config.js` in the theme root:
 ```js
-module.exports = require( '@rtcamp/wp-tooling/tailwind-config/postcss' );
+module.exports = require( '@rtcamp/tailwind-config/postcss' );
 ```
 
 **3. Add the plugin to `webpack.config.js`**
 
 In the `styles` compiler config, add `GenerateTailwindThemePlugin` to the plugins array:
 ```js
-const { GenerateTailwindThemePlugin } = require( '@rtcamp/wp-tooling/tailwind-config' );
+const { GenerateTailwindThemePlugin } = require( '@rtcamp/tailwind-config' );
 
 // inside the styles config:
 plugins: [
