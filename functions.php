@@ -32,6 +32,7 @@ if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
 endif;
 
 require_once ELEMENTARY_THEME_PATH . '/inc/Autoloader.php';
+require_once ELEMENTARY_THEME_PATH . '/inc//helpers/custom-functions.php';
 
 if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
 	return;

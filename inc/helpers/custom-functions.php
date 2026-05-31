@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\WPFramework\Components\ComponentLoader;
+use rtCamp\Theme\Elementary\Components\ThemeComponentLoader;
 
 if ( ! function_exists( 'elementary_theme_component' ) ) {
 
@@ -25,7 +25,7 @@ if ( ! function_exists( 'elementary_theme_component' ) ) {
 	 * @return void
 	 */
 	function elementary_theme_component( string $name, array $args = [], array $options = [] ): void {
-		ComponentLoader::render( $name, $args, $options );
+		ThemeComponentLoader::render( $name, $args, $options );
 	}
 }
 
@@ -45,6 +45,6 @@ if ( ! function_exists( 'elementary_theme_get_component' ) ) {
 	 * @return string Rendered component HTML.
 	 */
 	function elementary_theme_get_component( string $name, array $args = [], array $options = [] ): string {
-		return ComponentLoader::get( $name, $args, $options );
+		return ThemeComponentLoader::get( $name, $args, $options );
 	}
 }
