@@ -26,7 +26,11 @@ if ( ! function_exists( 'elementary_theme_component' ) ) {
 	 * @return void
 	 */
 	function elementary_theme_component( string $name, array $args = [], array $options = [] ): void {
-		/** @var ThemeComponentLoader $loader */
+		/**
+		 * Shared component loader.
+		 *
+		 * @var ThemeComponentLoader $loader
+		 */
 		$loader = Main::get_instance()->get_shared( ThemeComponentLoader::class );
 		$loader->render( $name, $args, $options );
 	}
@@ -48,7 +52,11 @@ if ( ! function_exists( 'elementary_theme_get_component' ) ) {
 	 * @return string Rendered component HTML.
 	 */
 	function elementary_theme_get_component( string $name, array $args = [], array $options = [] ): string {
-		/** @var ThemeComponentLoader $loader */
+		/**
+		 * Shared component loader.
+		 *
+		 * @var ThemeComponentLoader $loader
+		 */
 		$loader = Main::get_instance()->get_shared( ThemeComponentLoader::class );
 		return $loader->get( $name, $args, $options );
 	}
