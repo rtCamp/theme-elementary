@@ -50,6 +50,7 @@ const main = async () => {
 
 	if ( args.length > 0 ) {
 		console.log( style.error( '\nInvalid arguments.\n' ) );
+		process.exitCode = 1;
 		return;
 	}
 
@@ -106,8 +107,8 @@ const scaffoldFlow = async () => {
 	} ) ) {
 		await initializeGit();
 	} else {
-		console.log( style.warning( '\nSkipping git initialization.' ) );
-		await askHooks();
+		// Git hooks require a repo, so skip the hooks prompt entirely here.
+		console.log( style.warning( '\nSkipping git initialization (and git hooks).' ) );
 	}
 
 	await themeCleanupFlow();
@@ -413,7 +414,7 @@ const writeProjectConfig = ( fields ) => {
 	try {
 		fs.writeFileSync(
 			path.resolve( getRoot(), CONFIG_FILE ),
-			JSON.stringify( config, null, 2 ) + '\n',
+			JSON.stringify( config, null, '\t' ) + '\n',
 			'utf8',
 		);
 		console.log( style.success( `Saved project config to ${ CONFIG_FILE }` ), '✨' );
@@ -532,7 +533,7 @@ const setPrepareScript = ( root ) => {
 		const pkg = JSON.parse( fs.readFileSync( packageJsonPath, 'utf8' ) );
 		pkg.scripts = pkg.scripts || {};
 		pkg.scripts.prepare = 'wp-tooling install-hooks || true';
-		fs.writeFileSync( packageJsonPath, JSON.stringify( pkg, null, 2 ), 'utf8' );
+		fs.writeFileSync( packageJsonPath, JSON.stringify( pkg, null, '\t' ) + '\n', 'utf8' );
 	} catch ( error ) {
 		// Non-fatal: hooks are still installed for this clone.
 	}
@@ -568,7 +569,7 @@ const updateComposerJson = () => {
 		if ( composerJson.scripts ) {
 			delete composerJson.scripts[ 'post-install-cmd' ];
 		}
-		fs.writeFileSync( composerJsonPath, JSON.stringify( composerJson, null, 2 ), 'utf8' );
+		fs.writeFileSync( composerJsonPath, JSON.stringify( composerJson, null, '\t' ) + '\n', 'utf8' );
 	} catch ( error ) {
 		console.log( style.error( `Error while updating composer.json: ${ error.message }` ) );
 	}
@@ -601,7 +602,7 @@ const updatePackageJson = () => {
 		} else {
 			packageJson.scripts.prepare = remaining.join( ' && ' );
 		}
-		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ), 'utf8' );
+		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, '\t' ) + '\n', 'utf8' );
 	} catch ( error ) {
 		console.log( style.error( `Error while updating package.json: ${ error.message }` ) );
 	}
