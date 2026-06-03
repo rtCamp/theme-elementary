@@ -239,6 +239,17 @@ const deriveReplacements = ( f ) => {
 		[ 'elementary_theme', prefix ],
 		[ 'Elementary_Theme', toPascalSnake( prefix ) ],
 		[ 'ELEMENTARY_THEME', prefix.toUpperCase() ],
+		// Bare-"elementary" identifiers (run after the compound tokens above;
+		// specific so the repo URLs and elementary.local examples stay untouched).
+		[ 'Theme Elementary', f.themeName ],
+		[ 'elementary-media-text-interactive', `${ textDomain }-media-text-interactive` ],
+		[ 'elementary/media-text', `${ textDomain }/media-text` ], // Interactivity store namespace
+		[ 'elementary-featured', `${ textDomain }-featured` ],
+		[ 'elementary-browser-sync', `${ textDomain }-browser-sync` ],
+		[ 'elementary-settings', `${ textDomain }-settings` ],
+		[ 'elementary_main_section', `${ prefix }_main_section` ],
+		[ 'elementary_', `${ prefix }_` ], // option-key prefix
+		[ 'Elementary', f.themeName ], // bare label — keep last
 	];
 };
 
