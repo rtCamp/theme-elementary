@@ -7,7 +7,7 @@
  *
  * First run (no `.wp-tooling.json`): rename the starter theme to your theme
  * name, persist the choices, pick optional features (Tailwind, ...), and
- * optionally set up git/husky. Later runs jump straight to the feature manager,
+ * optionally set up git + git hooks. Later runs jump straight to the feature manager,
  * so features can be toggled any time with `npm run init`.
  *
  * The whole flow runs on the wp-tooling TTY UI kit (text / confirm / spinner),
@@ -107,7 +107,7 @@ const scaffoldFlow = async () => {
 		await initializeGit();
 	} else {
 		console.log( style.warning( '\nSkipping git initialization.' ) );
-		await askHusky();
+		await askHooks();
 	}
 
 	await themeCleanupFlow();
@@ -444,7 +444,7 @@ const runFeatureManager = async ( { install = true } = {} ) => {
 };
 
 /**
- * Initialize git, set up husky between init and the first commit.
+ * Initialize git, install git hooks between init and the first commit.
  *
  * @return {Promise<void>}
  */
@@ -466,10 +466,10 @@ const initializeGit = async () => {
 		isGitInitialized = true;
 		s.succeed( 'Git initialized.' );
 
-		await askHusky();
+		await askHooks();
 
 		execSync( `git add '${ root }'`, { stdio: 'pipe' } );
-		// --no-verify so the husky pre-commit hook does not block the first commit.
+		// --no-verify so the commit-msg / pre-commit hooks do not block the first commit.
 		execSync(
 			"git commit -m 'Initialize project using https://github.com/rtCamp/theme-elementary' --no-verify",
 			{ cwd: root, stdio: 'pipe' },
@@ -480,57 +480,61 @@ const initializeGit = async () => {
 };
 
 /**
- * Ask whether to install Husky, then install it.
+ * Ask whether to install git hooks, then install them.
  *
  * @return {Promise<void>}
  */
-const askHusky = async () => {
-	if ( ! ( await confirm( { message: 'Would you like to install Husky?', defaultValue: true } ) ) ) {
-		console.log( style.warning( '\nSkipping Husky.\n' ) );
+const askHooks = async () => {
+	if ( ! ( await confirm( { message: 'Would you like to install git hooks (pre-commit lint + commit-msg)?', defaultValue: true } ) ) ) {
+		console.log( style.warning( '\nSkipping git hooks.\n' ) );
 		return;
 	}
-	installHusky();
+	await installGitHooks();
 };
 
 /**
- * Install Husky and wire the pre-commit lint hook.
+ * Install the wp-tooling git hooks (pre-commit runs `lint:staged`; commit-msg
+ * validates Conventional Commits) into `.git/hooks`, and point `prepare` at
+ * `wp-tooling install-hooks` so they reinstall after a fresh clone.
  *
- * @return {void}
+ * @return {Promise<void>}
  */
-const installHusky = () => {
+const installGitHooks = async () => {
 	const root = path.resolve( getRoot() );
 	if ( ! fs.existsSync( path.resolve( root, '.git' ) ) ) {
 		console.log( style.warning( '\nGit is not initialized. Please initialize git first.\n' ) );
 		return;
 	}
 
-	const s = spinner( 'Installing Husky…' );
+	const s = spinner( 'Installing git hooks…' );
 	s.start();
 	try {
-		execSync( `npm install husky@9.0.1 --save-dev --prefix '${ root }'`, { stdio: 'pipe' } );
-
-		// `husky init` overwrites the prepare script; preserve any existing one.
-		const packageJsonPath = path.resolve( root, 'package.json' );
-		let previousPrepare = '';
-		if ( fs.existsSync( packageJsonPath ) ) {
-			const pkg = JSON.parse( fs.readFileSync( packageJsonPath, 'utf8' ) );
-			previousPrepare = ( pkg.scripts && pkg.scripts.prepare ) || '';
-		}
-
-		execSync( 'npx husky init', { cwd: root, stdio: 'pipe' } );
-		fs.writeFileSync( path.resolve( root, '.husky/pre-commit' ), 'npm run lint:staged\n', 'utf8' );
-
-		if ( previousPrepare ) {
-			const pkg = JSON.parse( fs.readFileSync( packageJsonPath, 'utf8' ) );
-			if ( pkg.scripts && pkg.scripts.prepare ) {
-				pkg.scripts.prepare += ` && ${ previousPrepare }`;
-				fs.writeFileSync( packageJsonPath, JSON.stringify( pkg, null, 2 ), 'utf8' );
-			}
-		}
-
-		s.succeed( 'Husky installed.' );
+		const { installHooks } = require( '@rtcamp/wp-tooling/hooks' );
+		await installHooks( root, { force: true } );
+		setPrepareScript( root );
+		s.succeed( 'Git hooks installed (pre-commit + commit-msg).' );
 	} catch ( error ) {
-		s.fail( 'Error while installing Husky. Please check the logs above.' );
+		s.fail( `Could not install git hooks: ${ error.message }` );
+	}
+};
+
+/**
+ * Point the `prepare` lifecycle script at `wp-tooling install-hooks` so hooks
+ * reinstall after a fresh clone (`.git/hooks` is never committed). `|| true`
+ * keeps `npm install` from failing where there is no git repo (CI / tarball).
+ *
+ * @param {string} root Theme root.
+ * @return {void}
+ */
+const setPrepareScript = ( root ) => {
+	const packageJsonPath = path.resolve( root, 'package.json' );
+	try {
+		const pkg = JSON.parse( fs.readFileSync( packageJsonPath, 'utf8' ) );
+		pkg.scripts = pkg.scripts || {};
+		pkg.scripts.prepare = 'wp-tooling install-hooks || true';
+		fs.writeFileSync( packageJsonPath, JSON.stringify( pkg, null, 2 ), 'utf8' );
+	} catch ( error ) {
+		// Non-fatal: hooks are still installed for this clone.
 	}
 };
 
