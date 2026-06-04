@@ -37,6 +37,41 @@ const [
 const rootPath = ( ...parts ) => path.resolve( process.cwd(), ...parts );
 
 /**
+ * Read the persisted theme config (`.wp-tooling.json`). Tolerant: returns an
+ * empty object when the file is missing or unreadable.
+ *
+ * @return {Object} Parsed config, or `{}`.
+ */
+const readThemeConfig = () => {
+	try {
+		return JSON.parse( fs.readFileSync( rootPath( '.wp-tooling.json' ), 'utf8' ) );
+	} catch {
+		return {};
+	}
+};
+
+const themeConfig = readThemeConfig();
+const tailwindEnabled = Boolean(
+	themeConfig.features && themeConfig.features.tailwind,
+);
+
+/**
+ * Tailwind plugins for the styles compiler, gated by the `tailwind` feature
+ * flag in `.wp-tooling.json` (toggled via `npm run init`). When off, the
+ * @rtcamp/tailwind-config package is never required, so themes that opt out do
+ * not need it installed.
+ *
+ * @return {Array} GenerateTailwindThemePlugin instance(s), or an empty array.
+ */
+const getTailwindPlugins = () => {
+	if ( ! tailwindEnabled ) {
+		return [];
+	}
+	const { GenerateTailwindThemePlugin } = require( '@rtcamp/tailwind-config' );
+	return [ new GenerateTailwindThemePlugin() ];
+};
+
+/**
  * Get a webpack plugin constructor name.
  *
  * The config filters by constructor name when it needs to remove or adjust a
@@ -504,6 +539,9 @@ const styles = {
 		...sharedNonHotConfig.module,
 	},
 	plugins: [
+		// Tailwind first: it scaffolds/regenerates the CSS entry files from
+		// theme.json before the compiler reads them.
+		...getTailwindPlugins(),
 		...sharedNonHotConfig.plugins.filter(
 			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
 		),

@@ -3,628 +3,812 @@
 /* eslint no-console: 0 */
 
 /**
+ * Theme setup / feature manager.
+ *
+ * First run (no `.wp-tooling.json`): rename the starter theme, persist the
+ * choices, pick optional features, and optionally set up git + git hooks.
+ * Later runs jump straight to the feature manager, so features can be toggled
+ * any time with `npm run init`.
+ */
+
+/**
  * External dependencies
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
-const readline = require( 'readline' );
-const { promisify } = require( 'util' );
 const { execSync } = require( 'child_process' );
+const { text, confirm, checkbox, spinner, style } = require( '@rtcamp/wp-tooling/ui' );
+
+const ROOT = path.resolve( __dirname, '..' );
+
+// Presence of the config flips init from scaffold mode to feature-manager mode.
+const CONFIG_FILE = '.wp-tooling.json';
 
 /**
- * Define Constants
+ * Entry point.
+ *
+ * @return {Promise<void>}
  */
-const rl = readline.createInterface( {
-	input: process.stdin,
-	output: process.stdout,
-} );
+const main = async () => {
+	const args = process.argv.slice( 2 );
 
-const info = {
-	error: ( message ) => {
-		return `\x1b[31m${ message }\x1b[0m`;
-	},
-	success: ( message ) => {
-		return `\x1b[32m${ message }\x1b[0m`;
-	},
-	warning: ( message ) => {
-		return `\x1b[33m${ message }\x1b[0m`;
-	},
-	message: ( message ) => {
-		return `\x1b[34m${ message }\x1b[0m`;
-	},
+	if ( args.includes( '--clean' ) || args.includes( '-c' ) ) {
+		// Standalone clean never touches `.git` — only the scaffold flow may
+		// remove the starter clone's repo (and its git prompt says so).
+		await themeCleanupFlow( { keepGit: true } );
+		return;
+	}
+
+	if ( args.length > 0 ) {
+		console.log( style.error( '\nInvalid arguments.\n' ) );
+		process.exitCode = 1;
+		return;
+	}
+
+	if ( fs.existsSync( path.resolve( ROOT, CONFIG_FILE ) ) ) {
+		console.log( style.success( '\nTheme already initialized — opening the feature manager.\n' ) );
+		await runFeatureManager( { install: true } );
+		return;
+	}
+
+	await scaffoldFlow();
 };
 
 /**
- * Return root directory
+ * First-run scaffold flow.
  *
- * @return {string} root directory
+ * @return {Promise<void>}
  */
-const getRoot = () => {
-	return path.resolve( __dirname, '../' );
-}
+const scaffoldFlow = async () => {
+	renderHeader();
 
-let fileContentUpdated = false;
-let fileNameUpdated = false;
-let themeCleanup = false;
-let isGitInitialized = false;
+	if ( ! ( await confirm( { message: 'Would you like to set up the theme?', defaultValue: true } ) ) ) {
+		console.log( style.warning( '\nTheme setup cancelled.\n' ) );
+		return;
+	}
 
-const args = process.argv.slice( 2 );
-
-if ( 0 === args.length ) {
-	rl.question( 'Would you like to setup the theme? (y/n) ', ( answer ) => {
-
-		if ( 'n' === answer.toLowerCase() ) {
-			console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-			rl.close();
-		}
-
-		rl.question( 'Enter theme name (shown in WordPress admin)*: ', ( themeName ) => {
-
-			const themeInfo = renderThemeDetails( themeName );
-
-			rl.question( 'Confirm the Theme Details (y/n) ', ( confirm ) => {
-
-				if ( 'n' === confirm.toLowerCase() ) {
-					console.log( info.warning( '\nTheme Setup Cancelled.\n' ) );
-					rl.close();
-				}
-
-				initTheme( themeInfo );
-
-				rl.question( 'Would you like to initialize git (Note: It will delete any `.git` folder already in current directory)? (y/n) ', async ( initialize ) => {
-					if ( 'n' === initialize.toLowerCase() ) {
-						console.log( info.warning( '\nExiting without initializing GitHub.\n' ) );
-						await askQuestionForHuskyInstallation();
-					} else {
-						await initializeGit()
-					}
-					themeCleanupQuestion();
-				} );
-			} );
-		} );
+	const themeName = await text( {
+		message: 'Enter theme name (shown in WordPress admin)',
+		validate: validThemeName,
 	} );
-} else if ( ( args.includes( '--clean' ) || args.includes( '-c' ) ) && 1 === args.length ) {
-	themeCleanupQuestion();
-} else {
-	console.log( info.error( '\nInvalid arguments.\n' ) );
-	rl.close();
-}
-rl.on( 'close', () => {
-	process.exit( 0 );
+
+	// Review loop: declining the table opens a multi-select editor, then
+	// re-confirms. No cascade: editing one field never rewrites another.
+	let fields = defaultFields( themeName.trim() );
+	while ( true ) {
+		renderThemeDetails( fields );
+		if ( await confirm( { message: 'Confirm the theme details?', defaultValue: true } ) ) {
+			break;
+		}
+		fields = await editFields( fields );
+	}
+
+	const counts = applyThemeName( fields );
+	applyVersion( fields.version );
+	writeProjectConfig( fields );
+	// The theme is initialized now — drop the `prepare` auto-trigger so a later
+	// `npm install` cannot re-open init, even if the cleanup below is declined.
+	updateJsonFile( 'package.json', stripInitFromPrepare );
+
+	console.log( style.bold( '\n  Optional features' ) );
+	// Init usually runs inside `npm install` (the prepare hook), so the feature
+	// manager records new deps in package.json instead of nesting an install.
+	await runFeatureManager( { install: false } );
+
+	let keepGit = false;
+	if ( await confirm( {
+		message: 'Initialize git? (Note: deletes any `.git` folder already in this directory)',
+		defaultValue: false,
+	} ) ) {
+		keepGit = await initializeGit();
+	} else {
+		console.log( style.warning( '\nSkipping git initialization (and git hooks).' ) );
+	}
+
+	await themeCleanupFlow( { keepGit } );
+
+	renderSummary( fields, { ...counts, keepGit } );
+};
+
+/**
+ * Print the setup banner.
+ *
+ * @return {void}
+ */
+const renderHeader = () => {
+	console.log( style.bold( '\n  Theme setup' ) );
+	console.log( style.muted( '  Name your theme and pick optional features. Ctrl+C cancels.' ) );
+};
+
+/**
+ * Split a value into lower-cased words on spaces, hyphens, underscores, and
+ * camelCase boundaries. Shared by every case helper below.
+ *
+ * @param {string} value
+ * @return {string[]} Lower-cased words.
+ */
+const words = ( value ) =>
+	String( value )
+		.trim()
+		.replace( /([a-z0-9])([A-Z])/g, '$1 $2' )
+		.split( /[\s\-_]+/ )
+		.filter( Boolean )
+		.map( ( word ) => word.toLowerCase() );
+
+const cap = ( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 );
+
+const toKebab = ( value ) => words( value ).join( '-' );
+const toSnake = ( value ) => words( value ).join( '_' );
+const toTrain = ( value ) => words( value ).map( cap ).join( '-' );
+const toCobol = ( value ) => words( value ).join( '-' ).toUpperCase();
+const toPascal = ( value ) => words( value ).map( cap ).join( '' );
+const toPascalSnake = ( value ) => words( value ).map( cap ).join( '_' );
+
+/**
+ * Collapse doubled backslashes so a namespace pasted from composer.json
+ * (`rtCamp\\Theme\\X`) behaves the same as one typed plainly, and strip
+ * leading/trailing separators that would produce invalid PHP.
+ *
+ * @param {string} value
+ * @return {string} Normalised namespace.
+ */
+const normalizeNamespace = ( value ) =>
+	String( value )
+		.trim()
+		.replace( /\\+/g, '\\' )
+		.replace( /^\\|\\$/g, '' );
+
+/*
+ * Per-field validators for text() prompts — each returns an error message or
+ * undefined. They guard the generated code: the theme name is substituted into
+ * single-quoted PHP strings (so no quotes/backslashes), a digit-leading prefix
+ * or text domain would produce invalid PHP/CSS identifiers, and a malformed
+ * namespace or package name corrupts composer.json. Validation runs on the raw
+ * input; derived values go through the same normalizers the replacements use.
+ */
+const validThemeName = ( value ) => {
+	const v = String( value ).trim();
+	if ( ! v ) {
+		return 'This field is required.';
+	}
+	if ( ! /^[A-Za-z]/.test( v ) ) {
+		return 'Start with a letter so the derived PHP/CSS identifiers stay valid.';
+	}
+	return /['"\\]/.test( v )
+		? 'Quotes and backslashes are not allowed — the name is written into PHP strings.'
+		: undefined;
+};
+
+const validVersion = ( value ) =>
+	/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/.test( String( value ).trim() )
+		? undefined
+		: 'Use a semantic version like 1.0.0.';
+
+const validTextDomain = ( value ) =>
+	/^[a-z][a-z0-9-]*$/.test( toKebab( value ) )
+		? undefined
+		: 'Must produce a kebab-case slug starting with a letter (e.g. my-theme).';
+
+const validNamespace = ( value ) =>
+	/^[A-Za-z_][A-Za-z0-9_]*(\\[A-Za-z_][A-Za-z0-9_]*)*$/.test( normalizeNamespace( value ) )
+		? undefined
+		: 'Use letters, numbers and underscores separated by \\ (e.g. rtCamp\\Theme\\MyTheme).';
+
+const validFunctionPrefix = ( value ) =>
+	/^[a-z][a-z0-9_]*$/.test( toSnake( value ) )
+		? undefined
+		: 'Must produce a snake_case prefix starting with a letter (e.g. my_theme).';
+
+const validPackageName = ( value ) =>
+	/^[a-z0-9]([a-z0-9._-]*[a-z0-9])?\/[a-z0-9]([a-z0-9._-]*[a-z0-9])?$/.test( String( value ).trim() )
+		? undefined
+		: 'Use the composer vendor/name format (lowercase, e.g. rtcamp/my-theme).';
+
+/**
+ * Editable source fields, defaulted from the theme name. Everything else
+ * (constants, CSS prefix, case variants) is derived from these.
+ *
+ * @param {string} themeName
+ * @return {Object} Source fields.
+ */
+const defaultFields = ( themeName ) => ( {
+	themeName,
+	version: '1.0.0',
+	textDomain: toKebab( themeName ),
+	namespace: `rtCamp\\Theme\\${ toPascal( themeName ) }`,
+	functionPrefix: toSnake( themeName ),
+	packageName: `rtcamp/${ toKebab( themeName ) }`,
 } );
 
 /**
- * Update composer.json file.
+ * Canonical identity derived from the (possibly edited) fields. The details
+ * table, the search-replace, and the saved config all go through this.
  *
- * @return {void}
+ * @param {Object} f Source fields.
+ * @return {Object} Canonical identity values.
  */
-const updateComposerJson = () => {
-	console.log( info.message( '\nRemoving post-install-cmd script from the composer.json...' ) );
-	const composerJsonPath = path.resolve( getRoot(), 'composer.json' );
+const resolveIdentity = ( f ) => {
+	const textDomain = toKebab( f.textDomain );
+	const prefix = toSnake( f.functionPrefix );
+	return {
+		themeName: f.themeName,
+		version: f.version,
+		textDomain,
+		namespace: normalizeNamespace( f.namespace ),
+		packageName: f.packageName.trim(),
+		functionPrefix: `${ prefix }_`,
+		cssClassPrefix: `${ textDomain }-`,
+		constantPrefix: prefix.toUpperCase(),
+	};
+};
 
-	try {
-		if ( ! fs.existsSync( composerJsonPath ) ) {
-			return;
-		}
-
-		const composerJson = JSON.parse( fs.readFileSync( composerJsonPath ) );
-
-		// Remove scripts.
-		delete composerJson.scripts['post-install-cmd'];
-
-		// Commit the changes to file.
-		fs.writeFileSync( composerJsonPath, JSON.stringify( composerJson, null, 2 ) );
-		console.log( info.success( '\ncomposer.json updated successfully!' ), '✨' );
-	} catch ( error ) {
-		console.log( info.error( `Error while updating composer.json: ${ error.message }` ) );
-		console.log( info.message( 'Please remove post-install-cmd script from the composer.json file manually.' ) );
-	}
-}
+// Editable source fields: [ key, label, prompt, normalize, validate ]. Text
+// domain and prefix are normalised to kebab/snake so identifiers stay valid.
+const FIELD_META = [
+	[ 'themeName', 'Theme Name', 'Theme name', ( v ) => v.trim(), validThemeName ],
+	[ 'version', 'Version', 'Theme version', ( v ) => v.trim(), validVersion ],
+	[ 'textDomain', 'Text Domain', 'Text domain', toKebab, validTextDomain ],
+	[ 'namespace', 'Namespace', 'PHP namespace', ( v ) => v.trim(), validNamespace ],
+	[ 'functionPrefix', 'Function Prefix', 'Function / constant prefix', toSnake, validFunctionPrefix ],
+	[ 'packageName', 'Package', 'Composer package name', ( v ) => v.trim(), validPackageName ],
+];
 
 /**
- * Update package.json file.
+ * Field editor: multi-select the fields to change, then edit each chosen one in
+ * turn (defaulting to its current value). The caller re-renders the details
+ * table and re-confirms, so selecting nothing is a safe "never mind". Editing
+ * one field never rewrites another.
  *
- * @return {void}
+ * @param {Object} fields Current source fields.
+ * @return {Promise<Object>} Updated source fields.
  */
-const updatePackageJson = () => {
-	console.log( info.message( '\nRemoving init script from the package.json...' ) );
-	const packageJsonPath = path.resolve( getRoot(), 'package.json' );
-
-	try {
-		if ( ! fs.existsSync( packageJsonPath ) ) {
-			return;
-		}
-
-		const packageJson = JSON.parse( fs.readFileSync( packageJsonPath ) );
-
-		delete packageJson.scripts['init'];
-
-		if ( ! packageJson.scripts['prepare'] ) {
-			return;
-		}
-
-		const prepareScript = packageJson.scripts['prepare'];
-
-		// Check if 'npm run init' is part of the prepare script.
-		if ( ! prepareScript.includes( 'npm run init' ) ) {
-			return;
-		}
-
-		// Split the prepare script into an array of individual scripts.
-		const prepareScriptArray = prepareScript.split( '&&' ).map( ( script ) => script.trim() );
-
-		// Find the index of 'npm run init' in the array.
-		const initScriptIndex = prepareScriptArray.indexOf( 'npm run init' );
-
-		// Remove 'npm run init' from the array if it exists.
-		if ( -1 !== initScriptIndex ) {
-			prepareScriptArray.splice( initScriptIndex, 1 );
-		}
-		// Join the array back into a string and update the 'prepare' script in packageJson.
-		packageJson.scripts['prepare'] = prepareScriptArray.join( ' && ' );
-
-		// Commit the changes to file.
-		fs.writeFileSync( packageJsonPath, JSON.stringify( packageJson, null, 2 ) );
-		console.log( info.success( '\npackage.json updated successfully!' ), '✨' );
-	} catch ( error ) {
-		console.log( info.error( `Error while updating package.json: ${ error.message }` ) );
-		console.log( info.message( 'Please remove init script and remove npm run init command from the prepare script from the package.json file manually.' ) );
-	}
-}
-
-/**
- * Ask theme claenup question.
- *
- * @return {void}
- */
-function themeCleanupQuestion() {
-	rl.question( 'Would you like to run the theme cleanup? (y/n) ', ( cleanup ) => {
-		if ( 'n' === cleanup.toLowerCase() ) {
-			console.log( info.warning( '\nExiting without running theme cleanup.\n' ) );
-		} else {
-			updateComposerJson();
-			updatePackageJson();
-			runThemeCleanup();
-		}
-		rl.close();
+const editFields = async ( fields ) => {
+	const f = { ...fields };
+	// Map each menu label back to its field meta up front (before any edit
+	// changes a value and with it the label).
+	const byLabel = new Map(
+		FIELD_META.map( ( meta ) => [ `${ meta[ 1 ].padEnd( 16 ) }${ f[ meta[ 0 ] ] }`, meta ] ),
+	);
+	const picked = await checkbox( {
+		message: 'Select the fields to edit',
+		choices: [ ...byLabel.keys() ],
 	} );
-}
+	const chosen = new Set( picked.map( ( label ) => byLabel.get( label )[ 0 ] ) );
+
+	// Edit in canonical order for a predictable prompt sequence.
+	for ( const [ key, , prompt, normalize, validate ] of FIELD_META ) {
+		if ( ! chosen.has( key ) ) {
+			continue;
+		}
+		f[ key ] = normalize(
+			await text( { message: prompt, defaultValue: f[ key ], validate } ),
+		);
+	}
+	return f;
+};
 
 /**
- * Initialize Git.
+ * Ordered [search, replacement] pairs applied literally (split/join, so the
+ * back-slashed namespace needs no escaping). Compound tokens come before bare
+ * ones; specific bare-"elementary" identifiers are listed explicitly so repo
+ * URLs and elementary.local examples stay untouched.
  *
+ * @param {Object} f Source fields.
+ * @return {Array<[string, string]>} Replacement pairs.
+ */
+const deriveReplacements = ( f ) => {
+	const textDomain = toKebab( f.textDomain );
+	const prefix = toSnake( f.functionPrefix );
+	const namespace = normalizeNamespace( f.namespace );
+	return [
+		// composer.json stores the namespace JSON-escaped — cover both forms.
+		[ 'rtCamp\\Theme\\Elementary', namespace ],
+		[ 'rtCamp\\\\Theme\\\\Elementary', namespace.replace( /\\/g, '\\\\' ) ],
+		[ 'rtcamp/elementary', f.packageName.trim() ],
+		[ 'elementary theme', f.themeName.toLowerCase() ],
+		[ 'Elementary Theme', f.themeName ],
+		[ 'ELEMENTARY THEME', f.themeName.toUpperCase() ],
+		[ 'elementary-theme', textDomain ],
+		[ 'Elementary-Theme', toTrain( textDomain ) ],
+		[ 'ELEMENTARY-THEME', toCobol( textDomain ) ],
+		[ 'elementary_theme', prefix ],
+		[ 'Elementary_Theme', toPascalSnake( prefix ) ],
+		[ 'ELEMENTARY_THEME', prefix.toUpperCase() ],
+		[ 'Theme Elementary', f.themeName ],
+		[ 'elementary-media-text-interactive', `${ textDomain }-media-text-interactive` ],
+		[ 'elementary/media-text', `${ textDomain }/media-text` ],
+		[ 'elementary-featured', `${ textDomain }-featured` ],
+		[ 'elementary-browser-sync', `${ textDomain }-browser-sync` ],
+		[ 'elementary-settings', `${ textDomain }-settings` ],
+		[ 'elementary_main_section', `${ prefix }_main_section` ],
+		[ 'elementary_', `${ prefix }_` ],
+		[ 'themes/elementary', `themes/${ textDomain }` ],
+		[ 'Elementary', f.themeName ], // bare label — keep last
+	];
+};
+
+/**
+ * Render the theme details box for confirmation. Two aligned columns, split
+ * into the identity you set and the values derived from it (dimmed). Values
+ * come from {@link resolveIdentity}, so the box shows exactly what is applied.
+ *
+ * @param {Object} fields Source fields.
  * @return {void}
+ */
+const renderThemeDetails = ( fields ) => {
+	const id = resolveIdentity( fields );
+	const identity = [
+		[ 'Theme Name', id.themeName ],
+		[ 'Version', id.version ],
+		[ 'Text Domain', id.textDomain ],
+		[ 'Package', id.packageName ],
+		[ 'Namespace', id.namespace ],
+		[ 'Function Prefix', id.functionPrefix ],
+	];
+	// Purely computed from the identity above — shown dimmed, never set directly.
+	const derived = [
+		[ 'CSS Class Prefix', id.cssClassPrefix ],
+		[ 'Constants', `${ id.constantPrefix }_{VERSION,BUILD_DIR,BUILD_URI}` ],
+	];
+
+	const PAD = 2; // padding inside the left border
+	const GAP = 2; // between the label and value columns
+	const all = [ ...identity, ...derived ];
+	const labelW = Math.max( ...all.map( ( [ label ] ) => label.length ) );
+	const valueW = Math.max( ...all.map( ( [ , value ] ) => value.length ) );
+	const inner = PAD + labelW + GAP + valueW + 1; // +1 trailing space
+
+	// Build a row, computing the right-pad from the raw (un-styled) text so
+	// ANSI codes never throw off the border alignment.
+	const row = ( label, value, dim ) => {
+		const raw = ' '.repeat( PAD ) + label.padEnd( labelW ) + ' '.repeat( GAP ) + value;
+		const body = dim
+			? style.muted( raw )
+			: ' '.repeat( PAD ) + style.success( label.padEnd( labelW ) ) + ' '.repeat( GAP ) + style.info( value );
+		return style.muted( '│' ) + body + ' '.repeat( inner - raw.length ) + style.muted( '│' );
+	};
+	const rule = ( left, right ) => style.muted( '  ' + left + '─'.repeat( inner ) + right );
+
+	console.log( style.bold( '\n  Theme details' ) );
+	console.log( rule( '┌', '┐' ) );
+	for ( const [ label, value ] of identity ) {
+		console.log( '  ' + row( label, value, false ) );
+	}
+	console.log( rule( '├', '┤' ) );
+	for ( const [ label, value ] of derived ) {
+		console.log( '  ' + row( label, value, true ) );
+	}
+	console.log( rule( '└', '┘' ) );
+};
+
+// Contents of these are never search-replaced — decoding binary data as UTF-8
+// and writing it back corrupts it. Their *names* still go through the rename
+// pass (e.g. elementary-theme-logo.png).
+const BINARY_EXTENSIONS = new Set( [
+	'.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico',
+	'.woff', '.woff2', '.ttf', '.eot', '.otf',
+	'.mo', '.zip', '.gz', '.jar', '.pdf',
+] );
+
+/**
+ * Apply the identity across all project files — contents first, then
+ * filenames carrying a token (e.g. elementary-theme.pot) — and regenerate the
+ * Composer autoloader for the new namespace.
+ *
+ * @param {Object} fields Source fields.
+ * @return {{filesChanged: number, filesRenamed: number}} Counts for the summary.
+ */
+const applyThemeName = ( fields ) => {
+	const replacements = deriveReplacements( fields );
+	const replaceAll = ( value ) =>
+		replacements.reduce( ( out, [ search, replacement ] ) => out.split( search ).join( replacement ), value );
+	// Skip this script itself: it holds the search tokens verbatim (in
+	// deriveReplacements), and it is kept after scaffolding, so rewriting it
+	// would corrupt its own replacement table.
+	const files = getAllFiles( ROOT ).filter( ( file ) => file !== __filename );
+
+	const s = spinner( 'Applying your theme name across the project…' );
+	s.start();
+
+	let filesChanged = 0;
+	let filesRenamed = 0;
+
+	try {
+		for ( const file of files ) {
+			if ( BINARY_EXTENSIONS.has( path.extname( file ).toLowerCase() ) ) {
+				continue;
+			}
+			const original = fs.readFileSync( file, 'utf8' );
+			const updated = replaceAll( original );
+			if ( updated !== original ) {
+				fs.writeFileSync( file, updated, 'utf8' );
+				filesChanged++;
+			}
+		}
+
+		for ( const file of files ) {
+			const base = path.basename( file );
+			const nextBase = replaceAll( base );
+			if ( nextBase !== base ) {
+				fs.renameSync( file, path.join( path.dirname( file ), nextBase ) );
+				filesRenamed++;
+			}
+		}
+
+		s.succeed( `Theme name applied — ${ filesChanged } file(s) updated, ${ filesRenamed } renamed.` );
+	} catch ( error ) {
+		s.fail( `Failed to apply theme name: ${ error.message }` );
+		throw error;
+	}
+
+	const dump = spinner( 'Regenerating Composer autoloader…' );
+	dump.start();
+	try {
+		execSync( 'composer dump-autoload', { cwd: ROOT, stdio: 'pipe' } );
+		dump.succeed( 'Composer autoloader regenerated.' );
+	} catch {
+		dump.fail( 'Could not run `composer dump-autoload` — run it manually after installing dependencies.' );
+	}
+
+	return { filesChanged, filesRenamed };
+};
+
+/**
+ * Apply the chosen version to style.css and package.json with surgical regex
+ * edits — the version is not a search-replace token.
+ *
+ * @param {string} version
+ * @return {void}
+ */
+const applyVersion = ( version ) => {
+	replaceInFile( 'style.css', /(^\s*\*?\s*Version:\s*).*$/m, `$1${ version }` );
+	replaceInFile( 'package.json', /("version"\s*:\s*")[^"]*"/, `$1${ version }"` );
+};
+
+/**
+ * Persist the identity that scaffolds reuse via `discover_from: "config:<key>"`.
+ * The `features` block is owned by the wp-tooling feature manager.
+ *
+ * @param {Object} fields Source fields.
+ * @return {void}
+ */
+const writeProjectConfig = ( fields ) => {
+	const id = resolveIdentity( fields );
+	const config = {
+		name: id.themeName,
+		version: id.version,
+		textDomain: id.textDomain,
+		namespace: id.namespace,
+		packageName: id.packageName,
+		functionPrefix: id.functionPrefix,
+		cssClassPrefix: id.cssClassPrefix,
+		constantPrefix: id.constantPrefix,
+		cssDir: 'src/css/frontend',
+		features: {},
+	};
+
+	try {
+		fs.writeFileSync(
+			path.resolve( ROOT, CONFIG_FILE ),
+			JSON.stringify( config, null, '\t' ) + '\n',
+			'utf8',
+		);
+		console.log( style.success( `Saved project config to ${ CONFIG_FILE }` ), '✨' );
+	} catch ( error ) {
+		console.log( style.error( `Error while writing ${ CONFIG_FILE }: ${ error.message }` ) );
+	}
+};
+
+/**
+ * Names of the features enabled in `.wp-tooling.json` (for the summary).
+ *
+ * @return {string[]} Enabled feature keys, or an empty array.
+ */
+const enabledFeatures = () => {
+	try {
+		const cfg = JSON.parse( fs.readFileSync( path.resolve( ROOT, CONFIG_FILE ), 'utf8' ) );
+		return Object.entries( cfg.features || {} ).filter( ( [ , on ] ) => on ).map( ( [ name ] ) => name );
+	} catch {
+		return [];
+	}
+};
+
+/**
+ * Print the closing recap: what was applied, plus the next steps.
+ *
+ * @param {Object}  fields              Source fields.
+ * @param {Object}  meta                Summary metadata.
+ * @param {number}  [meta.filesChanged] Files whose contents changed.
+ * @param {number}  [meta.filesRenamed] Files renamed.
+ * @param {boolean} [meta.keepGit]      Whether a git repo was initialized.
+ * @return {void}
+ */
+const renderSummary = ( fields, { filesChanged = 0, filesRenamed = 0, keepGit = false } = {} ) => {
+	const id = resolveIdentity( fields );
+	const features = enabledFeatures();
+	const rows = [
+		[ 'Name', id.themeName ],
+		[ 'Namespace', id.namespace ],
+		[ 'Files', `${ filesChanged } updated · ${ filesRenamed } renamed` ],
+		[ 'Features', features.length ? features.join( ', ' ) : 'none' ],
+		[ 'Git', keepGit ? 'initialized' : 'skipped' ],
+	];
+	const width = Math.max( ...rows.map( ( [ label ] ) => label.length ) );
+
+	console.log( style.bold( '\n  ✓ Setup complete' ) );
+	for ( const [ label, value ] of rows ) {
+		console.log( '    ' + style.muted( label.padEnd( width ) ) + '  ' + value );
+	}
+	console.log(
+		style.success( '\n  Next: ' ) + 'run ' + style.warning( '`npm install`' ) +
+		' to install feature deps, then ' + style.warning( '`npm start`' ) + '.',
+	);
+	console.log( style.muted( '  Re-run `npm run init` any time to toggle features on or off.\n' ) );
+};
+
+/**
+ * Run the wp-tooling feature manager in-process (same TTY session as init).
+ * When install is skipped (init already runs inside `npm install`), opt in to
+ * recording new deps in package.json so the next `npm install` picks them up.
+ *
+ * @param {Object}  options         Options.
+ * @param {boolean} options.install Run npm install for newly enabled features.
+ * @return {Promise<void>}
+ */
+const runFeatureManager = async ( { install = true } = {} ) => {
+	try {
+		const { runFeatures } = require( '@rtcamp/wp-tooling/features' );
+		await runFeatures( { cwd: ROOT, install, record: ! install } );
+	} catch ( error ) {
+		if ( error && error.name === 'CancelledError' ) {
+			throw error; // handled by main()'s top-level catch
+		}
+		console.log( style.warning(
+			`\nCould not run the feature manager: ${ error && error.message ? error.message : error }`,
+		) );
+		console.log( style.warning(
+			'Run `npx wp-tooling features` later to manage features.\n',
+		) );
+	}
+};
+
+/**
+ * Initialize a fresh git repo, install hooks, and create the first commit.
+ *
+ * @return {Promise<boolean>} True when a repo was created (so cleanup keeps it).
  */
 const initializeGit = async () => {
-	// Initialize git.
-	console.log( info.success( '\nInitializing git...' ) );
-
-	// Check if .git file exists.
-	const gitDir = path.resolve( getRoot(), '.git' );
 	try {
-		if ( fs.existsSync( gitDir ) ) {
-			// Remove .git directory.
-			fs.rmSync( gitDir, {
-				recursive: true,
-			} );
-		}
-	} catch ( error ) {
-
+		fs.rmSync( path.resolve( ROOT, '.git' ), { recursive: true, force: true } );
+	} catch {
+		// git init below will surface any real problem.
 	}
 
-	const pathToRoot = path.resolve( getRoot() );
-	const gitInitCommand = `git init '${ pathToRoot }'`;
-	const pathToAllFiles = path.resolve( getRoot(), '.' );
-	const gitAddCommand = `git add '${ pathToAllFiles }'`;
-	// Apply --no-verify flag to skip husky pre-commit hook.
-	const gitCommit = `git commit -m 'Initialize project using https://github.com/rtCamp/theme-elementary' --no-verify`;
-
+	let initialized = false;
+	const s = spinner( 'Initializing git…' );
+	s.start();
 	try {
-		// Execute git init command in the root directory.
-		execSync( gitInitCommand );
-		console.log( info.success( '\nGit initialized successfully!' ), '✨' );
-		isGitInitialized = true;
+		execSync( 'git init', { cwd: ROOT, stdio: 'pipe' } );
+		initialized = true;
+		s.succeed( 'Git initialized.' );
 
-		await askQuestionForHuskyInstallation();
+		await installGitHooks();
 
-		// Execute git add command in the root directory.
-		execSync( gitAddCommand );
+		execSync( 'git add -A', { cwd: ROOT, stdio: 'pipe' } );
+		// --no-verify: the freshly installed hooks must not block this commit.
+		execSync(
+			"git commit -m 'Initialize project using https://github.com/rtCamp/theme-elementary' --no-verify",
+			{ cwd: ROOT, stdio: 'pipe' },
+		);
+	} catch {
+		s.fail( 'Error while initializing git. Please check the logs above.' );
+	}
+	return initialized;
+};
 
-		// Execute git commit command in the root directory.
-		execSync( gitCommit );
+/**
+ * Offer and install the wp-tooling git hooks (pre-commit lint + commit-msg),
+ * pointing `prepare` at `wp-tooling install-hooks` so they reinstall after a
+ * fresh clone (`.git/hooks` is never committed).
+ *
+ * @return {Promise<void>}
+ */
+const installGitHooks = async () => {
+	if ( ! ( await confirm( { message: 'Would you like to install git hooks (pre-commit lint + commit-msg)?', defaultValue: true } ) ) ) {
+		console.log( style.warning( '\nSkipping git hooks.\n' ) );
+		return;
+	}
+
+	const s = spinner( 'Installing git hooks…' );
+	s.start();
+	try {
+		const { installHooks } = require( '@rtcamp/wp-tooling/hooks' );
+		await installHooks( ROOT, { force: true } );
+		// `|| true` keeps non-git installs (CI / tarball) green.
+		updateJsonFile( 'package.json', ( pkg ) => {
+			pkg.scripts = pkg.scripts || {};
+			pkg.scripts.prepare = 'wp-tooling install-hooks || true';
+		} );
+		s.succeed( 'Git hooks installed (pre-commit + commit-msg).' );
 	} catch ( error ) {
-		console.log( info.error( 'Error while installing Git. Please check above for the logs.' ) );
+		s.fail( `Could not install git hooks: ${ error.message }` );
 	}
 };
 
 /**
- * Ask Question for Husky Installation.
+ * Offer and run the theme cleanup: drop the scaffold-only lifecycle scripts
+ * and delete first-run-only files.
  *
- * @return {void}
+ * @param {Object}  options         Options.
+ * @param {boolean} options.keepGit Keep `.git` (a repo was created this run).
+ * @return {Promise<void>}
  */
-const askQuestionForHuskyInstallation = async () => {
-
-	// Promisify the question function for this instance only as this question is in between another question so code after this was getting executed before this is completed.
-	// There is readlinePromises Interface introduced in v17.0.0 and is in Experimental phase so we are using promisify for now.
-	// In future we can use readlinePromises Interface.
-	const question = promisify( rl.question ).bind( rl );
-	const install = await question( 'Would you like to install Husky? (y/n) ' );
-	if ( 'n' === install.toLowerCase() ) {
-		console.log(info.warning('\nExiting without installing Husky.\n'));
+const themeCleanupFlow = async ( { keepGit = false } = {} ) => {
+	if ( ! ( await confirm( { message: 'Would you like to run the theme cleanup?', defaultValue: true } ) ) ) {
+		console.log( style.warning( '\nExiting without running theme cleanup.\n' ) );
 		return;
 	}
-	installHusky();
-}
+
+	updateJsonFile( 'composer.json', ( json ) => {
+		if ( json.scripts ) {
+			delete json.scripts[ 'post-install-cmd' ];
+		}
+	} );
+	updateJsonFile( 'package.json', cleanupPackageJson );
+	removeScaffoldFiles( keepGit );
+};
 
 /**
- * Install Husky.
+ * Drop `npm run init` from the `prepare` script so `npm install` stops
+ * re-running init (the `init` script itself stays so the feature manager
+ * remains re-runnable). Mutator for {@link updateJsonFile} — runs right after
+ * the project config is written, and again as a fallback during cleanup.
  *
- * @return {void}
+ * @param {Object} pkg Parsed package.json.
+ * @return {boolean} False to skip writing when nothing changed.
  */
-const installHusky = () => {
+const stripInitFromPrepare = ( pkg ) => {
+	const prepare = pkg.scripts && pkg.scripts.prepare;
+	if ( ! prepare || ! prepare.includes( 'npm run init' ) ) {
+		return false;
+	}
+	const remaining = prepare
+		.split( '&&' )
+		.map( ( script ) => script.trim() )
+		.filter( ( script ) => script !== 'npm run init' );
+	if ( remaining.length === 0 ) {
+		delete pkg.scripts.prepare;
+	} else {
+		pkg.scripts.prepare = remaining.join( ' && ' );
+	}
+	return true;
+};
 
-	// Search if .git directory exists.
-	const gitDir = path.resolve( getRoot(), '.git' );
-	if ( ! fs.existsSync( gitDir ) ) {
-		console.log( info.warning( '\nGit is not initialized. Please initialize git first.\n' ) );
-		return;
+/**
+ * Cleanup mutations for package.json: strip the init auto-trigger (fallback —
+ * normally already done post-init) and remove repository/bugs/homepage entries
+ * still pointing at the starter repo — they belong to theme-elementary, not
+ * the scaffolded theme.
+ *
+ * @param {Object} pkg Parsed package.json.
+ * @return {boolean} False to skip writing when nothing changed.
+ */
+const cleanupPackageJson = ( pkg ) => {
+	let changed = stripInitFromPrepare( pkg );
+
+	for ( const key of [ 'repository', 'bugs', 'homepage' ] ) {
+		if ( JSON.stringify( pkg[ key ] || '' ).includes( 'theme-elementary' ) ) {
+			delete pkg[ key ];
+			changed = true;
+		}
 	}
 
-	// Install Husky.
-	console.log( info.success( '\nInstalling Husky...' ) );
+	return changed;
+};
 
-	const pathToRoot = path.resolve( getRoot() );
-	const huskyInstallCommand = `npm install husky@9.0.1 --save-dev --prefix '${ pathToRoot }'`;
+/**
+ * Delete first-run-only files. Keeps `bin/init.js` and `.wp-tooling.json` so
+ * the feature manager remains re-runnable.
+ *
+ * @param {boolean} keepGit Keep `.git` (a repo was created this run).
+ * @return {void}
+ */
+const removeScaffoldFiles = ( keepGit ) => {
+	const toRemove = [ '.github', 'languages', ...( keepGit ? [] : [ '.git' ] ) ];
 
-	try {
-		// Execute Husky install command in the root directory.
-		execSync( huskyInstallCommand );
-
-		const pathToPackageJson = path.resolve( getRoot(), 'package.json' );
-
-		let prepareScript = '';
-
-		// Extracting the prepare script from package.json before husky installation ovrwrites it.
-		if ( fs.existsSync( pathToPackageJson ) ) {
-			const packageJson = JSON.parse( fs.readFileSync( pathToPackageJson ) );
-
-			if ( packageJson.scripts && packageJson.scripts.prepare ) {
-				prepareScript = packageJson.scripts.prepare;
+	let removed = 0;
+	for ( const entry of toRemove ) {
+		const target = path.resolve( ROOT, entry );
+		try {
+			if ( fs.existsSync( target ) ) {
+				fs.rmSync( target, { recursive: true } );
+				removed++;
 			}
+		} catch ( error ) {
+			console.log( style.error( `\nError removing ${ entry }: ${ error.message }` ) );
 		}
+	}
 
-		execSync( 'npx husky init' );
-		execSync( 'echo "npm run lint:staged" > .husky/pre-commit' );
+	console.log(
+		removed > 0
+			? style.success( '\nTheme cleanup completed!' ) + ' ✨'
+			: style.warning( '\nNothing to clean up.\n' ),
+	);
+};
 
-		if ( '' === prepareScript ) {
+/**
+ * Edit a JSON file in place, tab-indented like the rest of the repo.
+ *
+ * @param {string}   file   Path relative to the theme root.
+ * @param {Function} mutate Receives the parsed object; return false to skip writing.
+ * @return {void}
+ */
+const updateJsonFile = ( file, mutate ) => {
+	const filePath = path.resolve( ROOT, file );
+	try {
+		if ( ! fs.existsSync( filePath ) ) {
 			return;
 		}
-
-		// Update the prepare script with the old prepare script after husky installation overwrites it.
-		if ( fs.existsSync( pathToPackageJson ) ) {
-			const packageJson = JSON.parse( fs.readFileSync( pathToPackageJson ) );
-
-			if ( packageJson.scripts && packageJson.scripts.prepare ) {
-				packageJson.scripts.prepare += ` && ${ prepareScript }`;
-
-				fs.writeFileSync( pathToPackageJson, JSON.stringify( packageJson, null, 2 ) );
-			}
+		const json = JSON.parse( fs.readFileSync( filePath, 'utf8' ) );
+		if ( mutate( json ) === false ) {
+			return;
 		}
-
-		console.log( info.success( '\nHusky installed successfully!' ), '✨' );
+		fs.writeFileSync( filePath, JSON.stringify( json, null, '\t' ) + '\n', 'utf8' );
 	} catch ( error ) {
-		console.log( error );
-		console.log( info.error( 'Error while installing husky. Please check above for the logs.' ) );
+		console.log( style.error( `Error while updating ${ file }: ${ error.message }` ) );
 	}
-}
-
-/**
- * Renders the theme setup modal with all necessary information related to the search-replace.
- *
- * @param {string} themeName
- *
- * @return {Object} themeInfo
- */
-const renderThemeDetails = ( themeName ) => {
-	console.log( info.success( '\nFiring up the theme setup...' ) );
-
-	// Ask theme name.
-	if ( ! themeName ) {
-		console.log( info.error( '\nTheme name is required.\n' ) );
-		process.exit( 0 );
-	}
-
-	// Generate theme info.
-	const themeInfo = generateThemeInfo( themeName );
-
-	const themeDetails = {
-		'Theme Name: ': `${ themeInfo.themeName }`,
-		'Theme Version: ': '1.0.0',
-		'Text Domain: ': themeInfo.kebabCase,
-		'Package: ': themeInfo.trainCase,
-		'Namespace: ': themeInfo.pascalSnakeCase,
-		'Function Prefix: ': themeInfo.snakeCaseWithUnderscoreSuffix,
-		'CSS Class Prefix: ': themeInfo.kebabCaseWithHyphenSuffix,
-		'PHP Variable Prefix: ': themeInfo.snakeCaseWithUnderscoreSuffix,
-		'Version Constant: ': `${ themeInfo.macroCase }_VERSION`,
-		'Theme Directory Constant: ': `${ themeInfo.macroCase }_TEMP_DIR`,
-		'Theme Build Directory Constant: ': `${ themeInfo.macroCase }_BUILD_DIR`,
-		'Theme Build Directory URI Constant: ': `${ themeInfo.macroCase }_BUILD_URI`,
-	};
-
-	const biggestStringLength = themeDetails[ 'Theme Build Directory URI Constant: ' ].length + 'Theme Build Directory URI Constant: '.length;
-
-	console.log( info.success( '\nTheme Details:' ) );
-	console.log(
-		info.warning( '┌' + '─'.repeat( biggestStringLength + 2 ) + '┐' ),
-	);
-	Object.keys( themeDetails ).forEach( ( key ) => {
-		console.log(
-			info.warning( '│' + ' ' + info.success( key ) + info.message( themeDetails[ key ] ) + ' ' + ' '.repeat( biggestStringLength - ( themeDetails[ key ].length + key.length ) ) + info.warning( '│' ) ),
-		);
-	} );
-	console.log(
-		info.warning( '└' + '─'.repeat( biggestStringLength + 2 ) + '┘' ),
-	);
-
-	return themeInfo;
 };
 
 /**
- * Initialize new theme
+ * Apply a single regex replacement to a file, leaving the rest untouched.
  *
- * @param {Object} themeInfo
+ * @param {string} file        Path relative to the theme root.
+ * @param {RegExp} pattern     Pattern to replace.
+ * @param {string} replacement Replacement string.
+ * @return {void}
  */
-const initTheme = ( themeInfo ) => {
-	const chunksToReplace = {
-		'rtcamp/elementary': themeInfo.packageName, // Specifically targets composer.json file.
-		'elementary theme': themeInfo.themeNameLowerCase,
-		'Elementary Theme': themeInfo.themeName,
-		'ELEMENTARY THEME': themeInfo.themeNameCobolCase,
-		'elementary-theme': themeInfo.kebabCase,
-		'Elementary-Theme': themeInfo.trainCase,
-		'ELEMENTARY-THEME': themeInfo.cobolCase,
-		elementary_theme: themeInfo.snakeCase,
-		Elementary_Theme: themeInfo.pascalSnakeCase,
-		ELEMENTARY_THEME: themeInfo.macroCase,
-		'elementary-theme-': themeInfo.kebabCaseWithHyphenSuffix,
-		'Elementary-Theme-': themeInfo.trainCaseWithHyphenSuffix,
-		'ELEMENTARY-THEME-': themeInfo.cobolCaseWithHyphenSuffix,
-		elementary_theme_: themeInfo.snakeCaseWithUnderscoreSuffix,
-		Elementary_Theme_: themeInfo.pascalSnakeCaseWithUnderscoreSuffix,
-		ELEMENTARY_THEME_: themeInfo.macroCaseWithUnderscoreSuffix,
-	};
-
-	const files = getAllFiles( getRoot() );
-
-	// File name to replace in.
-	const fileNameToReplace = {};
-	files.forEach( ( file ) => {
-		const fileName = path.basename( file );
-		Object.keys( chunksToReplace ).forEach( ( key ) => {
-			if ( fileName.includes( key ) ) {
-				fileNameToReplace[ fileName ] = fileName.replace( key, chunksToReplace[ key ] );
-			}
-		} );
-	} );
-
-	// Replace files contents.
-	console.log( info.success( '\nUpdating theme details in file(s)...' ) );
-	Object.keys( chunksToReplace ).forEach( ( key ) => {
-		replaceFileContent( files, key, chunksToReplace[ key ] );
-	} );
-
-	if ( ! fileContentUpdated ) {
-		console.log( info.error( 'No file content updated.\n' ) );
-	}
-
-	// Replace file names
-	console.log( info.success( '\nUpdating theme file(s) name...' ) );
-	Object.keys( fileNameToReplace ).forEach( ( key ) => {
-		replaceFileName( files, key, fileNameToReplace[ key ] );
-	} );
-	if ( ! fileNameUpdated ) {
-		console.log( info.error( 'No file name updated.\n' ) );
-	}
-
-	if ( fileContentUpdated || fileNameUpdated ) {
-		console.log( info.success( '\nYour new theme is ready to go!' ), '✨' );
-		// Docs link
-		console.log( info.success( '\nFor more information on how to use this theme, please visit the following link: ' + info.warning( 'https://github.com/rtCamp/theme-elementary/blob/main/README.md\n' ) ) );
-	} else {
-		console.log( info.warning( '\nNo changes were made to your theme.\n' ) );
-	}
-
+const replaceInFile = ( file, pattern, replacement ) => {
+	const filePath = path.resolve( ROOT, file );
 	try {
-		const result = execSync( 'composer dump-autoload' );
-		console.log( info.success( result ) );
+		if ( ! fs.existsSync( filePath ) ) {
+			return;
+		}
+		const updated = fs.readFileSync( filePath, 'utf8' ).replace( pattern, replacement );
+		fs.writeFileSync( filePath, updated, 'utf8' );
 	} catch ( error ) {
-		console.log( info.error( `Error while executing composer dump-autoload: ${error}` ) );
+		console.log( style.error( `Error while updating ${ file }: ${ error.message }` ) );
 	}
 };
 
 /**
- * Get all files in a directory
+ * Recursively list project files, skipping VCS/dependency directories.
+ * Symlinks are skipped so a broken link cannot abort the rename pass mid-way.
  *
- * @param {Array} dir - Directory to search
+ * @param {string} dir Directory to scan.
+ * @return {string[]} Absolute file paths.
  */
 const getAllFiles = ( dir ) => {
-	const dirOrFilesIgnore = [
-		'.git',
-		'.github',
-		'node_modules',
-		'vendor',
-	];
-
-	try {
-		let files = fs.readdirSync( dir );
-		files = files.filter( ( fileOrDir ) => ! dirOrFilesIgnore.includes( fileOrDir ) );
-
-		const allFiles = [];
-		files.forEach( ( file ) => {
-			const filePath = path.join( dir, file );
-			const stat = fs.statSync( filePath );
-			if ( stat.isDirectory() ) {
-				allFiles.push( ...getAllFiles( filePath ) );
-			} else {
-				allFiles.push( filePath );
-			}
-		} );
-		return allFiles;
-	} catch ( err ) {
-		console.log( info.error( err ) );
+	const ignore = [ '.git', '.github', 'node_modules', 'vendor' ];
+	const out = [];
+	for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+		if ( ignore.includes( entry.name ) || entry.isSymbolicLink() ) {
+			continue;
+		}
+		const full = path.join( dir, entry.name );
+		if ( entry.isDirectory() ) {
+			out.push( ...getAllFiles( full ) );
+		} else if ( entry.isFile() ) {
+			out.push( full );
+		}
 	}
+	return out;
 };
 
-/**
- * Replace content in file
- *
- * @param {Array}  files           Files to search
- * @param {string} chunksToReplace String to replace
- * @param {string} newChunk        New string to replace with
- */
-const replaceFileContent = ( files, chunksToReplace, newChunk ) => {
-	files.forEach( ( file ) => {
-		const filePath = path.resolve( getRoot(), file );
-
-		try {
-			let content = fs.readFileSync( filePath, 'utf8' );
-			const regex = new RegExp( chunksToReplace, 'g' );
-			content = content.replace( regex, newChunk );
-			if ( content !== fs.readFileSync( filePath, 'utf8' ) ) {
-				fs.writeFileSync( filePath, content, 'utf8' );
-				console.log( info.success( `Updated [${ info.message( chunksToReplace ) }] ${ info.success( 'to' ) } [${ info.message( newChunk ) }] ${ info.success( 'in file' ) } [${ info.message( path.basename( file ) ) }]` ) );
-				fileContentUpdated = true;
-			}
-		} catch ( err ) {
-			console.log( info.error( `\nError: ${ err }` ) );
-		}
-	} );
-};
-
-/**
- * Change File Name
- *
- * @param {Array}  files       Files to search
- * @param {string} oldFileName Old file name
- * @param {string} newFileName New file name
- */
-const replaceFileName = ( files, oldFileName, newFileName ) => {
-	files.forEach( ( file ) => {
-		if ( oldFileName !== path.basename( file ) ) {
-			return;
-		}
-		const filePath = path.resolve( getRoot(), file );
-		const newFilePath = path.resolve( getRoot(), file.replace( oldFileName, newFileName ) );
-		try {
-			fs.renameSync( filePath, newFilePath );
-			console.log( info.success( `Updated file [${ info.message( path.basename( filePath ) ) }] ${ info.success( 'to' ) } [${ info.message( path.basename( newFilePath ) ) }]` ) );
-			fileNameUpdated = true;
-		} catch ( err ) {
-			console.log( info.error( `\nError: ${ err }` ) );
-		}
-	} );
-};
-
-/**
- * Generate Theme Info from Theme Name
- *
- * @param {string} themeName
- */
-const generateThemeInfo = ( themeName ) => {
-	const themeNameLowerCase = themeName.toLowerCase();
-
-	const kebabCase = themeName.replace( /\s+/g, '-' ).toLowerCase();
-	const packageName = `rtcamp/${ kebabCase }`;
-	const snakeCase = kebabCase.replace( /\-/g, '_' );
-	const kebabCaseWithHyphenSuffix = kebabCase + '-';
-	const snakeCaseWithUnderscoreSuffix = snakeCase + '_';
-
-	const trainCase = kebabCase.replace( /\b\w/g, ( l ) => {
-		return l.toUpperCase();
-	} );
-	const themeNameTrainCase = trainCase.replace( /\-/g, ' ' );
-	const pascalSnakeCase = trainCase.replace( /\-/g, '_' );
-	const trainCaseWithHyphenSuffix = trainCase + '-';
-	const pascalSnakeCaseWithUnderscoreSuffix = pascalSnakeCase + '_';
-
-	const cobolCase = kebabCase.toUpperCase();
-	const themeNameCobolCase = themeNameTrainCase.toUpperCase();
-	const macroCase = snakeCase.toUpperCase();
-	const cobolCaseWithHyphenSuffix = cobolCase + '-';
-	const macroCaseWithUnderscoreSuffix = macroCase + '_';
-
-	return {
-		themeName,
-		packageName,
-		themeNameLowerCase,
-		kebabCase,
-		snakeCase,
-		kebabCaseWithHyphenSuffix,
-		snakeCaseWithUnderscoreSuffix,
-		trainCase,
-		themeNameTrainCase,
-		pascalSnakeCase,
-		trainCaseWithHyphenSuffix,
-		pascalSnakeCaseWithUnderscoreSuffix,
-		cobolCase,
-		themeNameCobolCase,
-		macroCase,
-		cobolCaseWithHyphenSuffix,
-		macroCaseWithUnderscoreSuffix,
-	};
-};
-
-/**
- * Run theme cleanup to delete files and directories
- *
- * It will remove following directories and files:
- * 1. .git
- * 2. .github
- * 3. bin
- * 4. languages
- */
-const runThemeCleanup = () => {
-	const deleteDirs = [
-		'.github',
-		'bin/init.js',
-		'languages',
-	];
-
-	if ( ! isGitInitialized ) {
-		deleteDirs.push( '.git' );
+main().catch( ( error ) => {
+	if ( error && error.name === 'CancelledError' ) {
+		console.log( style.warning( '\nSetup cancelled.\n' ) );
+		process.exit( 130 );
 	}
-
-	deleteDirs.forEach( ( dir ) => {
-		const dirPath = path.resolve( getRoot(), dir );
-		try {
-			if ( fs.existsSync( dirPath ) ) {
-				let isDirectory = false;
-
-				if ( true === fs.lstatSync( dirPath ).isDirectory() ) {
-					isDirectory = true;
-				}
-
-				// rmSync function introduced in Node v14.14.0. It can delete files and directories recursively.
-				fs.rmSync( dirPath, {
-					recursive: true,
-				} );
-
-				if ( isDirectory ) {
-					console.log( info.success( `Removed directory [${ info.message( dir ) }]` ) );
-				} else {
-					console.log( info.success( `Removed file [${ info.message( dir ) }]` ) );
-				}
-				themeCleanup = true;
-			}
-		} catch ( err ) {
-			console.log( info.error( `\nError: ${ err }` ) );
-		}
-	} );
-
-	if ( themeCleanup ) {
-		console.log( info.success( '\nTheme cleanup completed!' ), '✨' );
-	} else {
-		console.log( info.warning( '\nNo theme cleanup required!\n' ) );
-	}
-};
+	console.log( style.error( `\nError: ${ error && error.message ? error.message : error }` ) );
+	process.exit( 1 );
+} );
