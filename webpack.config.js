@@ -406,7 +406,15 @@ const sharedConfig = {
 		: undefined,
 	plugins: [
 		new CleanBuildPlugin(),
-		...scriptConfig.plugins.map( setCssOutputPath ),
+		// Strip wp-scripts' inherited CopyPlugin (its actual class is `CopyPlugin`,
+		// not `CopyWebpackPlugin` — that's just wp-scripts' import alias). It would
+		// otherwise copy block.json/render.php from src/blocks/ into the JS output
+		// at assets/build/js/blocks/, which is redundant — block compilation is
+		// owned by the dedicated `build:blocks` script and lands in
+		// assets/build/blocks/. Keep all other inherited plugins.
+		...scriptConfig.plugins
+			.filter( isNotPlugin( 'CopyPlugin' ) )
+			.map( setCssOutputPath ),
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
