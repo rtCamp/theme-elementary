@@ -17,7 +17,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
-const { text, confirm, radio, spinner, style } = require( '@rtcamp/wp-tooling/ui' );
+const { text, confirm, checkbox, spinner, style } = require( '@rtcamp/wp-tooling/ui' );
 
 const ROOT = path.resolve( __dirname, '..' );
 
@@ -72,8 +72,8 @@ const scaffoldFlow = async () => {
 		validate: validThemeName,
 	} );
 
-	// Review loop: declining the table opens a field picker — edit one field at
-	// a time, then re-confirm. No cascade: editing one never rewrites another.
+	// Review loop: declining the table opens a multi-select editor, then
+	// re-confirms. No cascade: editing one field never rewrites another.
 	let fields = defaultFields( themeName.trim() );
 	while ( true ) {
 		renderThemeDetails( fields );
@@ -254,32 +254,37 @@ const FIELD_META = [
 ];
 
 /**
- * Field picker: pick one field to edit (defaulting to its current value),
- * looping until "Done". Editing one field never rewrites another.
+ * Field editor: multi-select the fields to change, then edit each chosen one in
+ * turn (defaulting to its current value). The caller re-renders the details
+ * table and re-confirms, so selecting nothing is a safe "never mind". Editing
+ * one field never rewrites another.
  *
  * @param {Object} fields Current source fields.
  * @return {Promise<Object>} Updated source fields.
  */
 const editFields = async ( fields ) => {
 	const f = { ...fields };
-	const done = 'Done — back to summary';
-	while ( true ) {
-		const rows = FIELD_META.map( ( meta ) => ( {
-			meta,
-			text: `${ meta[ 1 ].padEnd( 16 ) }${ f[ meta[ 0 ] ] }`,
-		} ) );
-		const picked = await radio( {
-			message: 'Edit which field?',
-			choices: [ ...rows.map( ( r ) => r.text ), done ],
-		} );
-		if ( picked === done ) {
-			return f;
+	// Map each menu label back to its field meta up front (before any edit
+	// changes a value and with it the label).
+	const byLabel = new Map(
+		FIELD_META.map( ( meta ) => [ `${ meta[ 1 ].padEnd( 16 ) }${ f[ meta[ 0 ] ] }`, meta ] ),
+	);
+	const picked = await checkbox( {
+		message: 'Select the fields to edit',
+		choices: [ ...byLabel.keys() ],
+	} );
+	const chosen = new Set( picked.map( ( label ) => byLabel.get( label )[ 0 ] ) );
+
+	// Edit in canonical order for a predictable prompt sequence.
+	for ( const [ key, , prompt, normalize, validate ] of FIELD_META ) {
+		if ( ! chosen.has( key ) ) {
+			continue;
 		}
-		const [ key, , prompt, normalize, validate ] = rows.find( ( r ) => r.text === picked ).meta;
 		f[ key ] = normalize(
 			await text( { message: prompt, defaultValue: f[ key ], validate } ),
 		);
 	}
+	return f;
 };
 
 /**
