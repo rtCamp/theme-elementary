@@ -9,17 +9,18 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\WPFramework\Contracts\Traits\AssetLoaderTrait;
+use rtCamp\WPFramework\AssetLoader;
 use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
 /**
  * Class Assets
  *
+ * The theme's asset loader: extends the framework AssetLoader and registers
+ * the theme's own scripts and styles on the relevant hooks.
+ *
  * @since 1.0.0
  */
-class Assets implements Registrable {
-
-	use AssetLoaderTrait;
+class Assets extends AssetLoader implements Registrable {
 
 	/**
 	 * Whether Tailwind CSS is enabled for this theme.
@@ -46,9 +47,11 @@ class Assets implements Registrable {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->base_dir   = trailingslashit( ELEMENTARY_THEME_PATH );
-		$this->base_url   = trailingslashit( get_template_directory_uri() );
-		$this->assets_dir = 'assets/build';
+		parent::__construct(
+			ELEMENTARY_THEME_PATH,
+			get_template_directory_uri(),
+			'assets/build'
+		);
 
 		$this->tailwind_enabled = (bool) apply_filters(
 			'elementary_theme_tailwind_enabled',
