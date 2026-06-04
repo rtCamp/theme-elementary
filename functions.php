@@ -7,47 +7,51 @@
  * @package rtCamp\Theme\Elementary
  */
 
-if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) :
-	define( 'ELEMENTARY_THEME_VERSION', wp_get_theme()->get( 'Version' ) );
-endif;
+declare( strict_types = 1 );
 
-if ( ! defined( 'ELEMENTARY_THEME_PATH' ) ) :
-	define( 'ELEMENTARY_THEME_PATH', untrailingslashit( get_template_directory() ) );
-endif;
+namespace rtCamp\Theme\Elementary;
 
-if ( ! defined( 'ELEMENTARY_THEME_BUILD_URI' ) ) :
-	define( 'ELEMENTARY_THEME_BUILD_URI', untrailingslashit( get_template_directory_uri() ) . '/assets/build' );
-endif;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
-if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
-	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
-endif;
+/**
+ * Define theme constants.
+ */
+function constants(): void {
+	if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) {
+		define( 'ELEMENTARY_THEME_VERSION', wp_get_theme()->get( 'Version' ) );
+	}
 
-if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) :
-	define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
-endif;
+	if ( ! defined( 'ELEMENTARY_THEME_PATH' ) ) {
+		define( 'ELEMENTARY_THEME_PATH', untrailingslashit( get_template_directory() ) );
+	}
 
-if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) :
-	define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
-endif;
+	if ( ! defined( 'ELEMENTARY_THEME_BUILD_URI' ) ) {
+		define( 'ELEMENTARY_THEME_BUILD_URI', untrailingslashit( get_template_directory_uri() ) . '/assets/build' );
+	}
 
+	if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) {
+		define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) {
+		define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC' ) ) {
+		define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', false );
+	}
+}
+
+constants();
+
+// If the autoloader fails, we cannot proceed.
 require_once ELEMENTARY_THEME_PATH . '/inc/Autoloader.php';
-
-if ( ! class_exists( 'rtCamp\Theme\Elementary\Autoloader' ) || ! rtCamp\Theme\Elementary\Autoloader::autoload() ) {
+if ( ! class_exists( Autoloader::class ) || ! Autoloader::autoload() ) {
 	return;
 }
 
-/**
- * Theme bootstrap instance.
- *
- * @since 1.0.0
- *
- * @return rtCamp\Theme\Elementary\Main Theme bootstrap instance.
- */
-function elementary_theme_instance() {
-
-	return rtCamp\Theme\Elementary\Main::get_instance();
+// Instantiate the theme.
+if ( class_exists( Main::class ) ) {
+	Main::get_instance();
 }
-
-// Instantiate theme.
-elementary_theme_instance();

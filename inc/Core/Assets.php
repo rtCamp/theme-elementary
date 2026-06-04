@@ -11,16 +11,18 @@ namespace rtCamp\Theme\Elementary\Core;
 
 use rtCamp\WPFramework\AssetLoader;
 use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 
 /**
  * Class Assets
  *
  * The theme's asset loader: extends the framework AssetLoader and registers
- * the theme's own scripts and styles on the relevant hooks.
+ * the theme's own scripts and styles on the relevant hooks. Shared so the
+ * component loader registers component assets through the same instance.
  *
  * @since 1.0.0
  */
-class Assets extends AssetLoader implements Registrable {
+class Assets extends AssetLoader implements Registrable, Shareable {
 
 	/**
 	 * Whether Tailwind CSS is enabled for this theme.

@@ -8,6 +8,7 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
+use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Main;
 
 /**
@@ -44,5 +45,17 @@ class MainTest extends TestCase {
 		foreach ( Main::CLASSES as $class ) {
 			$this->assertTrue( class_exists( $class ), "Class {$class} does not exist." );
 		}
+	}
+
+	/**
+	 * Test component loader is shared by the bootstrap container.
+	 *
+	 * @since 1.0.0
+	 */
+	public function test_component_loader_is_shared(): void {
+		$this->assertInstanceOf(
+			Components::class,
+			Main::get_instance()->get_shared( Components::class )
+		);
 	}
 }

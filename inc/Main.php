@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
-use rtCamp\Theme\Elementary\Core\{Assets, Menu, ThemeSetup};
+use rtCamp\Theme\Elementary\Core\{Assets, Components, Menu, ThemeSetup};
 use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, Settings\ThemeOptions};
 
 /**
@@ -30,6 +30,7 @@ class Main {
 		Assets::class,
 		Menu::class,
 		ThemeSetup::class,
+		Components::class,
 		MediaTextInteractive::class,
 		ThemeOptions::class,
 	];
