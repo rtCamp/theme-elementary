@@ -17,7 +17,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { execSync } = require( 'child_process' );
-const { text, confirm, spinner, style } = require( '@rtcamp/wp-tooling/ui' );
+const { text, confirm, radio, spinner, style } = require( '@rtcamp/wp-tooling/ui' );
 
 const ROOT = path.resolve( __dirname, '..' );
 
@@ -33,7 +33,9 @@ const main = async () => {
 	const args = process.argv.slice( 2 );
 
 	if ( args.includes( '--clean' ) || args.includes( '-c' ) ) {
-		await themeCleanupFlow( { keepGit: false } );
+		// Standalone clean never touches `.git` — only the scaffold flow may
+		// remove the starter clone's repo (and its git prompt says so).
+		await themeCleanupFlow( { keepGit: true } );
 		return;
 	}
 
@@ -58,6 +60,8 @@ const main = async () => {
  * @return {Promise<void>}
  */
 const scaffoldFlow = async () => {
+	renderHeader();
+
 	if ( ! ( await confirm( { message: 'Would you like to set up the theme?', defaultValue: true } ) ) ) {
 		console.log( style.warning( '\nTheme setup cancelled.\n' ) );
 		return;
@@ -65,26 +69,28 @@ const scaffoldFlow = async () => {
 
 	const themeName = await text( {
 		message: 'Enter theme name (shown in WordPress admin)',
-		validate: required,
+		validate: validThemeName,
 	} );
 
-	// Review loop: declining the table opens a per-field editor. No cascade —
-	// editing one field never silently rewrites another.
+	// Review loop: declining the table opens a field picker — edit one field at
+	// a time, then re-confirm. No cascade: editing one never rewrites another.
 	let fields = defaultFields( themeName.trim() );
 	while ( true ) {
 		renderThemeDetails( fields );
 		if ( await confirm( { message: 'Confirm the theme details?', defaultValue: true } ) ) {
 			break;
 		}
-		console.log( style.info( '\nCustomize each field (press Enter to keep the shown value):' ) );
-		fields = await customizeFields( fields );
+		fields = await editFields( fields );
 	}
 
-	applyThemeName( fields );
+	const counts = applyThemeName( fields );
 	applyVersion( fields.version );
 	writeProjectConfig( fields );
+	// The theme is initialized now — drop the `prepare` auto-trigger so a later
+	// `npm install` cannot re-open init, even if the cleanup below is declined.
+	updateJsonFile( 'package.json', stripInitFromPrepare );
 
-	console.log( style.success( '\nChoose optional features for your theme:' ) );
+	console.log( style.bold( '\n  Optional features' ) );
 	// Init usually runs inside `npm install` (the prepare hook), so the feature
 	// manager records new deps in package.json instead of nesting an install.
 	await runFeatureManager( { install: false } );
@@ -101,14 +107,17 @@ const scaffoldFlow = async () => {
 
 	await themeCleanupFlow( { keepGit } );
 
-	console.log( style.success(
-		'\nAll set! If you enabled any features, run ' + style.warning( '`npm install`' ) +
-		style.success( ' once to install their dependencies.' ),
-	) );
-	console.log( style.success(
-		'Re-run ' + style.warning( '`npm run init`' ) +
-		style.success( ' any time to toggle features on or off.\n' ),
-	) );
+	renderSummary( fields, { ...counts, keepGit } );
+};
+
+/**
+ * Print the setup banner.
+ *
+ * @return {void}
+ */
+const renderHeader = () => {
+	console.log( style.bold( '\n  Theme setup' ) );
+	console.log( style.muted( '  Name your theme and pick optional features. Ctrl+C cancels.' ) );
 };
 
 /**
@@ -136,15 +145,6 @@ const toPascal = ( value ) => words( value ).map( cap ).join( '' );
 const toPascalSnake = ( value ) => words( value ).map( cap ).join( '_' );
 
 /**
- * Non-empty validator for text() prompts.
- *
- * @param {string} value
- * @return {string|undefined} Error message, or undefined when valid.
- */
-const required = ( value ) =>
-	value && value.trim() ? undefined : 'This field is required.';
-
-/**
  * Collapse doubled backslashes so a namespace pasted from composer.json
  * (`rtCamp\\Theme\\X`) behaves the same as one typed plainly, and strip
  * leading/trailing separators that would produce invalid PHP.
@@ -157,6 +157,52 @@ const normalizeNamespace = ( value ) =>
 		.trim()
 		.replace( /\\+/g, '\\' )
 		.replace( /^\\|\\$/g, '' );
+
+/*
+ * Per-field validators for text() prompts — each returns an error message or
+ * undefined. They guard the generated code: the theme name is substituted into
+ * single-quoted PHP strings (so no quotes/backslashes), a digit-leading prefix
+ * or text domain would produce invalid PHP/CSS identifiers, and a malformed
+ * namespace or package name corrupts composer.json. Validation runs on the raw
+ * input; derived values go through the same normalizers the replacements use.
+ */
+const validThemeName = ( value ) => {
+	const v = String( value ).trim();
+	if ( ! v ) {
+		return 'This field is required.';
+	}
+	if ( ! /^[A-Za-z]/.test( v ) ) {
+		return 'Start with a letter so the derived PHP/CSS identifiers stay valid.';
+	}
+	return /['"\\]/.test( v )
+		? 'Quotes and backslashes are not allowed — the name is written into PHP strings.'
+		: undefined;
+};
+
+const validVersion = ( value ) =>
+	/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/.test( String( value ).trim() )
+		? undefined
+		: 'Use a semantic version like 1.0.0.';
+
+const validTextDomain = ( value ) =>
+	/^[a-z][a-z0-9-]*$/.test( toKebab( value ) )
+		? undefined
+		: 'Must produce a kebab-case slug starting with a letter (e.g. my-theme).';
+
+const validNamespace = ( value ) =>
+	/^[A-Za-z_][A-Za-z0-9_]*(\\[A-Za-z_][A-Za-z0-9_]*)*$/.test( normalizeNamespace( value ) )
+		? undefined
+		: 'Use letters, numbers and underscores separated by \\ (e.g. rtCamp\\Theme\\MyTheme).';
+
+const validFunctionPrefix = ( value ) =>
+	/^[a-z][a-z0-9_]*$/.test( toSnake( value ) )
+		? undefined
+		: 'Must produce a snake_case prefix starting with a letter (e.g. my_theme).';
+
+const validPackageName = ( value ) =>
+	/^[a-z0-9]([a-z0-9._-]*[a-z0-9])?\/[a-z0-9]([a-z0-9._-]*[a-z0-9])?$/.test( String( value ).trim() )
+		? undefined
+		: 'Use the composer vendor/name format (lowercase, e.g. rtcamp/my-theme).';
 
 /**
  * Editable source fields, defaulted from the theme name. Everything else
@@ -196,22 +242,45 @@ const resolveIdentity = ( f ) => {
 	};
 };
 
+// Editable source fields: [ key, label, prompt, normalize, validate ]. Text
+// domain and prefix are normalised to kebab/snake so identifiers stay valid.
+const FIELD_META = [
+	[ 'themeName', 'Theme Name', 'Theme name', ( v ) => v.trim(), validThemeName ],
+	[ 'version', 'Version', 'Theme version', ( v ) => v.trim(), validVersion ],
+	[ 'textDomain', 'Text Domain', 'Text domain', toKebab, validTextDomain ],
+	[ 'namespace', 'Namespace', 'PHP namespace', ( v ) => v.trim(), validNamespace ],
+	[ 'functionPrefix', 'Function Prefix', 'Function / constant prefix', toSnake, validFunctionPrefix ],
+	[ 'packageName', 'Package', 'Composer package name', ( v ) => v.trim(), validPackageName ],
+];
+
 /**
- * Prompt for each editable field, defaulting to its current value (Enter
- * keeps it). Text domain and prefix are normalised to kebab/snake so the
- * generated identifiers stay valid.
+ * Field picker: pick one field to edit (defaulting to its current value),
+ * looping until "Done". Editing one field never rewrites another.
  *
- * @param {Object} f Current source fields.
+ * @param {Object} fields Current source fields.
  * @return {Promise<Object>} Updated source fields.
  */
-const customizeFields = async ( f ) => ( {
-	themeName: ( await text( { message: 'Theme name', defaultValue: f.themeName, validate: required } ) ).trim(),
-	version: ( await text( { message: 'Theme version', defaultValue: f.version, validate: required } ) ).trim(),
-	textDomain: toKebab( await text( { message: 'Text domain', defaultValue: f.textDomain, validate: required } ) ),
-	namespace: ( await text( { message: 'PHP namespace', defaultValue: f.namespace, validate: required } ) ).trim(),
-	functionPrefix: toSnake( await text( { message: 'Function / constant prefix', defaultValue: f.functionPrefix, validate: required } ) ),
-	packageName: ( await text( { message: 'Composer package name', defaultValue: f.packageName, validate: required } ) ).trim(),
-} );
+const editFields = async ( fields ) => {
+	const f = { ...fields };
+	const done = 'Done — back to summary';
+	while ( true ) {
+		const rows = FIELD_META.map( ( meta ) => ( {
+			meta,
+			text: `${ meta[ 1 ].padEnd( 16 ) }${ f[ meta[ 0 ] ] }`,
+		} ) );
+		const picked = await radio( {
+			message: 'Edit which field?',
+			choices: [ ...rows.map( ( r ) => r.text ), done ],
+		} );
+		if ( picked === done ) {
+			return f;
+		}
+		const [ key, , prompt, normalize, validate ] = rows.find( ( r ) => r.text === picked ).meta;
+		f[ key ] = normalize(
+			await text( { message: prompt, defaultValue: f[ key ], validate } ),
+		);
+	}
+};
 
 /**
  * Ordered [search, replacement] pairs applied literally (split/join, so the
@@ -254,39 +323,67 @@ const deriveReplacements = ( f ) => {
 };
 
 /**
- * Render the theme details table for confirmation. Values come from
- * {@link resolveIdentity}, so the table shows exactly what will be applied.
+ * Render the theme details box for confirmation. Two aligned columns, split
+ * into the identity you set and the values derived from it (dimmed). Values
+ * come from {@link resolveIdentity}, so the box shows exactly what is applied.
  *
  * @param {Object} fields Source fields.
  * @return {void}
  */
 const renderThemeDetails = ( fields ) => {
 	const id = resolveIdentity( fields );
-	const rows = Object.entries( {
-		'Theme Name': id.themeName,
-		'Theme Version': id.version,
-		'Text Domain': id.textDomain,
-		Package: id.packageName,
-		Namespace: id.namespace,
-		'Function Prefix': id.functionPrefix,
-		'CSS Class Prefix': id.cssClassPrefix,
-		'Version Constant': `${ id.constantPrefix }_VERSION`,
-		'Build Dir Constant': `${ id.constantPrefix }_BUILD_DIR`,
-		'Build URI Constant': `${ id.constantPrefix }_BUILD_URI`,
-	} ).map( ( [ label, value ] ) => [ `${ label }: `, value ] );
+	const identity = [
+		[ 'Theme Name', id.themeName ],
+		[ 'Version', id.version ],
+		[ 'Text Domain', id.textDomain ],
+		[ 'Package', id.packageName ],
+		[ 'Namespace', id.namespace ],
+		[ 'Function Prefix', id.functionPrefix ],
+	];
+	// Purely computed from the identity above — shown dimmed, never set directly.
+	const derived = [
+		[ 'CSS Class Prefix', id.cssClassPrefix ],
+		[ 'Constants', `${ id.constantPrefix }_{VERSION,BUILD_DIR,BUILD_URI}` ],
+	];
 
-	const width = Math.max( ...rows.map( ( [ label, value ] ) => label.length + value.length ) );
+	const PAD = 2; // padding inside the left border
+	const GAP = 2; // between the label and value columns
+	const all = [ ...identity, ...derived ];
+	const labelW = Math.max( ...all.map( ( [ label ] ) => label.length ) );
+	const valueW = Math.max( ...all.map( ( [ , value ] ) => value.length ) );
+	const inner = PAD + labelW + GAP + valueW + 1; // +1 trailing space
 
-	console.log( style.success( '\nTheme Details:' ) );
-	console.log( style.warning( `┌${ '─'.repeat( width + 2 ) }┐` ) );
-	for ( const [ label, value ] of rows ) {
-		const pad = ' '.repeat( width - label.length - value.length );
-		console.log(
-			style.warning( '│ ' ) + style.success( label ) + style.info( value ) + pad + style.warning( ' │' ),
-		);
+	// Build a row, computing the right-pad from the raw (un-styled) text so
+	// ANSI codes never throw off the border alignment.
+	const row = ( label, value, dim ) => {
+		const raw = ' '.repeat( PAD ) + label.padEnd( labelW ) + ' '.repeat( GAP ) + value;
+		const body = dim
+			? style.muted( raw )
+			: ' '.repeat( PAD ) + style.success( label.padEnd( labelW ) ) + ' '.repeat( GAP ) + style.info( value );
+		return style.muted( '│' ) + body + ' '.repeat( inner - raw.length ) + style.muted( '│' );
+	};
+	const rule = ( left, right ) => style.muted( '  ' + left + '─'.repeat( inner ) + right );
+
+	console.log( style.bold( '\n  Theme details' ) );
+	console.log( rule( '┌', '┐' ) );
+	for ( const [ label, value ] of identity ) {
+		console.log( '  ' + row( label, value, false ) );
 	}
-	console.log( style.warning( `└${ '─'.repeat( width + 2 ) }┘` ) );
+	console.log( rule( '├', '┤' ) );
+	for ( const [ label, value ] of derived ) {
+		console.log( '  ' + row( label, value, true ) );
+	}
+	console.log( rule( '└', '┘' ) );
 };
+
+// Contents of these are never search-replaced — decoding binary data as UTF-8
+// and writing it back corrupts it. Their *names* still go through the rename
+// pass (e.g. elementary-theme-logo.png).
+const BINARY_EXTENSIONS = new Set( [
+	'.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico',
+	'.woff', '.woff2', '.ttf', '.eot', '.otf',
+	'.mo', '.zip', '.gz', '.jar', '.pdf',
+] );
 
 /**
  * Apply the identity across all project files — contents first, then
@@ -294,7 +391,7 @@ const renderThemeDetails = ( fields ) => {
  * Composer autoloader for the new namespace.
  *
  * @param {Object} fields Source fields.
- * @return {void}
+ * @return {{filesChanged: number, filesRenamed: number}} Counts for the summary.
  */
 const applyThemeName = ( fields ) => {
 	const replacements = deriveReplacements( fields );
@@ -313,6 +410,9 @@ const applyThemeName = ( fields ) => {
 
 	try {
 		for ( const file of files ) {
+			if ( BINARY_EXTENSIONS.has( path.extname( file ).toLowerCase() ) ) {
+				continue;
+			}
 			const original = fs.readFileSync( file, 'utf8' );
 			const updated = replaceAll( original );
 			if ( updated !== original ) {
@@ -344,6 +444,8 @@ const applyThemeName = ( fields ) => {
 	} catch {
 		dump.fail( 'Could not run `composer dump-autoload` — run it manually after installing dependencies.' );
 	}
+
+	return { filesChanged, filesRenamed };
 };
 
 /**
@@ -390,6 +492,53 @@ const writeProjectConfig = ( fields ) => {
 	} catch ( error ) {
 		console.log( style.error( `Error while writing ${ CONFIG_FILE }: ${ error.message }` ) );
 	}
+};
+
+/**
+ * Names of the features enabled in `.wp-tooling.json` (for the summary).
+ *
+ * @return {string[]} Enabled feature keys, or an empty array.
+ */
+const enabledFeatures = () => {
+	try {
+		const cfg = JSON.parse( fs.readFileSync( path.resolve( ROOT, CONFIG_FILE ), 'utf8' ) );
+		return Object.entries( cfg.features || {} ).filter( ( [ , on ] ) => on ).map( ( [ name ] ) => name );
+	} catch {
+		return [];
+	}
+};
+
+/**
+ * Print the closing recap: what was applied, plus the next steps.
+ *
+ * @param {Object}  fields              Source fields.
+ * @param {Object}  meta                Summary metadata.
+ * @param {number}  [meta.filesChanged] Files whose contents changed.
+ * @param {number}  [meta.filesRenamed] Files renamed.
+ * @param {boolean} [meta.keepGit]      Whether a git repo was initialized.
+ * @return {void}
+ */
+const renderSummary = ( fields, { filesChanged = 0, filesRenamed = 0, keepGit = false } = {} ) => {
+	const id = resolveIdentity( fields );
+	const features = enabledFeatures();
+	const rows = [
+		[ 'Name', id.themeName ],
+		[ 'Namespace', id.namespace ],
+		[ 'Files', `${ filesChanged } updated · ${ filesRenamed } renamed` ],
+		[ 'Features', features.length ? features.join( ', ' ) : 'none' ],
+		[ 'Git', keepGit ? 'initialized' : 'skipped' ],
+	];
+	const width = Math.max( ...rows.map( ( [ label ] ) => label.length ) );
+
+	console.log( style.bold( '\n  ✓ Setup complete' ) );
+	for ( const [ label, value ] of rows ) {
+		console.log( '    ' + style.muted( label.padEnd( width ) ) + '  ' + value );
+	}
+	console.log(
+		style.success( '\n  Next: ' ) + 'run ' + style.warning( '`npm install`' ) +
+		' to install feature deps, then ' + style.warning( '`npm start`' ) + '.',
+	);
+	console.log( style.muted( '  Re-run `npm run init` any time to toggle features on or off.\n' ) );
 };
 
 /**
@@ -507,29 +656,40 @@ const themeCleanupFlow = async ( { keepGit = false } = {} ) => {
 /**
  * Drop `npm run init` from the `prepare` script so `npm install` stops
  * re-running init (the `init` script itself stays so the feature manager
- * remains re-runnable), and remove repository/bugs/homepage entries still
- * pointing at the starter repo — they belong to theme-elementary, not the
- * scaffolded theme.
+ * remains re-runnable). Mutator for {@link updateJsonFile} — runs right after
+ * the project config is written, and again as a fallback during cleanup.
+ *
+ * @param {Object} pkg Parsed package.json.
+ * @return {boolean} False to skip writing when nothing changed.
+ */
+const stripInitFromPrepare = ( pkg ) => {
+	const prepare = pkg.scripts && pkg.scripts.prepare;
+	if ( ! prepare || ! prepare.includes( 'npm run init' ) ) {
+		return false;
+	}
+	const remaining = prepare
+		.split( '&&' )
+		.map( ( script ) => script.trim() )
+		.filter( ( script ) => script !== 'npm run init' );
+	if ( remaining.length === 0 ) {
+		delete pkg.scripts.prepare;
+	} else {
+		pkg.scripts.prepare = remaining.join( ' && ' );
+	}
+	return true;
+};
+
+/**
+ * Cleanup mutations for package.json: strip the init auto-trigger (fallback —
+ * normally already done post-init) and remove repository/bugs/homepage entries
+ * still pointing at the starter repo — they belong to theme-elementary, not
+ * the scaffolded theme.
  *
  * @param {Object} pkg Parsed package.json.
  * @return {boolean} False to skip writing when nothing changed.
  */
 const cleanupPackageJson = ( pkg ) => {
-	let changed = false;
-
-	const prepare = pkg.scripts && pkg.scripts.prepare;
-	if ( prepare && prepare.includes( 'npm run init' ) ) {
-		const remaining = prepare
-			.split( '&&' )
-			.map( ( script ) => script.trim() )
-			.filter( ( script ) => script !== 'npm run init' );
-		if ( remaining.length === 0 ) {
-			delete pkg.scripts.prepare;
-		} else {
-			pkg.scripts.prepare = remaining.join( ' && ' );
-		}
-		changed = true;
-	}
+	let changed = stripInitFromPrepare( pkg );
 
 	for ( const key of [ 'repository', 'bugs', 'homepage' ] ) {
 		if ( JSON.stringify( pkg[ key ] || '' ).includes( 'theme-elementary' ) ) {
