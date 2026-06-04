@@ -300,7 +300,10 @@ const applyThemeName = ( fields ) => {
 	const replacements = deriveReplacements( fields );
 	const replaceAll = ( value ) =>
 		replacements.reduce( ( out, [ search, replacement ] ) => out.split( search ).join( replacement ), value );
-	const files = getAllFiles( ROOT );
+	// Skip this script itself: it holds the search tokens verbatim (in
+	// deriveReplacements), and it is kept after scaffolding, so rewriting it
+	// would corrupt its own replacement table.
+	const files = getAllFiles( ROOT ).filter( ( file ) => file !== __filename );
 
 	const s = spinner( 'Applying your theme name across the project…' );
 	s.start();
