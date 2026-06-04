@@ -8,7 +8,7 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\Theme\Elementary\Components\ThemeComponentLoader;
+use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Main;
 
 /**
@@ -54,8 +54,8 @@ class MainTest extends TestCase {
 	 */
 	public function test_component_loader_is_shared(): void {
 		$this->assertInstanceOf(
-			ThemeComponentLoader::class,
-			Main::get_instance()->get_shared( ThemeComponentLoader::class )
+			Components::class,
+			Main::get_instance()->get_shared( Components::class )
 		);
 	}
 }

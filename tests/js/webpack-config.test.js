@@ -12,8 +12,11 @@ jest.mock( '@wordpress/scripts/config/webpack.config', () => [
 			splitChunks: {},
 		},
 		plugins: [],
+		module: { rules: [] },
 	},
-	{},
+	{
+		output: {},
+	},
 ] );
 
 const { getComponentEntries } = require( '../../webpack.config' );
