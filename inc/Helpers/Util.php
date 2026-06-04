@@ -16,10 +16,13 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Helpers;
 
+use rtCamp\Theme\Elementary\Core\Components;
+use rtCamp\Theme\Elementary\Main;
+
 /**
  * Class - Util
  *
- * No static methods yet — drop your theme-wide helpers here as the need arises.
+ * Cross-cutting theme helpers. Drop theme-wide bits here as the need arises.
  */
 final class Util {
 
@@ -27,4 +30,46 @@ final class Util {
 	 * Disallow instantiation — this class only exposes static helpers.
 	 */
 	private function __construct() {}
+
+	/**
+	 * Render a component by name.
+	 *
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options Optional. Resolution options. See ComponentLoader::render().
+	 *
+	 * @return void
+	 */
+	public static function component( string $name, array $args = [], array $options = [] ): void {
+		self::component_loader()->render( $name, $args, $options );
+	}
+
+	/**
+	 * Get the rendered HTML of a component as a string.
+	 *
+	 * @param string               $name    Component name (e.g. 'Button', 'Card').
+	 * @param array<string, mixed> $args    Arguments to pass to the component.
+	 * @param array<string, mixed> $options Optional. Resolution options. See ComponentLoader::get().
+	 *
+	 * @return string Rendered component HTML.
+	 */
+	public static function get_component( string $name, array $args = [], array $options = [] ): string {
+		return self::component_loader()->get( $name, $args, $options );
+	}
+
+	/**
+	 * Get the shared theme component loader.
+	 *
+	 * @return Components Shared component loader.
+	 */
+	private static function component_loader(): Components {
+		/**
+		 * Shared component loader.
+		 *
+		 * @var Components $loader
+		 */
+		$loader = Main::get_instance()->get_shared( Components::class );
+
+		return $loader;
+	}
 }

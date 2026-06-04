@@ -20,6 +20,8 @@
 
 declare( strict_types = 1 );
 
+use rtCamp\Theme\Elementary\Helpers\Util;
+
 $title       = $args['title'] ?? '';
 $description = $args['description'] ?? '';
 $image_url   = $args['image_url'] ?? '';
@@ -47,7 +49,7 @@ if ( empty( $title ) ) {
 		<?php if ( ! empty( $url ) ) : ?>
 			<div class="elementary-card__action">
 				<?php
-				elementary_theme_component(
+				Util::component(
 					'Button',
 					[
 						'label' => $title,
