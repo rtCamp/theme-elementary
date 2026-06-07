@@ -54,7 +54,11 @@
 		"phpcs:fix": "@php ./vendor/bin/phpcbf",
 		"phpstan": "phpstan analyse --memory-limit=1G",
 		"post-install-cmd": [
-			"npm i"
+			"npm i",
+			"@php vendor/rtcamp/wp-framework/bin/install-ai-instructions.php"
+		],
+		"post-update-cmd": [
+			"@php vendor/rtcamp/wp-framework/bin/install-ai-instructions.php"
 		],
 		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
 	}
