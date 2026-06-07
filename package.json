@@ -58,7 +58,7 @@
 		"build:dev": "wp-scripts start --no-watch --experimental-modules",
 		"build:prod": "wp-scripts build --experimental-modules",
 		"init": "./bin/init.js && npm run sync-ai",
-		"sync-ai": "node vendor/rtcamp/wp-framework/bin/sync-ai-instructions.js",
+		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./src",
 		"lint:css:fix": "npm run lint:css -- --fix",

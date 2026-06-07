@@ -6,7 +6,7 @@ Tool-agnostic brief for AI coding agents (Claude Code, Copilot coding agent, Cod
 
 The review rules ARE the coding rules: the same files Copilot reviews against. Follow them when writing code; they hold the full detail:
 
-- `.github/instructions/framework-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. (Shipped from `rtcamp/wp-framework`; the single source of truth.)
+- `.github/instructions/framework-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. Shipped from `rtcamp/wp-framework`, generated locally by `npm run sync-ai` (absent until then).
 - `.github/instructions/structure.instructions.md`: theme layout and wiring.
 - `.github/copilot-instructions.md`: overview + conventions.
 
