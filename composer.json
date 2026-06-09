@@ -13,7 +13,7 @@
 	],
 	"require": {
 		"php": ">=8.2",
-		"rtcamp/wp-framework": "dev-main"
+		"rtcamp/wp-framework": "dev-feature/cache-utility"
 	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^2.3",

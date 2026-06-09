@@ -11,7 +11,7 @@ namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\{Assets, Components, Menu, ThemeSetup};
-use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, Settings\ThemeOptions};
+use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, RelatedPosts\RelatedPosts, Settings\ThemeOptions};
 
 /**
  * Class Main
@@ -33,6 +33,7 @@ class Main {
 		Components::class,
 		MediaTextInteractive::class,
 		ThemeOptions::class,
+		RelatedPosts::class,
 	];
 
 	/**
