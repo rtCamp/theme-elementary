@@ -4,9 +4,6 @@ module.exports = {
 	transform: {
 		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
-	setupFiles: [
-		'<rootDir>/tests/js/setup-globals',
-	],
 	preset: '@wordpress/jest-preset-default',
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',

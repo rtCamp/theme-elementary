@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "e3d6522692d091b2cc8014862413bd277a63aec2"
+                "reference": "daf0208ab2e1d9835bf5e664e6c5ffb4e12112d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/e3d6522692d091b2cc8014862413bd277a63aec2",
-                "reference": "e3d6522692d091b2cc8014862413bd277a63aec2",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/daf0208ab2e1d9835bf5e664e6c5ffb4e12112d2",
+                "reference": "daf0208ab2e1d9835bf5e664e6c5ffb4e12112d2",
                 "shasum": ""
             },
             "require": {
@@ -74,7 +74,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-05-26T09:38:33+00:00"
+            "time": "2026-06-07T18:15:35+00:00"
         }
     ],
     "packages-dev": [
@@ -1208,11 +1208,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.55",
+            "version": "2.2.2",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9eaac3826ed5e9b8427350a43cac825eeca3f566",
-                "reference": "9eaac3826ed5e9b8427350a43cac825eeca3f566",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
+                "reference": "e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
                 "shasum": ""
             },
             "require": {
@@ -1234,6 +1234,17 @@
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ondřej Mirtes"
+                },
+                {
+                    "name": "Markus Staab"
+                },
+                {
+                    "name": "Vincent Langlet"
+                }
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
             "keywords": [
@@ -1257,7 +1268,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-18T11:57:34+00:00"
+            "time": "2026-06-05T09:00:01+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -1855,7 +1866,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-10-26T13:08:54+00:00"
         },
         {
@@ -1911,7 +1921,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-09-28T05:30:19+00:00"
         },
         {
@@ -3196,12 +3205,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "f041deb97d8637a1c78de8e9194125e05e35b466"
+                "reference": "49ad9e440b86ed46da49cc2062970ade9c4d798f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/f041deb97d8637a1c78de8e9194125e05e35b466",
-                "reference": "f041deb97d8637a1c78de8e9194125e05e35b466",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/49ad9e440b86ed46da49cc2062970ade9c4d798f",
+                "reference": "49ad9e440b86ed46da49cc2062970ade9c4d798f",
                 "shasum": ""
             },
             "require": {
@@ -3272,7 +3281,7 @@
                 "issues": "https://github.com/wp-cli/wp-cli/issues",
                 "source": "https://github.com/wp-cli/wp-cli"
             },
-            "time": "2026-05-25T16:00:52+00:00"
+            "time": "2026-06-03T21:33:03+00:00"
         },
         {
             "name": "wp-coding-standards/wpcs",
@@ -3447,6 +3456,6 @@
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

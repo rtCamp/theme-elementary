@@ -451,7 +451,6 @@ const initTheme = ( themeInfo ) => {
 const getAllFiles = ( dir ) => {
 	const dirOrFilesIgnore = [
 		'.git',
-		'.github',
 		'node_modules',
 		'vendor',
 	];
