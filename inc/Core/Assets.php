@@ -131,9 +131,42 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 				$scheme = is_ssl() ? 'https' : 'http';
 				$host   = wp_parse_url( home_url(), PHP_URL_HOST );
 				$host   = $host ? $host : 'localhost';
-				$bs_url = "{$scheme}://{$host}:3000/browser-sync/browser-sync-client.js";
+				$port   = $this->get_browser_sync_port();
+				$bs_url = "{$scheme}://{$host}:{$port}/browser-sync/browser-sync-client.js";
 			}
 			wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
 		}
+	}
+
+	/**
+	 * Read the BrowserSync port from .env.local (BS_PORT), defaulting to 3000.
+	 *
+	 * Keeps the enqueued client URL in sync with the port webpack/BrowserSync
+	 * actually bind to, which is read from the same .env.local on the build side.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int BrowserSync port.
+	 */
+	private function get_browser_sync_port(): int {
+		$default  = 3000;
+		$env_file = $this->base_dir . '.env.local';
+
+		if ( ! is_readable( $env_file ) ) {
+			return $default;
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local dev only; reading a small project file, not remote.
+		$contents = file_get_contents( $env_file );
+
+		if ( false === $contents ) {
+			return $default;
+		}
+
+		if ( preg_match( '/^\s*BS_PORT\s*=\s*(\d+)/m', $contents, $matches ) ) {
+			return (int) $matches[1];
+		}
+
+		return $default;
 	}
 }
