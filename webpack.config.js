@@ -399,11 +399,6 @@ const sharedConfig = {
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
-	// WDS v5 requires proxy as an array; since writeToDisk: true is set we don't need it.
-	// allowedHosts: 'all' is needed for custom local domains (e.g. elementary.local).
-	devServer: scriptConfig.devServer
-		? { ...scriptConfig.devServer, proxy: undefined, allowedHosts: 'all' }
-		: undefined,
 	plugins: [
 		new CleanBuildPlugin(),
 		// Strip wp-scripts' inherited CopyPlugin (its actual class is `CopyPlugin`,
