@@ -4,10 +4,10 @@ This document explains how live reload and hot module replacement work in the th
 
 ## Overview
 
-Running `npm start` enables two complementary tools:
+Running `npm start` runs two scripts in parallel, each with a complementary tool:
 
-- **BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
-- **webpack-dev-server / Fast Refresh** (port 8887) — hot module replacement for block editor React components. Block state is preserved across updates; no full page reload needed.
+- **`start:theme` → BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
+- **`start:blocks` → webpack-dev-server / Fast Refresh** (port 8887 by default, configurable via `BLOCKS_DEV_SERVER_PORT`) — hot module replacement for block editor React components. Block state is preserved across updates; no full page reload needed.
 
 For BrowserSync:
 
@@ -48,11 +48,19 @@ Without `SCRIPT_DEBUG`, WordPress does not support Fast Refresh.
 
 ## How It Works
 
-1. `npm start` runs webpack in watch mode.
+**Theme assets (`start:theme` + BrowserSync):**
+
+1. `start:theme` runs `wp-scripts start` in watch mode (no `--hot`) using `webpack.config.js`.
 2. When a file changes, webpack rebuilds the affected assets in `assets/build/`.
 3. BrowserSync detects the change and notifies the browser via the client script.
 4. CSS changes are injected in-place. Everything else triggers a full reload.
-5. Block changes are detected in editor by the webpack-dev-server run by the `--hot` option
+
+**Blocks (`start:blocks` + Fast Refresh):**
+
+5. `start:blocks` runs `wp-scripts start --hot`, which starts webpack-dev-server, using `webpack.blocks.config.js`.
+6. JS/JSX changes to block components hot-swap in the editor without a full reload; block state is preserved.
+
+`webpack.blocks.config.js` is a thin wrapper over `@wordpress/scripts`' default config. It exists only to strip the `devServer.proxy` option: webpack-dev-server v5 (pinned via the `overrides` block in `package.json`) requires `proxy` to be an array, while wp-scripts still emits the v4 object form, which v5 rejects with `options.proxy should be an array`. The wrapper also sets the dev-server port from `BLOCKS_DEV_SERVER_PORT`.
 
 BrowserSync watches the following:
 
@@ -93,6 +101,16 @@ define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browse
 ```
 
 `ELEMENTARY_THEME_BROWSER_SYNC_URL` overrides the auto-detected URL entirely, so it also works for remote setups (ddev, reverse proxy) where the BrowserSync server is on a different host or IP.
+
+### Block dev server port
+
+The block Fast Refresh dev server runs on port 8887 by default. If that port is already in use (e.g. two local sites running `start:blocks` at once), set a different port in `.env.local`:
+
+```
+BLOCKS_DEV_SERVER_PORT=8889
+```
+
+`webpack.blocks.config.js` reads this value and applies it to the dev server. No matching `wp-config.php` constant is needed — the editor loads block scripts from disk, and the HMR client connects to the dev server directly.
 
 ### HTTPS
 
