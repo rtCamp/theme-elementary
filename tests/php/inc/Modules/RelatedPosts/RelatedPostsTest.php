@@ -119,11 +119,36 @@ class RelatedPostsTest extends TestCase {
 
 		// Drop the request layer so the assertion reads the object cache directly.
 		Cache::flush_runtime();
-		$this->instance->flush();
+		$this->instance->flush( $post_id, get_post( $post_id ) );
 
 		$found = false;
 		Cache::get( "related_posts_{$post_id}", 'elementary_related_posts', true, $found );
 
 		$this->assertFalse( $found, 'flush() should remove the cached lookup from the group.' );
+	}
+
+	/**
+	 * Test flush() ignores non-post types so unrelated saves do not evict the cache.
+	 */
+	public function test_flush_skips_non_post_types(): void {
+		if ( ! function_exists( 'wp_cache_supports' ) || ! wp_cache_supports( 'flush_group' ) ) {
+			$this->markTestSkipped( 'Object cache backend does not support group flushing.' );
+		}
+
+		$category_id = self::factory()->category->create();
+		$post_id     = self::factory()->post->create( [ 'post_category' => [ $category_id ] ] );
+		self::factory()->post->create( [ 'post_category' => [ $category_id ] ] );
+
+		$this->instance->get_related_post_ids( $post_id );
+		Cache::flush_runtime();
+
+		// Saving a page (or any non-post type) must NOT flush the post cache.
+		$page_id = self::factory()->post->create( [ 'post_type' => 'page' ] );
+		$this->instance->flush( $page_id, get_post( $page_id ) );
+
+		$found = false;
+		Cache::get( "related_posts_{$post_id}", 'elementary_related_posts', true, $found );
+
+		$this->assertTrue( $found, 'A non-post save must not flush the related-posts cache.' );
 	}
 }

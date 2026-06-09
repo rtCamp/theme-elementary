@@ -59,8 +59,8 @@ class RelatedPosts implements Registrable {
 	 */
 	public function register_hooks(): void {
 		add_filter( 'the_content', [ $this, 'append_related_posts' ] );
-		add_action( 'save_post', [ $this, 'flush' ] );
-		add_action( 'deleted_post', [ $this, 'flush' ] );
+		add_action( 'save_post', [ $this, 'flush' ], 10, 2 );
+		add_action( 'deleted_post', [ $this, 'flush' ], 10, 2 );
 	}
 
 	/**
@@ -240,21 +240,24 @@ class RelatedPosts implements Registrable {
 	}
 
 	/**
-	 * Flush the related-posts cache group.
+	 * Flush the related-posts cache group when a post changes.
 	 *
-	 * Any post being saved or deleted can change which posts are related to
-	 * others, so the whole group is dropped rather than a single key. Revisions
-	 * and autosaves are ignored to avoid needless flushes.
+	 * Only `post` changes affect the related-posts query, so non-post saves and
+	 * deletes (pages, attachments, custom post types) are ignored — as are
+	 * revisions and autosaves, which carry the `revision` post type. The check
+	 * uses the WP_Post passed by the hook, so it stays reliable on `deleted_post`
+	 * too, where the row is already gone from the database.
 	 *
-	 * @param int $post_id Post being saved or deleted.
+	 * @param int          $post_id Post ID (the WP_Post argument is authoritative).
+	 * @param WP_Post|null $post    Post object supplied by save_post / deleted_post.
 	 *
 	 * @return void
 	 *
 	 * @action save_post
 	 * @action deleted_post
 	 */
-	public function flush( int $post_id = 0 ): void {
-		if ( $post_id > 0 && ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) ) {
+	public function flush( int $post_id, ?WP_Post $post = null ): void {
+		if ( ! $post instanceof WP_Post || 'post' !== $post->post_type ) {
 			return;
 		}
 
