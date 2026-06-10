@@ -69,7 +69,7 @@
 		"init": "./bin/init.js && npm run sync-ai",
 		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:*",
-		"lint:css": "wp-scripts lint-style ./src",
+		"lint:css": "wp-scripts lint-style './src/**/*.{css,scss}'",
 		"lint:css:fix": "npm run lint:css -- --fix",
 		"lint:js": "wp-scripts lint-js ./src",
 		"lint:js:fix": "npm run lint:js -- --fix",
