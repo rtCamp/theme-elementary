@@ -530,10 +530,10 @@ const scripts = {
 	],
 };
 
-// Component JS entry points from src/components/{component}/{component}.js.
+// Component script entry points from src/components/{component}/{component}.{js,jsx,ts,tsx}.
 const componentScripts = {
 	...sharedNonHotConfig,
-	entry: () => getComponentEntries( COMPONENTS_DIR, /\.js$/ ),
+	entry: () => getComponentEntries( COMPONENTS_DIR, /\.(jsx?|tsx?)$/ ),
 	plugins: [
 		...sharedNonHotConfig.plugins.filter( isNotPlugin( 'RtlCssPlugin' ) ),
 	],
