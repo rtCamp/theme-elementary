@@ -123,6 +123,8 @@ final class Util {
 	 * @param string $value Plaintext to encrypt.
 	 *
 	 * @return string|false Encrypted value, or false on failure.
+	 *
+	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
 	 */
 	public static function encrypt( string $value ): string|false {
 		return self::encryptor()->encrypt( $value );
@@ -134,6 +136,8 @@ final class Util {
 	 * @param string $value Encrypted value.
 	 *
 	 * @return string|false Decrypted value, or false on failure/tampering.
+	 *
+	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
 	 */
 	public static function decrypt( string $value ): string|false {
 		return self::encryptor()->decrypt( $value );

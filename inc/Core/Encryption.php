@@ -31,7 +31,7 @@ final class Encryption extends Encryptor implements Shareable {
 	 *
 	 * @return string The encryption key.
 	 *
-	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not defined.
+	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not defined or is empty.
 	 */
 	protected function key(): string {
 		if ( defined( 'ELEMENTARY_ENCRYPTION_KEY' ) && '' !== ELEMENTARY_ENCRYPTION_KEY ) {
