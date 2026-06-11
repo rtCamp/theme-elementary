@@ -17,6 +17,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Helpers;
 
 use rtCamp\Theme\Elementary\Core\Components;
+use rtCamp\Theme\Elementary\Core\Encryption;
 use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
 
@@ -114,5 +115,47 @@ final class Util {
 		$loader = Main::get_instance()->get_shared( Templates::class );
 
 		return $loader;
+	}
+
+	/**
+	 * Encrypt a value with the theme's shared Encryptor.
+	 *
+	 * @param string $value Plaintext to encrypt.
+	 *
+	 * @return string|false Encrypted value, or false on failure.
+	 *
+	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
+	 */
+	public static function encrypt( string $value ): string|false {
+		return self::encryptor()->encrypt( $value );
+	}
+
+	/**
+	 * Decrypt a value produced by Util::encrypt().
+	 *
+	 * @param string $value Encrypted value.
+	 *
+	 * @return string|false Decrypted value, or false on failure/tampering.
+	 *
+	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
+	 */
+	public static function decrypt( string $value ): string|false {
+		return self::encryptor()->decrypt( $value );
+	}
+
+	/**
+	 * Get the theme's shared Encryptor.
+	 *
+	 * @return Encryption Shared encryptor.
+	 */
+	private static function encryptor(): Encryption {
+		/**
+		 * Shared encryptor.
+		 *
+		 * @var Encryption $encryptor
+		 */
+		$encryptor = Main::get_instance()->get_shared( Encryption::class );
+
+		return $encryptor;
 	}
 }
