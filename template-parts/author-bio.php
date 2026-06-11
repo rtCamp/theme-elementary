@@ -17,27 +17,27 @@
 
 declare( strict_types = 1 );
 
-// Variables here are function-scoped (the part is included via load_template()),
-// not globals — but WPCS can't tell, so they carry the theme prefix anyway.
-$elementary_theme_name   = (string) ( $args['name'] ?? '' );
-$elementary_theme_bio    = (string) ( $args['bio'] ?? '' );
-$elementary_theme_avatar = (string) ( $args['avatar'] ?? '' );
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Local to the load_template() include scope.
+
+$name   = (string) ( $args['name'] ?? '' );
+$bio    = (string) ( $args['bio'] ?? '' );
+$avatar = (string) ( $args['avatar'] ?? '' );
 
 // Nothing to show — don't render an empty shell.
-if ( '' === $elementary_theme_name && '' === $elementary_theme_bio ) {
+if ( '' === $name && '' === $bio ) {
 	return;
 }
 ?>
 <div class="elementary-author-bio">
-	<?php if ( '' !== $elementary_theme_avatar ) : ?>
+	<?php if ( '' !== $avatar ) : ?>
 		<div class="elementary-author-bio__avatar">
-			<?php echo $elementary_theme_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns escaped markup. ?>
+			<?php echo $avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_avatar() returns escaped markup. ?>
 		</div>
 	<?php endif; ?>
 	<div class="elementary-author-bio__body">
-		<p class="elementary-author-bio__name"><?php echo esc_html( $elementary_theme_name ); ?></p>
-		<?php if ( '' !== $elementary_theme_bio ) : ?>
-			<p class="elementary-author-bio__desc"><?php echo esc_html( $elementary_theme_bio ); ?></p>
+		<p class="elementary-author-bio__name"><?php echo esc_html( $name ); ?></p>
+		<?php if ( '' !== $bio ) : ?>
+			<p class="elementary-author-bio__desc"><?php echo esc_html( $bio ); ?></p>
 		<?php endif; ?>
 	</div>
 </div>
