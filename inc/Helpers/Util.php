@@ -18,6 +18,7 @@ namespace rtCamp\Theme\Elementary\Helpers;
 
 use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Core\Encryption;
+use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
 
 /**
@@ -70,6 +71,48 @@ final class Util {
 		 * @var Components $loader
 		 */
 		$loader = Main::get_instance()->get_shared( Components::class );
+
+		return $loader;
+	}
+
+	/**
+	 * Render a theme template part, echoing its output.
+	 *
+	 * @param string               $slug Template slug.
+	 * @param string|null          $name Optional. Template variation name.
+	 * @param array<string, mixed> $args Optional. Data passed to the template.
+	 *
+	 * @return void
+	 */
+	public static function render_template( string $slug, ?string $name = null, array $args = [] ): void {
+		self::template_loader()->render( $slug, $name, $args );
+	}
+
+	/**
+	 * Get a rendered theme template part as a string.
+	 *
+	 * @param string               $slug Template slug.
+	 * @param string|null          $name Optional. Template variation name.
+	 * @param array<string, mixed> $args Optional. Data passed to the template.
+	 *
+	 * @return string Rendered template output, or '' if not found.
+	 */
+	public static function get_template( string $slug, ?string $name = null, array $args = [] ): string {
+		return self::template_loader()->get( $slug, $name, $args );
+	}
+
+	/**
+	 * Get the shared theme template loader.
+	 *
+	 * @return Templates Shared template loader.
+	 */
+	private static function template_loader(): Templates {
+		/**
+		 * Shared template loader.
+		 *
+		 * @var Templates $loader
+		 */
+		$loader = Main::get_instance()->get_shared( Templates::class );
 
 		return $loader;
 	}
