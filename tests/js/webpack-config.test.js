@@ -45,4 +45,33 @@ describe( 'webpack component entries', () => {
 			'components/button': path.join( buttonDir, 'button.js' ),
 		} );
 	} );
+
+	it( 'picks up .ts and .tsx component entries with the build pattern', () => {
+		tmpDir = fs.mkdtempSync(
+			path.join( os.tmpdir(), 'elementary-webpack-components-ts-' )
+		);
+
+		const cardDir = path.join( tmpDir, 'card' );
+		const modalDir = path.join( tmpDir, 'modal' );
+		const legacyDir = path.join( tmpDir, 'legacy' );
+
+		[ cardDir, modalDir, legacyDir ].forEach( ( dir ) => fs.mkdirSync( dir ) );
+
+		// One entry per supported extension.
+		fs.writeFileSync( path.join( cardDir, 'card.ts' ), '' );
+		fs.writeFileSync( path.join( modalDir, 'modal.tsx' ), '' );
+		fs.writeFileSync( path.join( legacyDir, 'legacy.js' ), '' );
+
+		// Same-folder files that must NOT become entries (basename mismatch),
+		// even though their extensions match the widened pattern.
+		fs.writeFileSync( path.join( cardDir, 'card.types.ts' ), '' );
+		fs.writeFileSync( path.join( cardDir, 'card.test.tsx' ), '' );
+
+		// Mirrors the pattern used by componentScripts in webpack.config.js.
+		expect( getComponentEntries( tmpDir, /\.(jsx?|tsx?)$/ ) ).toEqual( {
+			'components/card': path.join( cardDir, 'card.ts' ),
+			'components/modal': path.join( modalDir, 'modal.tsx' ),
+			'components/legacy': path.join( legacyDir, 'legacy.js' ),
+		} );
+	} );
 } );
