@@ -37,7 +37,7 @@ class AuthorBioTest extends TestCase {
 	}
 
 	/**
-	 * register_hooks registers the shortcode.
+	 * The shortcode is registered by register_hooks().
 	 */
 	public function test_registers_shortcode(): void {
 		$this->assertTrue( shortcode_exists( 'elementary_author_bio' ) );
