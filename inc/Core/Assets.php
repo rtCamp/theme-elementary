@@ -143,6 +143,8 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 *
 	 * Keeps the enqueued client URL in sync with the port webpack/BrowserSync
 	 * actually bind to, which is read from the same .env.local on the build side.
+	 * Falls back to the default when BS_PORT is absent or not a valid TCP port
+	 * (1–65535).
 	 *
 	 * @since 1.0.0
 	 *
@@ -164,7 +166,11 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		}
 
 		if ( preg_match( '/^\s*BS_PORT\s*=\s*(\d+)/m', $contents, $matches ) ) {
-			return (int) $matches[1];
+			$port = (int) $matches[1];
+
+			if ( $port >= 1 && $port <= 65535 ) {
+				return $port;
+			}
 		}
 
 		return $default;
