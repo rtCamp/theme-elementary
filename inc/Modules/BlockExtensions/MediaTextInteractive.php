@@ -10,12 +10,28 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
  * Class MediaTextInteractive
+ *
+ * Gated behind the `media-text-interactive` feature flag (Settings →
+ * Features), disabled by default; toggling the flag takes effect on the next
+ * request, since registration is decided once at load.
  */
-class MediaTextInteractive implements Registrable {
+class MediaTextInteractive implements ConditionallyRegistrable {
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Runs during Main's load — Util::is_feature_enabled() / get_shared()
+	 * would re-enter the Singleton here, so construct a Features instance
+	 * directly (see the Features docblock for why that is equivalent).
+	 */
+	public function can_register(): bool {
+		return ( new Features() )->is_enabled( Features::MEDIA_TEXT_INTERACTIVE );
+	}
 
 	/**
 	 * Register hooks.

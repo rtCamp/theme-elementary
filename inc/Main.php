@@ -10,8 +10,8 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
-use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, Menu, Templates, ThemeSetup};
-use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, Settings\ThemeOptions, Shortcodes\AuthorBio};
+use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, Features, Menu, Templates, ThemeSetup};
+use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, Settings\FeaturesSettingsPage, Settings\ThemeOptions, Shortcodes\AuthorBio};
 
 /**
  * Class Main
@@ -33,8 +33,10 @@ class Main {
 		Components::class,
 		Templates::class,
 		Encryption::class,
+		Features::class,
 		MediaTextInteractive::class,
 		ThemeOptions::class,
+		FeaturesSettingsPage::class,
 		AuthorBio::class,
 	];
 

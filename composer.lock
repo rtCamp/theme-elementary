@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db06e940e3f311fbccbb71fc2828d672",
+    "content-hash": "c58adb26698dbfb6ee8fc7b934672b75",
     "packages": [
         {
             "name": "rtcamp/wp-framework",
-            "version": "dev-main",
+            "version": "dev-feature/feature-selector-utility",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "2e8fa2d5efd3940020b51b0a9c81f4488d3563eb"
+                "reference": "b8b5a2b31f3c4db096037d8f70622dc3acab5192"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/2e8fa2d5efd3940020b51b0a9c81f4488d3563eb",
-                "reference": "2e8fa2d5efd3940020b51b0a9c81f4488d3563eb",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/b8b5a2b31f3c4db096037d8f70622dc3acab5192",
+                "reference": "b8b5a2b31f3c4db096037d8f70622dc3acab5192",
                 "shasum": ""
             },
             "require": {
@@ -34,7 +34,6 @@
                 "wp-coding-standards/wpcs": "^3.1",
                 "yoast/phpunit-polyfills": "^4.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -74,7 +73,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-06-11T22:57:26+00:00"
+            "time": "2026-06-12T16:03:48+00:00"
         }
     ],
     "packages-dev": [
@@ -3456,6 +3455,6 @@
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

@@ -8,7 +8,9 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
+use rtCamp\Theme\Elementary\Core\Features;
 use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
+use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
  * Class AuthorBioTest
@@ -41,6 +43,19 @@ class AuthorBioTest extends TestCase {
 	 */
 	public function test_registers_shortcode(): void {
 		$this->assertTrue( shortcode_exists( 'elementary_author_bio' ) );
+	}
+
+	/**
+	 * The module is gated behind the `author-bio` feature flag: off by
+	 * default, on once the flag is enabled.
+	 */
+	public function test_registration_is_gated_by_feature_flag(): void {
+		$this->assertInstanceOf( ConditionallyRegistrable::class, $this->instance );
+		$this->assertFalse( $this->instance->can_register() );
+
+		( new Features() )->enable( Features::AUTHOR_BIO );
+
+		$this->assertTrue( $this->instance->can_register() );
 	}
 
 	/**
