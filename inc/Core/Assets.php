@@ -69,6 +69,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	public function register_hooks(): void {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_browser_sync' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
 	}
 
@@ -123,19 +124,37 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		if ( $this->tailwind_enabled ) {
 			wp_enqueue_style( 'elementary-theme-tailwind' );
 		}
+	}
 
-		if ( 'local' === wp_get_environment_type() && ! ELEMENTARY_THEME_DISABLE_BROWSER_SYNC ) {
-			if ( defined( 'ELEMENTARY_THEME_BROWSER_SYNC_URL' ) ) {
-				$bs_url = ELEMENTARY_THEME_BROWSER_SYNC_URL;
-			} else {
-				$scheme = is_ssl() ? 'https' : 'http';
-				$host   = wp_parse_url( home_url(), PHP_URL_HOST );
-				$host   = $host ? $host : 'localhost';
-				$port   = $this->get_browser_sync_port();
-				$bs_url = "{$scheme}://{$host}:{$port}/browser-sync/browser-sync-client.js";
-			}
-			wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
+	/**
+	 * Enqueue the BrowserSync client script for local live reload.
+	 *
+	 * Only runs in the `local` environment and when not disabled. The client URL
+	 * is derived from the site URL and the BrowserSync port (BS_PORT in
+	 * .env.local, default 3000), or taken verbatim from the
+	 * ELEMENTARY_THEME_BROWSER_SYNC_URL constant when defined (for custom ports
+	 * or remote/proxied setups).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action wp_enqueue_scripts
+	 */
+	public function enqueue_browser_sync(): void {
+		if ( 'local' !== wp_get_environment_type() || ELEMENTARY_THEME_DISABLE_BROWSER_SYNC ) {
+			return;
 		}
+
+		if ( defined( 'ELEMENTARY_THEME_BROWSER_SYNC_URL' ) ) {
+			$bs_url = ELEMENTARY_THEME_BROWSER_SYNC_URL;
+		} else {
+			$scheme = is_ssl() ? 'https' : 'http';
+			$host   = wp_parse_url( home_url(), PHP_URL_HOST );
+			$host   = $host ? $host : 'localhost';
+			$port   = $this->get_browser_sync_port();
+			$bs_url = "{$scheme}://{$host}:{$port}/browser-sync/browser-sync-client.js";
+		}
+
+		wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
 	}
 
 	/**
