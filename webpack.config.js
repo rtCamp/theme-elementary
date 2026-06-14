@@ -15,8 +15,10 @@ const isWatch =
 	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
 
 if ( isWatch ) {
-	// `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
-	// noisy on every rebuild in watch mode.
+	/*
+	 * `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
+	 * noisy on every rebuild in watch mode.
+	 */
 	require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
 }
 
@@ -490,9 +492,11 @@ const sharedConfig = {
 	...scriptConfig,
 	watchOptions: {
 		...( scriptConfig.watchOptions || {} ),
-		// assets/build/** must be ignored to prevent an infinite rebuild loop:
-		// Tailwind v4's content detection treats build output as potential template
-		// files, so without this, each webpack emit triggers another rebuild.
+		/*
+		 * assets/build/** must be ignored to prevent an infinite rebuild loop:
+		 * Tailwind v4's content detection treats build output as potential template
+		 * files, so without this, each webpack emit triggers another rebuild.
+		 */
 		ignored: [
 			'**/node_modules/**',
 			path.resolve( process.cwd(), 'assets', 'build', '**' ),
@@ -505,12 +509,14 @@ const sharedConfig = {
 	},
 	plugins: [
 		new CleanBuildPlugin(),
-		// Strip wp-scripts' inherited CopyPlugin (its actual class is `CopyPlugin`,
-		// not `CopyWebpackPlugin` — that's just wp-scripts' import alias). It would
-		// otherwise copy block.json/render.php from src/blocks/ into the JS output
-		// at assets/build/js/blocks/, which is redundant — block compilation is
-		// owned by the dedicated `build:blocks` script and lands in
-		// assets/build/blocks/. Keep all other inherited plugins.
+		/*
+		 * Strip wp-scripts' inherited CopyPlugin (its actual class is `CopyPlugin`,
+		 * not `CopyWebpackPlugin` — that's just wp-scripts' import alias). It would
+		 * otherwise copy block.json/render.php from src/blocks/ into the JS output
+		 * at assets/build/js/blocks/, which is redundant — block compilation is
+		 * owned by the dedicated `build:blocks` script and lands in
+		 * assets/build/blocks/. Keep all other inherited plugins.
+		 */
 		...scriptConfig.plugins
 			.filter( isNotPlugin( 'CopyPlugin' ) )
 			.map( setCssOutputPath ),

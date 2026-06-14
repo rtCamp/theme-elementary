@@ -18,8 +18,10 @@
 /**
  * External dependencies
  */
-// `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
-// noisy on every rebuild in watch mode.
+/*
+ * `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
+ * noisy on every rebuild in watch mode.
+ */
 require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
 
 /**
@@ -56,23 +58,31 @@ const devServerPort = toPort(
  * @return {Object} The same config, dev-server v5 compatible.
  */
 const fixDevServer = ( singleConfig ) => {
-	// Only the script config carries a devServer; the module config sets it to
-	// `false` (or omits it) and needs no changes.
+	/*
+	 * Only the script config carries a devServer; the module config sets it to
+	 * `false` (or omits it) and needs no changes.
+	 */
 	if ( ! singleConfig || ! singleConfig.devServer ) {
 		return singleConfig;
 	}
 
-	// webpack-dev-server v5 requires `proxy` to be an array; wp-scripts ships a
-	// v4-style object. Not needed for block HMR, so drop it.
+	/*
+	 * webpack-dev-server v5 requires `proxy` to be an array; wp-scripts ships a
+	 * v4-style object. Not needed for block HMR, so drop it.
+	 */
 	delete singleConfig.devServer.proxy;
 
-	// Multiple sites can run the dev server at once, so the port is read from
-	// .env.local (BLOCKS_DEV_SERVER_PORT) rather than hardcoded.
+	/*
+	 * Multiple sites can run the dev server at once, so the port is read from
+	 * .env.local (BLOCKS_DEV_SERVER_PORT) rather than hardcoded.
+	 */
 	singleConfig.devServer.port = devServerPort;
 
-	// Restrict host checks to localhost (and the configured local host) instead
-	// of the blanket `--allowed-hosts all`, to avoid DNS-rebinding exposure if
-	// the port is reachable on the network.
+	/*
+	 * Restrict host checks to localhost (and the configured local host) instead
+	 * of the blanket `--allowed-hosts all`, to avoid DNS-rebinding exposure if
+	 * the port is reachable on the network.
+	 */
 	singleConfig.devServer.allowedHosts = [
 		'localhost',
 		...( process.env.WP_HOST ? [ process.env.WP_HOST ] : [] ),
@@ -81,8 +91,10 @@ const fixDevServer = ( singleConfig ) => {
 	return singleConfig;
 };
 
-// `--experimental-modules` makes the stock config export an array of configs
-// ([ scriptConfig, moduleConfig ]); otherwise it's a single object.
+/*
+ * `--experimental-modules` makes the stock config export an array of configs
+ * ([ scriptConfig, moduleConfig ]); otherwise it's a single object.
+ */
 module.exports = Array.isArray( config )
 	? config.map( fixDevServer )
 	: fixDevServer( config );
