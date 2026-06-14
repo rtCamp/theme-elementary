@@ -22,7 +22,7 @@ if ( isWatch ) {
 	require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
 }
 
-const DEFAULT_BS_PORT = 3000;
+const DEFAULT_BS_PORT = 3001;
 
 /**
  * Parse a TCP port from an env value, falling back when it is missing or not a

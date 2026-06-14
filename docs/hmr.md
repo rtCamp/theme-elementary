@@ -6,7 +6,7 @@ This document explains how live reload and hot module replacement work in the th
 
 Running `npm start` runs two scripts in parallel, each with a complementary tool:
 
-- **`start:assets` → BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
+- **`start:assets` → BrowserSync** (port 3001) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
 - **`start:blocks` → webpack-dev-server / Fast Refresh** (port 8887 by default, configurable via `BLOCKS_DEV_SERVER_PORT`) — hot module replacement for block editor React components. Block state is preserved across updates; no full page reload needed.
 
 For BrowserSync:
@@ -24,7 +24,7 @@ For block editor HMR, JS/JSX changes to block components hot-swap in the editor 
 npm start
 ```
 
-Webpack starts watching for file changes and BrowserSync starts on port 3000. Open your local site and edits will reflect automatically.
+Webpack starts watching for file changes and BrowserSync starts on port 3001. Open your local site and edits will reflect automatically.
 
 ---
 
@@ -68,7 +68,7 @@ BrowserSync watches the following:
 - `**/*.php` (excluding `vendor/`)
 - `**/*.html`
 
-The client script is enqueued by PHP from `{scheme}://{host}:3000/browser-sync/browser-sync-client.js`. The scheme (`http` or `https`) and host are derived automatically from the WordPress site URL using `is_ssl()` and `home_url()`.
+The client script is enqueued by PHP from `{scheme}://{host}:3001/browser-sync/browser-sync-client.js`. The scheme (`http` or `https`) and host are derived automatically from the WordPress site URL using `is_ssl()` and `home_url()`.
 
 BrowserSync is only added to the `scripts` webpack config. Adding it to all three configs (`scripts`, `styles`, `moduleScripts`) would start three BrowserSync instances on the same port.
 
@@ -88,16 +88,16 @@ WP_HOST=yoursite.local
 
 ### Multiple sites / custom URL
 
-If port 3000 is already taken (e.g. two local sites running at once), set a different port in `.env.local`:
+If port 3001 is already taken (e.g. two local sites running at once), set a different port in `.env.local`:
 
 ```
-BS_PORT=3001
+BS_PORT=3002
 ```
 
 Then define the matching constant in `wp-config.php` so PHP enqueues the client from the right URL:
 
 ```php
-define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3002/browser-sync/browser-sync-client.js' );
 ```
 
 `ELEMENTARY_THEME_BROWSER_SYNC_URL` overrides the auto-detected URL entirely, so it also works for remote setups (ddev, reverse proxy) where the BrowserSync server is on a different host or IP.
@@ -121,7 +121,7 @@ WP_SSL_KEY=/path/to/yoursite.local.key
 WP_SSL_CERT=/path/to/yoursite.local.crt
 ```
 
-This is required to avoid mixed content errors — the BrowserSync client script on port 3000 must also be served over HTTPS. Since SSL certs are domain-based, the same cert your local site uses also covers port 3000.
+This is required to avoid mixed content errors — the BrowserSync client script on port 3001 must also be served over HTTPS. Since SSL certs are domain-based, the same cert your local site uses also covers port 3001.
 
 **Finding cert paths in LocalWP (macOS):**
 
@@ -149,13 +149,13 @@ This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync 
 By default, PHP constructs the client URL from the site's scheme and host:
 
 ```
-{scheme}://{host}:3000/browser-sync/browser-sync-client.js
+{scheme}://{host}:3001/browser-sync/browser-sync-client.js
 ```
 
 To override it entirely — for a non-standard port, a remote dev server, or a reverse proxy setup — define this constant in `wp-config.php`:
 
 ```php
-define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3001/browser-sync/browser-sync-client.js' );
+define( 'ELEMENTARY_THEME_BROWSER_SYNC_URL', 'https://yoursite.local:3002/browser-sync/browser-sync-client.js' );
 ```
 
 This takes precedence over the auto-detected URL.
@@ -164,6 +164,6 @@ This takes precedence over the auto-detected URL.
 
 ## Known Limitations
 
-**BrowserSync port**: BrowserSync requires its own port (3000) separate from your local site. Snippet mode keeps the site URL unchanged — proxy mode would change the URL and break WordPress redirects and cookie domains.
+**BrowserSync port**: BrowserSync requires its own port (3001) separate from your local site. Snippet mode keeps the site URL unchanged — proxy mode would change the URL and break WordPress redirects and cookie domains.
 
 **WDS host validation**: WDS runs on `localhost:8887`. For custom local hostnames (e.g. `yoursite.local`), `allowedHosts: 'all'` is set in the webpack devServer config so the HMR WebSocket connection is accepted.

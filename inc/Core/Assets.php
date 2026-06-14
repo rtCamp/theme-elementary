@@ -131,7 +131,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 *
 	 * Only runs in the `local` environment and when not disabled via DISABLE_BS
 	 * in .env.local. The client URL is derived from the site URL and the
-	 * BrowserSync port (BS_PORT in .env.local, default 3000), or taken verbatim
+	 * BrowserSync port (BS_PORT in .env.local, default 3001), or taken verbatim
 	 * from the ELEMENTARY_THEME_BROWSER_SYNC_URL constant when defined (for
 	 * custom ports or remote/proxied setups).
 	 *
@@ -158,7 +158,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	}
 
 	/**
-	 * Read the BrowserSync port from .env.local (BS_PORT), defaulting to 3000.
+	 * Read the BrowserSync port from .env.local (BS_PORT), defaulting to 3001.
 	 *
 	 * Keeps the enqueued client URL in sync with the port webpack/BrowserSync
 	 * actually bind to, which is read from the same .env.local on the build side.
@@ -170,7 +170,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @return int BrowserSync port.
 	 */
 	private function get_browser_sync_port(): int {
-		$default = 3000;
+		$default = 3001;
 		$value   = $this->get_env_value( 'BS_PORT' );
 
 		if ( null !== $value && preg_match( '/^\d+$/', $value ) ) {
