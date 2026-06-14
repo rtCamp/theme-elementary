@@ -136,10 +136,10 @@ This is required to avoid mixed content errors — the BrowserSync client script
 
 ### Disabling BrowserSync
 
-To disable BrowserSync without removing it from the webpack config, define this constant in `wp-config.php`:
+To disable BrowserSync without removing it from the webpack config, set this in `.env.local`:
 
-```php
-define( 'ELEMENTARY_THEME_DISABLE_BROWSER_SYNC', true );
+```
+DISABLE_BS=true
 ```
 
 This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync server still starts (webpack still runs it), but the browser won't connect to it. Useful when working purely in the block editor and you don't want the BrowserSync client loading on the frontend.
