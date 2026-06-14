@@ -225,7 +225,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local dev only; reading a small project file, not remote.
+		// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- Local dev only; reading a small project file, not remote.
 		$contents = file_get_contents( $env_file );
 
 		if ( false === $contents ) {
