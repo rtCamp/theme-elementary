@@ -146,7 +146,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * Falls back to the default when BS_PORT is absent or not a valid TCP port
 	 * (1–65535).
 	 *
-	 * @since 1.0.0
+	 * THIS METHOD IS INTENDED FOR LOCAL DEVELOPMENT ENVIRONMENTS ONLY.
 	 *
 	 * @return int BrowserSync port.
 	 */
