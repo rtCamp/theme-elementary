@@ -15,10 +15,31 @@ const isWatch =
 	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
 
 if ( isWatch ) {
-	require( 'dotenv' ).config( { path: '.env.local' } );
+	/*
+	 * `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
+	 * noisy on every rebuild in watch mode.
+	 */
+	require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
 }
 
-const bsPort = parseInt( process.env.BS_PORT, 10 ) || 3000;
+const DEFAULT_BS_PORT = 3001;
+
+/**
+ * Parse a TCP port from an env value, falling back when it is missing or not a
+ * valid port number (1–65535).
+ *
+ * @param {string|undefined} value    Raw env value.
+ * @param {number}           fallback Port to use when `value` is invalid.
+ * @return {number} A valid port.
+ */
+const toPort = ( value, fallback ) => {
+	const port = parseInt( value, 10 );
+	return Number.isInteger( port ) && port >= 1 && port <= 65535
+		? port
+		: fallback;
+};
+
+const bsPort = toPort( process.env.BS_PORT, DEFAULT_BS_PORT );
 
 /**
  * WordPress dependencies
@@ -112,7 +133,12 @@ const BROWSER_SYNC_FILES = [
  * itself is scanned recursively instead.
  *
  * If two files resolve to the same entry key, the first file is kept and a
- * warning is emitted.
+ * warning is emitted. This covers same-name files differing only by extension
+ * (e.g. `foo.js` + `foo.ts`).
+ *
+ * Note: directory entries are read with `withFileTypes`, whose dirents do not
+ * resolve symlinks — a symlinked subdirectory reports `isDirectory() === false`
+ * and is silently skipped rather than walked. Use real directories under `src/`.
  *
  * @param {string}   dir                 Base directory to scan.
  * @param {Object}   options             Options.
@@ -188,6 +214,12 @@ const readAllFileEntries = (
 
 /**
  * Read component entry files from src/components/{component}/{component}.{ext}.
+ *
+ * Note: if more than one file matches the component basename (e.g. both
+ * `card.js` and `card.ts` exist), the first match returned by `readdirSync`
+ * wins — keep one entry file per component. Component directories are read with
+ * `withFileTypes`, so a symlinked component folder is skipped (reported as a
+ * non-directory) rather than scanned.
  *
  * @param {string} dir     Component source directory.
  * @param {RegExp} pattern File extension pattern to match.
@@ -460,9 +492,11 @@ const sharedConfig = {
 	...scriptConfig,
 	watchOptions: {
 		...( scriptConfig.watchOptions || {} ),
-		// assets/build/** must be ignored to prevent an infinite rebuild loop:
-		// Tailwind v4's content detection treats build output as potential template
-		// files, so without this, each webpack emit triggers another rebuild.
+		/*
+		 * assets/build/** must be ignored to prevent an infinite rebuild loop:
+		 * Tailwind v4's content detection treats build output as potential template
+		 * files, so without this, each webpack emit triggers another rebuild.
+		 */
 		ignored: [
 			'**/node_modules/**',
 			path.resolve( process.cwd(), 'assets', 'build', '**' ),
@@ -473,14 +507,19 @@ const sharedConfig = {
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
-	// WDS v5 requires proxy as an array; since writeToDisk: true is set we don't need it.
-	// allowedHosts: 'all' is needed for custom local domains (e.g. elementary.local).
-	devServer: scriptConfig.devServer
-		? { ...scriptConfig.devServer, proxy: undefined, allowedHosts: 'all' }
-		: undefined,
 	plugins: [
 		new CleanBuildPlugin(),
-		...scriptConfig.plugins.map( setCssOutputPath ),
+		/*
+		 * Strip wp-scripts' inherited CopyPlugin (its actual class is `CopyPlugin`,
+		 * not `CopyWebpackPlugin` — that's just wp-scripts' import alias). It would
+		 * otherwise copy block.json/render.php from src/blocks/ into the JS output
+		 * at assets/build/js/blocks/, which is redundant — block compilation is
+		 * owned by the dedicated `build:blocks` script and lands in
+		 * assets/build/blocks/. Keep all other inherited plugins.
+		 */
+		...scriptConfig.plugins
+			.filter( isNotPlugin( 'CopyPlugin' ) )
+			.map( setCssOutputPath ),
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
