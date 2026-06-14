@@ -12,6 +12,10 @@
 	"devDependencies": {
 		"@babel/core": "7.29.7",
 		"@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
+		"@types/jest": "29.5.14",
+		"@types/react": "19.2.17",
+		"@types/react-dom": "19.2.3",
+		"@types/wordpress__block-editor": "15.0.6",
 		"@wordpress/babel-preset-default": "8.47.0",
 		"@wordpress/browserslist-config": "6.47.0",
 		"@wordpress/env": "11.7.0",
@@ -34,6 +38,7 @@
 		"npm-run-all": "4.1.5",
 		"rtlcss": "4.3.0",
 		"svgo": "4.0.1",
+		"typescript": "6.0.3",
 		"webpack": "5.107.2",
 		"webpack-remove-empty-scripts": "1.1.1"
 	},
@@ -47,7 +52,9 @@
 	"overrides": {
 		"webpack-dev-server": "5.2.1",
 		"serialize-javascript": "7.0.3",
-		"minimatch": "3.1.3"
+		"minimatch": "3.1.3",
+		"@types/react": "$@types/react",
+		"@types/react-dom": "$@types/react-dom"
 	},
 	"private": true,
 	"repository": {
@@ -64,11 +71,12 @@
 		"init": "./bin/init.js && npm run sync-ai",
 		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:*",
-		"lint:css": "wp-scripts lint-style ./src",
+		"lint:css": "wp-scripts lint-style './src/**/*.{css,scss}'",
 		"lint:css:fix": "npm run lint:css -- --fix",
 		"lint:js": "wp-scripts lint-js ./src",
 		"lint:js:fix": "npm run lint:js -- --fix",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
+		"lint:js:types": "tsc --noEmit",
 		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:php": "php vendor/bin/phpcs",
 		"lint:php:fix": "node ./bin/phpcbf.js",

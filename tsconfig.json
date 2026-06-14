@@ -1,0 +1,66 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig.json",
+
+	"compilerOptions": {
+		"allowJs": true,
+		// Migration override — flip to true once src/ is fully .ts/.tsx.
+		"checkJs": false,
+
+		// Type checking — full strict.
+		"strict": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"exactOptionalPropertyTypes": true,
+		"forceConsistentCasingInFileNames": true,
+		"noErrorTruncation": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		// Modules
+		"module": "preserve",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+
+		// Interop Constraints
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		// @todo flip to true once package.json declares `"type": "module"`.
+		"verbatimModuleSyntax": false,
+
+		// Language and Environment
+		"jsx": "react-jsx",
+		"lib": [ "ES2022", "DOM.Iterable", "DOM" ],
+		"moduleDetection": "force",
+		"target": "ES2022",
+
+		// Completeness
+		"skipLibCheck": true,
+
+		// Project-specific
+		"noEmit": true,
+		"paths": {
+			"@/*": [ "./src/*" ]
+		},
+		// Jest globals stay out of src/; tests get their own tsconfig once they migrate.
+		"types": [ "node" ]
+	},
+	"include": [
+		"src/**/*",
+		"tests/**/*",
+		"webpack.config.js",
+		"webpack.blocks.config.js",
+		"babel.config.js"
+	],
+	"exclude": [
+		"node_modules",
+		"vendor",
+		"assets/build",
+		"build",
+		"bin"
+	]
+}

@@ -8,12 +8,13 @@ import wordpressPlugin from '@wordpress/eslint-plugin';
 import comments from '@eslint-community/eslint-plugin-eslint-comments/configs';
 import jestPlugin from 'eslint-plugin-jest';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 const TEST_FILES = [
-	'**/__tests__/**/*.js',
-	'**/test/*.js',
-	'**/?(*.)test.js',
-	'tests/js/**/*.js',
+	'**/__tests__/**/*.{js,ts,tsx}',
+	'**/test/*.{js,ts,tsx}',
+	'**/?(*.)test.{js,ts,tsx}',
+	'tests/js/**/*.{js,ts,tsx}',
 ];
 
 export default [
@@ -27,6 +28,30 @@ export default [
 	},
 
 	...wordpressPlugin.configs[ 'recommended-with-formatting' ],
+
+	// `recommended-with-formatting` (unlike `recommended`) doesn't register a
+	// TypeScript config, so `.ts`/`.tsx` would be unmatched and skipped. Add the
+	// TypeScript parser + the unused-vars handoff, mirroring the TS block in
+	// @wordpress/eslint-plugin's `recommended` preset.
+	{
+		files: [ '**/*.ts', '**/*.tsx' ],
+		languageOptions: {
+			parser: tseslint.parser,
+		},
+		plugins: {
+			'@typescript-eslint': tseslint.plugin,
+		},
+		rules: {
+			'no-duplicate-imports': 'off',
+			'jsdoc/require-param-type': 'off',
+			'jsdoc/require-returns-type': 'off',
+			'no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{ ignoreRestSiblings: true },
+			],
+		},
+	},
 
 	// import plugin is already registered by the WordPress config above;
 	// add the remaining rules from plugin:import/recommended without re-registering.
@@ -65,7 +90,12 @@ export default [
 
 	{
 		settings: {
-			'import/resolver': { node: true },
+			'import/resolver': {
+				typescript: {
+					extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
+				},
+				node: true,
+			},
 		},
 	},
 ];
