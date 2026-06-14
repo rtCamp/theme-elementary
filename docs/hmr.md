@@ -6,7 +6,7 @@ This document explains how live reload and hot module replacement work in the th
 
 Running `npm start` runs two scripts in parallel, each with a complementary tool:
 
-- **`start:theme` → BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
+- **`start:assets` → BrowserSync** (port 3000) — live reload for the frontend via snippet mode. Your site URL stays unchanged.
 - **`start:blocks` → webpack-dev-server / Fast Refresh** (port 8887 by default, configurable via `BLOCKS_DEV_SERVER_PORT`) — hot module replacement for block editor React components. Block state is preserved across updates; no full page reload needed.
 
 For BrowserSync:
@@ -48,9 +48,9 @@ Without `SCRIPT_DEBUG`, WordPress does not support Fast Refresh.
 
 ## How It Works
 
-**Theme assets (`start:theme` + BrowserSync):**
+**Theme assets (`start:assets` + BrowserSync):**
 
-1. `start:theme` runs `wp-scripts start` in watch mode (no `--hot`) using `webpack.config.js`.
+1. `start:assets` runs `wp-scripts start` in watch mode (no `--hot`) using `webpack.config.js`.
 2. When a file changes, webpack rebuilds the affected assets in `assets/build/`.
 3. BrowserSync detects the change and notifies the browser via the client script.
 4. CSS changes are injected in-place. Everything else triggers a full reload.
