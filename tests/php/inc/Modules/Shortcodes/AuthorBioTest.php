@@ -46,16 +46,16 @@ class AuthorBioTest extends TestCase {
 	}
 
 	/**
-	 * The module is gated behind the `author-bio` feature flag: off by
-	 * default, on once the flag is enabled.
+	 * The module is gated behind the `author-bio` feature flag: on by
+	 * default, off once the flag is disabled.
 	 */
 	public function test_registration_is_gated_by_feature_flag(): void {
 		$this->assertInstanceOf( ConditionallyRegistrable::class, $this->instance );
-		$this->assertFalse( $this->instance->can_register() );
-
-		( new Features() )->enable( Features::AUTHOR_BIO );
-
 		$this->assertTrue( $this->instance->can_register() );
+
+		( new Features() )->disable( Features::AUTHOR_BIO );
+
+		$this->assertFalse( $this->instance->can_register() );
 	}
 
 	/**

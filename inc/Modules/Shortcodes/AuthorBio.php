@@ -21,7 +21,7 @@ use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
  * template part through Util::get_template() — a child theme can override the
  * markup by shipping its own template-parts/author-bio.php.
  *
- * Gated behind the `author-bio` feature flag (Settings → Features), disabled
+ * Gated behind the `author-bio` feature flag (Settings → Features), enabled
  * by default; toggling the flag takes effect on the next request, since
  * registration is decided once at load.
  *

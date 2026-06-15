@@ -68,12 +68,12 @@ class FeaturesTest extends TestCase {
 	}
 
 	/**
-	 * Flags default to disabled and follow the persisted option.
+	 * Flags default to enabled and follow the persisted option.
 	 */
 	public function test_is_enabled_follows_option(): void {
 		$features = new Features();
 
-		$this->assertFalse( $features->is_enabled( Features::AUTHOR_BIO ) );
+		$this->assertTrue( $features->is_enabled( Features::AUTHOR_BIO ) );
 
 		update_option( $features->option_key( Features::AUTHOR_BIO ), true );
 		$this->assertTrue( $features->is_enabled( Features::AUTHOR_BIO ) );
@@ -116,10 +116,10 @@ class FeaturesTest extends TestCase {
 	 * Util::is_feature_enabled() proxies the shared instance.
 	 */
 	public function test_util_helper_reads_flags(): void {
-		$this->assertFalse( Util::is_feature_enabled( Features::AUTHOR_BIO ) );
-
-		( new Features() )->enable( Features::AUTHOR_BIO );
-
 		$this->assertTrue( Util::is_feature_enabled( Features::AUTHOR_BIO ) );
+
+		( new Features() )->disable( Features::AUTHOR_BIO );
+
+		$this->assertFalse( Util::is_feature_enabled( Features::AUTHOR_BIO ) );
 	}
 }

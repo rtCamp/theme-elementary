@@ -23,7 +23,9 @@ use rtCamp\WPFramework\Utils\FeatureSelector;
  *   - override constant: ELEMENTARY_FEATURE_{FLAG}   (wp-config.php; wins over
  *                        the option and locks the admin checkbox)
  *
- * Flags default to disabled. Read them at hook time through
+ * Flags default to enabled — features ship on; the selector exists to turn
+ * them off (a stored option or an ELEMENTARY_FEATURE_{FLAG} constant overrides
+ * that default). Read them at hook time through
  * Helpers\Util::is_feature_enabled(); load-time consumers (constructors,
  * ConditionallyRegistrable::can_register()) must construct their own
  * `new Features()` instead — Main::get_instance()->get_shared() would re-enter

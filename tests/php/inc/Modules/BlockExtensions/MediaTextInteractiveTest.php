@@ -36,15 +36,15 @@ class MediaTextInteractiveTest extends TestCase {
 
 	/**
 	 * The module is gated behind the `media-text-interactive` feature flag:
-	 * off by default, on once the flag is enabled.
+	 * on by default, off once the flag is disabled.
 	 */
 	public function test_registration_is_gated_by_feature_flag(): void {
 		$this->assertInstanceOf( ConditionallyRegistrable::class, $this->instance );
-		$this->assertFalse( $this->instance->can_register() );
-
-		( new Features() )->enable( Features::MEDIA_TEXT_INTERACTIVE );
-
 		$this->assertTrue( $this->instance->can_register() );
+
+		( new Features() )->disable( Features::MEDIA_TEXT_INTERACTIVE );
+
+		$this->assertFalse( $this->instance->can_register() );
 	}
 
 	/**

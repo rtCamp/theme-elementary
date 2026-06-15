@@ -17,7 +17,7 @@ use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
  * Class MediaTextInteractive
  *
  * Gated behind the `media-text-interactive` feature flag (Settings →
- * Features), disabled by default; toggling the flag takes effect on the next
+ * Features), enabled by default; toggling the flag takes effect on the next
  * request, since registration is decided once at load.
  */
 class MediaTextInteractive implements ConditionallyRegistrable {
