@@ -23,16 +23,17 @@ module.exports = {
 
 	version: '1.0.0',
 
-	details: ( id, extra ) => ( {
-		'Theme Name': id.name,
-		'Version': extra.version,
-		'Text Domain': id.textDomain,
-		'Package': id.package,
-		'Namespace': extra.namespace,
-		'Function Prefix': id.functionPrefix,
-		'Constant Prefix': id.constantPrefix,
-		'CSS Prefix': id.cssPrefix,
-	} ),
+	// Identity fields shown in the review table and offered in the editor.
+	fields: [
+		{ key: 'name', label: 'Theme Name' },
+		{ key: 'version', label: 'Version' },
+		{ key: 'textDomain', label: 'Text Domain' },
+		{ key: 'package', label: 'Package' },
+		{ key: 'namespace', label: 'Namespace' },
+		{ key: 'functionPrefix', label: 'Function Prefix' },
+		{ key: 'constantPrefix', label: 'Constant Prefix' },
+		{ key: 'cssPrefix', label: 'CSS Prefix' },
+	],
 
 	versionFiles: [
 		{ path: 'style.css', kind: 'css-header' },
