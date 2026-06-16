@@ -3,14 +3,10 @@
 /* eslint no-console: 0 */
 
 /**
- * Theme setup -- thin wrapper.
+ * Theme setup; thin wrapper that delegates to the shared scaffold engine from
+ * rtcamp/wp-framework, passing this theme's bin/scaffold.config.js.
  *
- * Delegates to the shared scaffold engine shipped by rtcamp/wp-framework,
- * passing this theme's bin/scaffold.config.js. The engine renders all prompts
- * via the wp-tooling UI kit.
- *
- * Requires `composer install` (for the engine) and `npm install` (for the
- * wp-tooling UI kit) to have run. Invoke with `npm run init`.
+ * Requires `composer install` and `npm install`. Invoke with `npm run init`.
  */
 
 /**
