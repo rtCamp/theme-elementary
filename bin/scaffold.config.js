@@ -50,6 +50,24 @@ module.exports = {
 
 	steps: { composer: true, cleanup: true, git: true, husky: true },
 
+	// Optional features toggled in manage mode (re-run `npm run init` once set up).
+	// Each feature is data the engine interprets — see the Feature typedef in
+	// rtcamp/wp-framework bin/scaffold/features.js. Example shape:
+	//   {
+	//     key: 'tailwind', label: 'Tailwind CSS', description: '...', defaultOn: false,
+	//     apply: {
+	//       files: [ { from: 'tailwind/tailwind.config.js', to: 'tailwind.config.js' } ],
+	//       devDependencies: { tailwindcss: '^3.4.0', autoprefixer: '^10.4.0' },
+	//       scripts: { 'build:tailwind': 'tailwindcss -i ... -o ...' },
+	//     },
+	//     detect: ( api ) => api.exists( 'tailwind.config.js' ) && api.hasDep( 'tailwindcss' ),
+	//     onEnable:  ( api ) => api.writeFlag( 'tailwind', true ),   // webpack reads .wp-features.json
+	//     onDisable: ( api ) => api.writeFlag( 'tailwind', false ),
+	//   }
+	// (Tailwind's webpack wiring lands with the Tailwind effort; the toggle engine is ready.)
+	featuresDir: 'bin/features',
+	features: [],
+
 	cleanup: { targets: [ '.github', 'languages' ] },
 
 	docsUrl: 'https://github.com/rtCamp/theme-elementary/blob/main/README.md',
