@@ -67,10 +67,24 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @since 1.0.0
 	 */
 	public function register_hooks(): void {
+		add_action( 'after_setup_theme', [ $this, 'add_editor_styles' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_browser_sync' ] );
 		add_filter( 'render_block', [ $this, 'enqueue_block_specific_assets' ], 10, 2 );
+	}
+
+	/**
+	 * Register Tailwind stylesheet for the block editor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @action after_setup_theme
+	 */
+	public function add_editor_styles(): void {
+		if ( $this->tailwind_enabled ) {
+			add_editor_style( $this->assets_dir . '/css/frontend/tailwind.css' );
+		}
 	}
 
 	/**
