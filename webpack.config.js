@@ -10,6 +10,20 @@ const webpack = require( 'webpack' );
 const rtlcss = require( 'rtlcss' );
 const { optimize: svgoOptimize } = require( 'svgo' );
 
+/**
+ * Tailwind (opt-in). Wired only when the entry file exists — the same gate
+ * functions.php uses to enqueue the compiled stylesheet.
+ */
+const tailwindEntry = path.resolve( process.cwd(), 'src', 'css', 'frontend', 'tailwind.css' );
+let GenerateTailwindThemePlugin = null;
+if ( fs.existsSync( tailwindEntry ) ) {
+	try {
+		( { GenerateTailwindThemePlugin } = require( '@rtcamp/wp-tooling/tailwind-config' ) );
+	} catch ( err ) {
+		// @rtcamp/wp-tooling not installed; Tailwind stays off.
+	}
+}
+
 const isHot = process.argv.includes( '--hot' );
 const isWatch =
 	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
@@ -546,6 +560,7 @@ const styles = {
 		...sharedNonHotConfig.plugins.filter(
 			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
 		),
+		...( GenerateTailwindThemePlugin ? [ new GenerateTailwindThemePlugin() ] : [] ),
 		new CssAssetRtlPlugin(),
 	],
 };
