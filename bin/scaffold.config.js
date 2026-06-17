@@ -6,6 +6,12 @@
  * search-replaces files under bin/.
  */
 
+// functions.php and the theme's Tailwind enable constant (derived from the
+// resolved identity). functions.php defines it false by default; the feature
+// flips it, and Assets.php enqueues off it.
+const tailwindEntry = () => 'functions.php';
+const tailwindConst = ( api ) => `${ api.identity.constantPrefix }_ENABLE_TAILWIND`;
+
 module.exports = {
 	kind: 'theme',
 	vendor: 'rtcamp',
@@ -42,9 +48,31 @@ module.exports = {
 
 	steps: { composer: true, cleanup: true, git: true, husky: true },
 
-	// Optional features toggled in manage mode (none yet).
+	// Optional features toggled in manage mode. Tailwind enqueue is gated on the
+	// ELEMENTARY_THEME_ENABLE_TAILWIND constant in functions.php; the feature flips
+	// it and adds/removes the entry CSS, PostCSS config and deps. webpack still
+	// gates the theme.json token plugin on the entry file at build time.
 	featuresDir: 'bin/features',
-	features: [],
+	features: [
+		{
+			key: 'tailwind',
+			label: 'Tailwind CSS',
+			description: 'Tailwind v4 (opt-in). Adds the entry CSS, PostCSS config and deps, and flips the ENABLE_TAILWIND constant that gates the enqueue.',
+			apply: {
+				files: [
+					{ from: 'tailwind/tailwind.css', to: 'src/css/frontend/tailwind.css' },
+					{ from: 'tailwind/postcss.config.js', to: 'postcss.config.js' },
+				],
+				devDependencies: {
+					tailwindcss: '^4.3.0',
+					'@tailwindcss/postcss': '^4.3.0',
+				},
+			},
+			onEnable: ( api ) => api.setDefine( tailwindEntry( api ), tailwindConst( api ), true ),
+			onDisable: ( api ) => api.setDefine( tailwindEntry( api ), tailwindConst( api ), false ),
+			detect: ( api ) => true === api.readDefine( tailwindEntry( api ), tailwindConst( api ) ),
+		},
+	],
 
 	cleanup: { targets: [ '.github', 'languages' ] },
 
