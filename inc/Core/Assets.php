@@ -140,7 +140,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @action wp_enqueue_scripts
 	 */
 	public function enqueue_browser_sync(): void {
-		if ( 'local' !== wp_get_environment_type() || $this->is_browser_sync_disabled() ) {
+		if ( 'local' !== wp_get_environment_type() || ! $this->is_hmr_enabled() || $this->is_browser_sync_disabled() ) {
 			return;
 		}
 
@@ -182,6 +182,29 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		}
 
 		return $default;
+	}
+
+	/**
+	 * Whether HMR (BrowserSync live reload) is enabled via ENABLE_HMR in .env.local.
+	 *
+	 * Master switch for both sides: webpack only starts the BrowserSync server,
+	 * and PHP only enqueues its client, when this is on. Defaults ON when the key
+	 * is absent. Off values are `0`, `false`, `no`, and `off` (case-insensitive).
+	 * DISABLE_BS still works as a finer client-only override. Toggle it from
+	 * `npm run init` (manage mode) or by editing .env.local directly.
+	 *
+	 * THIS METHOD IS INTENDED FOR LOCAL DEVELOPMENT ENVIRONMENTS ONLY.
+	 *
+	 * @return bool True when HMR is enabled.
+	 */
+	private function is_hmr_enabled(): bool {
+		$value = $this->get_env_value( 'ENABLE_HMR' );
+
+		if ( null === $value ) {
+			return true;
+		}
+
+		return ! in_array( strtolower( $value ), [ '0', 'false', 'no', 'off' ], true );
 	}
 
 	/**

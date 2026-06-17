@@ -72,6 +72,20 @@ module.exports = {
 			onDisable: ( api ) => api.setDefine( tailwindEntry( api ), tailwindConst( api ), false ),
 			detect: ( api ) => true === api.readDefine( tailwindEntry( api ), tailwindConst( api ) ),
 		},
+		{
+			key: 'hmr',
+			label: 'HMR (BrowserSync live reload)',
+			description: 'Live reload in watch mode. Toggling flips ENABLE_HMR in .env.local, which webpack (BrowserSync server) and PHP (client enqueue) both honour. Default on; deps stay installed.',
+			// No files or deps: the code lives in webpack.config.js + Assets.php
+			// permanently and is gated on the flag. detect reads the live flag,
+			// defaulting on when .env.local (gitignored) has no ENABLE_HMR.
+			onEnable: ( api ) => api.setEnv( '.env.local', 'ENABLE_HMR', 'true' ),
+			onDisable: ( api ) => api.setEnv( '.env.local', 'ENABLE_HMR', 'false' ),
+			detect: ( api ) => {
+				const value = api.readEnv( '.env.local', 'ENABLE_HMR' );
+				return null === value || ! [ 'false', '0', 'no', 'off' ].includes( value.toLowerCase() );
+			},
+		},
 	],
 
 	cleanup: { targets: [ '.github', 'languages' ] },
