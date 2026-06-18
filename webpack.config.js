@@ -11,8 +11,9 @@ const rtlcss = require( 'rtlcss' );
 const { optimize: svgoOptimize } = require( 'svgo' );
 
 /**
- * Tailwind (opt-in). Wired only when the entry file exists — the same gate
- * functions.php uses to enqueue the compiled stylesheet.
+ * Tailwind (opt-in). The theme.json token plugin is wired only when the entry
+ * file exists; the build skips it otherwise. Runtime enqueue is gated separately
+ * on ELEMENTARY_THEME_ENABLE_TAILWIND (see functions.php / Assets.php).
  */
 const tailwindEntry = path.resolve( process.cwd(), 'src', 'css', 'frontend', 'tailwind.css' );
 let GenerateTailwindThemePlugin = null;
@@ -20,7 +21,8 @@ if ( fs.existsSync( tailwindEntry ) ) {
 	try {
 		( { GenerateTailwindThemePlugin } = require( '@rtcamp/wp-tooling/tailwind-config' ) );
 	} catch ( err ) {
-		// @rtcamp/wp-tooling not installed; Tailwind stays off.
+		// @rtcamp/wp-tooling not installed; skip the theme.json token plugin
+		// (Tailwind utilities still compile via PostCSS).
 	}
 }
 
