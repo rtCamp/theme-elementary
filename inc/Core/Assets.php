@@ -25,6 +25,12 @@ use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 class Assets extends AssetLoader implements Registrable, Shareable {
 
 	/**
+	 * Asset handle prefix, namespacing this theme's handles. Overrides the
+	 * framework default; read by AssetLoader::handle().
+	 */
+	public const HANDLE_PREFIX = 'elementary-theme-';
+
+	/**
 	 * Whether Tailwind CSS is enabled for this theme.
 	 *
 	 * Tailwind support is opt-in. It defaults to true when
@@ -81,12 +87,12 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @action wp_enqueue_scripts
 	 */
 	public function register_assets(): void {
-		$this->register_script( 'core-navigation', 'js/frontend/core-navigation' );
-		$this->register_style( 'core-navigation', 'css/frontend/core-navigation' );
-		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles' );
+		$this->register_script( $this->handle( 'core-navigation' ), 'js/frontend/core-navigation' );
+		$this->register_style( $this->handle( 'core-navigation' ), 'css/frontend/core-navigation' );
+		$this->register_style( $this->handle( 'styles' ), 'css/frontend/styles' );
 
 		if ( $this->tailwind_enabled ) {
-			$this->register_style( 'elementary-theme-tailwind', 'css/frontend/tailwind' );
+			$this->register_style( $this->handle( 'tailwind' ), 'css/frontend/tailwind' );
 		}
 	}
 
@@ -104,8 +110,8 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 */
 	public function enqueue_block_specific_assets( string $markup, array $block ): string {
 		if ( ! empty( $block['blockName'] ) && 'core/navigation' === $block['blockName'] ) {
-			wp_enqueue_script( 'core-navigation' );
-			wp_enqueue_style( 'core-navigation' );
+			wp_enqueue_script( $this->handle( 'core-navigation' ) );
+			wp_enqueue_style( $this->handle( 'core-navigation' ) );
 		}
 
 		return $markup;
@@ -119,10 +125,10 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @action wp_enqueue_scripts
 	 */
 	public function enqueue_assets(): void {
-		wp_enqueue_style( 'elementary-theme-styles' );
+		wp_enqueue_style( $this->handle( 'styles' ) );
 
 		if ( $this->tailwind_enabled ) {
-			wp_enqueue_style( 'elementary-theme-tailwind' );
+			wp_enqueue_style( $this->handle( 'tailwind' ) );
 		}
 	}
 
@@ -154,7 +160,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 			$bs_url = "{$scheme}://{$host}:{$port}/browser-sync/browser-sync-client.js";
 		}
 
-		wp_enqueue_script( 'elementary-browser-sync', $bs_url, [], ELEMENTARY_THEME_VERSION, true );
+		wp_enqueue_script( $this->handle( 'browser-sync' ), $bs_url, [], ELEMENTARY_THEME_VERSION, true );
 	}
 
 	/**
