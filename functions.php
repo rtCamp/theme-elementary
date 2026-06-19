@@ -4,37 +4,50 @@
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package Elementary-Theme
+ * @package rtCamp\Theme\Elementary
  */
 
-if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) :
-	define( 'ELEMENTARY_THEME_VERSION', wp_get_theme()->get( 'Version' ) );
-endif;
+declare( strict_types = 1 );
 
-if ( ! defined( 'ELEMENTARY_THEME_TEMP_DIR' ) ) :
-	define( 'ELEMENTARY_THEME_TEMP_DIR', untrailingslashit( get_template_directory() ) );
-endif;
+namespace rtCamp\Theme\Elementary;
 
-if ( ! defined( 'ELEMENTARY_THEME_BUILD_URI' ) ) :
-	define( 'ELEMENTARY_THEME_BUILD_URI', untrailingslashit( get_template_directory_uri() ) . '/assets/build' );
-endif;
-
-if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) :
-	define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
-endif;
-
-require_once ELEMENTARY_THEME_TEMP_DIR . '/vendor/autoload.php';
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 /**
- * Theme bootstrap instance.
- *
- * @since 1.0.0
- *
- * @return object Theme bootstrap instance.
+ * Define theme constants.
  */
-function elementary_theme_instance() {
-	return Elementary_Theme\Elementary_Theme::get_instance();
+function constants(): void {
+	if ( ! defined( 'ELEMENTARY_THEME_VERSION' ) ) {
+		define( 'ELEMENTARY_THEME_VERSION', wp_get_theme()->get( 'Version' ) );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_PATH' ) ) {
+		define( 'ELEMENTARY_THEME_PATH', untrailingslashit( get_template_directory() ) );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_BUILD_URI' ) ) {
+		define( 'ELEMENTARY_THEME_BUILD_URI', untrailingslashit( get_template_directory_uri() ) . '/assets/build' );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_BUILD_DIR' ) ) {
+		define( 'ELEMENTARY_THEME_BUILD_DIR', untrailingslashit( get_template_directory() ) . '/assets/build' );
+	}
+
+	if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) {
+		define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
+	}
 }
 
-// Instantiate theme.
-elementary_theme_instance();
+constants();
+
+// If the autoloader fails, we cannot proceed.
+require_once ELEMENTARY_THEME_PATH . '/inc/Autoloader.php';
+if ( ! class_exists( Autoloader::class ) || ! Autoloader::autoload() ) {
+	return;
+}
+
+// Instantiate the theme.
+if ( class_exists( Main::class ) ) {
+	Main::get_instance();
+}

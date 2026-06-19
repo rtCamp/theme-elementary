@@ -4,39 +4,55 @@
 
 A starter theme that facilitates a quick head start for developing new [block-based themes](https://developer.wordpress.org/block-editor/how-to-guides/themes/block-theme-overview/) along with a bunch of developer-friendly features.
 
-- [Understand the Folder Structure](https://github.com/rtCamp/theme-elementary#understand-the-folder-structure-open_file_folder)
-- [Get Started](https://github.com/rtCamp/theme-elementary#get-started-rocket)
-- [Development](https://github.com/rtCamp/theme-elementary#development-computer)
+Reusable scaffolding (singleton, autoloader, asset loader, template loader, and abstract base classes) ships separately as the `rtcamp/wp-framework` Composer package and is loaded from `vendor/`.
+
+> **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the architecture overview, the module pattern, and how to add new classes.
+
+- [Understand the Folder Structure](#understand-the-folder-structure-open_file_folder)
+- [Get Started](#get-started-rocket)
+- [Development](#development-computer)
 
 ## Understand the Folder Structure :open_file_folder:
 ```
- .
-├── assets (Holds theme's assets)
-│   └── src
-│       └── js
-│       └── css
+.
+├── src (Frontend source)
+│   ├── css
+│   │   ├── frontend/
+│   │   ├── admin/
+│   │   ├── editor/
+│   │   ├── shared/
+│   │   ├── globals/
+│   │   └── mixins/
+│   ├── js
+│   │   ├── frontend/
+│   │   ├── admin/
+│   │   ├── editor/
+│   │   └── shared/
+│   ├── fonts/
+│   └── images/svg/
+├── assets
+│   └── build (Compiled output)
 ├── bin (Holds scripts)
 ├── functions.php (PHP entry point)
-├── inc
-│   ├── classes (Holds all classes)
-│   │   └── class-elementary-theme.php (Instantiates all of the classes)
-│   ├── helpers (PHP Helpers)
-│   │   └── custom-functions.php
-│   └── traits (PHP Traits)
-│       └── trait-singleton.php
-├── index.php
+├── inc (All project-specific PHP — PSR-4 root)
+│   ├── Autoloader.php (Wraps vendor/autoload.php with graceful failure)
+│   ├── Main.php (Theme bootstrap — loads services)
+│   ├── Helpers/ (Stateless static utility classes)
+│   ├── Core/ (Theme-wide infrastructure — assets, menus, theme setup)
+│   └── Modules/ (Feature areas)
+│       ├── BlockExtensions/ (Block render filters and integrations)
+│       └── Settings/ (Admin settings pages — extend AbstractSettingsPage)
 ├── parts (Block Template Parts)
 ├── patterns (Block Patterns)
-│   ├── *.html
 ├── style.css
 ├── templates (Block Templates)
-│   ├── *.html
 ├── tests (Holds JS & PHP tests)
-│   ├── bootstrap.php
-│   ├── js
-│   └── php
+│   ├── js/
+│   └── php/
+├── vendor
+│   └── rtcamp/wp-framework/ (Framework — do not modify; Composer-managed)
+├── DEVELOPMENT.md
 └── theme.json
-
 ```
 
 ## Get Started :rocket:

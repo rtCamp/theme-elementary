@@ -1,75 +1,88 @@
 {
 	"name": "elementary-theme",
-	"version": "1.0.0",
 	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
-	"private": true,
+	"version": "1.0.0",
 	"author": "rtCamp",
-	"license": "GPL-2.0-or-later",
-	"keywords": [
-		"rtcamp",
-		"wp-theme",
-		"block-theme"
-	],
+	"bugs": {
+		"url": "https://github.com/rtCamp/theme-elementary/issues"
+	},
+	"dependencies": {
+		"@wordpress/interactivity": "6.47.0"
+	},
+	"devDependencies": {
+		"@babel/core": "7.29.7",
+		"@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
+		"@wordpress/babel-preset-default": "8.47.0",
+		"@wordpress/browserslist-config": "6.47.0",
+		"@wordpress/env": "11.7.0",
+		"@wordpress/eslint-plugin": "25.3.0",
+		"@wordpress/jest-preset-default": "12.47.0",
+		"@wordpress/scripts": "32.3.0",
+		"browser-sync": "3.0.4",
+		"browser-sync-webpack-plugin": "2.4.0",
+		"browserslist": "4.28.2",
+		"copy-webpack-plugin": "14.0.0",
+		"css-minimizer-webpack-plugin": "8.0.0",
+		"dotenv": "17.4.2",
+		"eslint": "10.4.0",
+		"eslint-import-resolver-typescript": "4.4.4",
+		"eslint-plugin-jest": "29.15.2",
+		"eslint-plugin-react-hooks": "7.1.1",
+		"globals": "17.6.0",
+		"jest-silent-reporter": "0.6.0",
+		"lint-staged": "17.0.5",
+		"npm-run-all": "4.1.5",
+		"rtlcss": "4.3.0",
+		"svgo": "4.0.1",
+		"webpack": "5.107.2",
+		"webpack-remove-empty-scripts": "1.1.1"
+	},
 	"homepage": "https://github.com/rtCamp/theme-elementary#readme",
+	"keywords": [
+		"block-theme",
+		"rtcamp",
+		"wp-theme"
+	],
+	"license": "GPL-2.0-or-later",
+	"overrides": {
+		"webpack-dev-server": "5.2.1",
+		"serialize-javascript": "7.0.3",
+		"minimatch": "3.1.3"
+	},
+	"private": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/rtCamp/theme-elementary.git"
 	},
-	"bugs": {
-		"url": "https://github.com/rtCamp/theme-elementary/issues"
-	},
-	"overrides": {
-		"webpack-dev-server": "^5.2.1",
-		"serialize-javascript": "^7.0.3",
-		"minimatch": "3.1.3"
-	},
-	"dependencies": {
-		"@wordpress/interactivity": "6.40.0"
-	},
-	"devDependencies": {
-		"@babel/core": "7.29.0",
-		"@wordpress/babel-preset-default": "8.40.0",
-		"@wordpress/browserslist-config": "6.40.0",
-		"@wordpress/env": "^10.39.0",
-		"@wordpress/eslint-plugin": "24.2.0",
-		"@wordpress/jest-preset-default": "12.40.0",
-		"@wordpress/scripts": "31.5.0",
-		"browserslist": "4.28.1",
-		"cross-env": "10.1.0",
-		"css-minimizer-webpack-plugin": "7.0.4",
-		"eslint": "^9.39.0",
-		"eslint-plugin-eslint-comments": "3.2.0",
-		"eslint-plugin-import": "2.32.0",
-		"eslint-plugin-jest": "29.15.0",
-		"eslint-plugin-react-hooks": "7.0.1",
-		"jest-silent-reporter": "0.6.0",
-		"lint-staged": "16.3.0",
-		"npm-run-all": "4.1.5",
-		"webpack-remove-empty-scripts": "1.1.1"
-	},
 	"scripts": {
-		"build:dev": "cross-env NODE_ENV=development npm-run-all 'build:!(dev|prod)'",
-		"build:prod": "cross-env NODE_ENV=production npm-run-all 'build:!(dev|prod)'",
-		"build:js": "wp-scripts build --experimental-modules",
-		"init": "./bin/init.js",
+		"build:dev": "npm-run-all build:assets:dev build:blocks:dev",
+		"build:prod": "npm-run-all build:assets build:blocks",
+		"build:blocks": "wp-scripts build --experimental-modules --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
+		"build:assets": "wp-scripts build --experimental-modules",
+		"build:blocks:dev": "wp-scripts start --no-watch --experimental-modules --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
+		"build:assets:dev": "wp-scripts start --no-watch --experimental-modules",
+		"init": "./bin/init.js && npm run sync-ai",
+		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:*",
-		"lint:css": "wp-scripts lint-style ./assets/src",
-		"lint:css:fix": "npm run lint:css -- --fix ./assets/src",
-		"lint:js": "wp-scripts lint-js ./assets/src",
-		"lint:js:fix": "npm run lint:js -- --fix ./assets/src",
+		"lint:css": "wp-scripts lint-style ./src",
+		"lint:css:fix": "npm run lint:css -- --fix",
+		"lint:js": "wp-scripts lint-js ./src",
+		"lint:js:fix": "npm run lint:js -- --fix",
 		"lint:js:report": "npm run lint:js -- --output-file lint-js-report.json --format json .",
+		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:php": "php vendor/bin/phpcs",
 		"lint:php:fix": "node ./bin/phpcbf.js",
-		"lint:package-json": "wp-scripts lint-pkg-json --ignorePath .gitignore",
 		"lint:staged": "lint-staged",
+		"pot": "composer run pot",
 		"prepare": "npm run init",
-		"start": "wp-scripts start --experimental-modules",
+		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/${PWD##*/} composer install --no-interaction --no-scripts",
+		"start": "npm-run-all --parallel start:assets start:blocks",
+		"start:assets": "wp-scripts start  --experimental-modules --config webpack.config.js",
+		"start:blocks": "wp-scripts start --hot --experimental-modules --config ./webpack.blocks.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
 		"test": "npm-run-all --parallel test:*",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
-		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer install --no-interaction --no-scripts",
-		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename $(pwd)) composer exec 'phpunit --do-not-cache-result --verbose'",
-		"wp-env": "wp-env",
-		"pot": "composer run pot"
+		"test:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/${PWD##*/} composer exec 'phpunit --do-not-cache-result --verbose'",
+		"wp-env": "wp-env"
 	}
 }
