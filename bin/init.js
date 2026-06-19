@@ -3,16 +3,15 @@
 /* eslint no-console: 0 */
 
 /**
- * Theme setup; thin wrapper that delegates to the shared scaffold engine from
- * rtcamp/wp-framework, passing this theme's bin/scaffold.config.js.
+ * Theme setup; thin wrapper that delegates to the shared init engine in
+ * @rtcamp/wp-tooling, passing this theme's bin/scaffold.config.js.
  *
- * Requires `composer install` and `npm install`. Invoke with `npm run init`.
+ * Requires `npm install`. Invoke with `npm run init`.
  */
 
 /**
  * External dependencies
  */
-const fs = require( 'fs' );
 const path = require( 'path' );
 
 /**
@@ -20,26 +19,17 @@ const path = require( 'path' );
  */
 const config = require( './scaffold.config' );
 
-const root = path.resolve( __dirname, '..' );
-const enginePath = path.join( root, 'vendor', 'rtcamp', 'wp-framework', 'bin', 'scaffold.js' );
-
-if ( ! fs.existsSync( enginePath ) ) {
-	console.error( '\nScaffold engine not found at vendor/rtcamp/wp-framework.' );
-	console.error( 'Run `composer install` first, then `npm run init`.\n' );
-	process.exit( 1 );
-}
-
 let run;
 try {
-	( { run } = require( enginePath ) );
+	( { run } = require( '@rtcamp/wp-tooling/init' ) );
 } catch ( err ) {
-	console.error( '\nCould not load the scaffold engine.' );
-	console.error( 'Ensure dependencies are installed (`composer install` && `npm install`).\n' );
+	console.error( '\nCould not load the init engine from @rtcamp/wp-tooling.' );
+	console.error( 'Ensure dependencies are installed (`npm install`).\n' );
 	console.error( err.message );
 	process.exit( 1 );
 }
 
-run( config, { root } )
+run( config, { root: path.resolve( __dirname, '..' ) } )
 	.then( () => process.exit( process.exitCode || 0 ) )
 	.catch( ( err ) => {
 		console.error( err );
