@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "2e8fa2d5efd3940020b51b0a9c81f4488d3563eb"
+                "reference": "fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/2e8fa2d5efd3940020b51b0a9c81f4488d3563eb",
-                "reference": "2e8fa2d5efd3940020b51b0a9c81f4488d3563eb",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5",
+                "reference": "fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5",
                 "shasum": ""
             },
             "require": {
@@ -28,10 +28,11 @@
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
                 "phpcompatibility/phpcompatibility-wp": "^2.1",
                 "phpstan/phpstan": "^2.0",
-                "phpunit/phpunit": "^11.0",
+                "phpunit/phpunit": "^9.6",
                 "squizlabs/php_codesniffer": "^3.10",
                 "szepeviktor/phpstan-wordpress": "^2.0",
                 "wp-coding-standards/wpcs": "^3.1",
+                "wp-phpunit/wp-phpunit": "^6.9",
                 "yoast/phpunit-polyfills": "^4.0"
             },
             "default-branch": true,
@@ -74,7 +75,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-06-11T22:57:26+00:00"
+            "time": "2026-06-19T12:37:08+00:00"
         }
     ],
     "packages-dev": [
