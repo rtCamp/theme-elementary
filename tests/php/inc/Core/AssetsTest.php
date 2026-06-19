@@ -90,7 +90,7 @@ class AssetsTest extends TestCase {
 	}
 
 	/**
-	 * register_assets() registers styles/scripts under the prefixed handles.
+	 * Registers styles and scripts under the prefixed handles.
 	 */
 	public function test_register_assets_uses_prefixed_handles(): void {
 		// AssetLoader::register_script()/register_style() only register a handle
