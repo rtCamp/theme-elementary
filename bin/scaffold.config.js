@@ -89,6 +89,47 @@ module.exports = {
 		},
 	],
 
+	// First-run "which example sets to remove?" prompt. The three module groups
+	// share inc/Main.php, so each scopes its own region with a keyed marker
+	// (wp:example:<key>); components and patterns are delete-only (auto-discovered,
+	// nothing to strip). Markers are stripped either way; code/files drop on remove.
+	examples: {
+		marker: 'wp:example',
+		groups: [
+			{
+				key: 'block-extension',
+				label: 'Media-text block extension',
+				marker: 'wp:example:block-extension',
+				strip: [ 'inc/Main.php' ],
+				remove: [ 'inc/Modules/BlockExtensions', 'patterns/media-text-interactive.php', 'src/js/frontend/modules/media-text.js' ],
+			},
+			{
+				key: 'settings',
+				label: 'Theme options settings page',
+				marker: 'wp:example:settings',
+				strip: [ 'inc/Main.php' ],
+				remove: [ 'inc/Modules/Settings' ],
+			},
+			{
+				key: 'shortcode',
+				label: 'Author bio shortcode',
+				marker: 'wp:example:shortcode',
+				strip: [ 'inc/Main.php' ],
+				remove: [ 'inc/Modules/Shortcodes', 'tests/php/inc/Modules/Shortcodes' ],
+			},
+			{
+				key: 'components',
+				label: 'Example components (button, card)',
+				remove: [ 'src/components/button', 'src/components/card' ],
+			},
+			{
+				key: 'patterns',
+				label: 'Page-creation pattern',
+				remove: [ 'patterns/page-creation-pattern.php' ],
+			},
+		],
+	},
+
 	cleanup: { targets: [ '.github', 'languages' ] },
 
 	docsUrl: 'https://github.com/rtCamp/theme-elementary/blob/main/README.md',
