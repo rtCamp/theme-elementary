@@ -1,6 +1,6 @@
 <?php
 /**
- * Test FeatureRegistry service.
+ * Test Features service.
  *
  * @package rtCamp\Theme\Elementary
  */
@@ -15,11 +15,11 @@ use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 use rtCamp\WPFramework\Utils\FeatureSelector;
 
 /**
- * Class FeatureRegistryTest
+ * Class FeaturesTest
  *
  * @since 1.0.0
  */
-class FeatureRegistryTest extends TestCase {
+class FeaturesTest extends TestCase {
 
 	/**
 	 * The class exists, extends the framework FeatureSelector, and is shareable.
