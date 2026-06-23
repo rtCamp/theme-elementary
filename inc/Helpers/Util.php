@@ -18,7 +18,7 @@ namespace rtCamp\Theme\Elementary\Helpers;
 
 use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Core\Encryption;
-use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
 
@@ -163,21 +163,19 @@ final class Util {
 	/**
 	 * Whether a theme feature flag is enabled.
 	 *
-	 * For use at hook time. Do not call during Main's load (constructors,
-	 * can_register()) — the Singleton is not assigned yet; construct a
-	 * Features instance directly there instead.
+	 * Delegates to the shared FeatureRegistry. Safe to call at hook time;
+	 * do not call from constructors during Main::load() since that runs before
+	 * hook registration — use can_register() via AbstractFeature instead.
 	 *
-	 * @param string $flag Feature-flag slug, e.g. Features::AUTHOR_BIO.
+	 * @param string $flag Feature-flag slug, e.g. 'author-bio'.
 	 *
 	 * @return bool True if enabled, false otherwise.
 	 */
 	public static function is_feature_enabled( string $flag ): bool {
 		/**
-		 * Shared feature-flag registry.
-		 *
-		 * @var Features $features
+		 * @var FeatureRegistry $features
 		 */
-		$features = Main::get_instance()->get_shared( Features::class );
+		$features = Main::get_instance()->get_shared( FeatureRegistry::class );
 
 		return $features->is_enabled( $flag );
 	}

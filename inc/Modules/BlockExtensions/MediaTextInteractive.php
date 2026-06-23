@@ -10,8 +10,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use rtCamp\Theme\Elementary\Core\Features;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\Theme\Elementary\Core\ThemeFeature;
 
 /**
  * Class MediaTextInteractive
@@ -20,21 +19,24 @@ use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
  * Features), enabled by default; toggling the flag takes effect on the next
  * request, since registration is decided once at load.
  */
-class MediaTextInteractive implements ConditionallyRegistrable {
+class MediaTextInteractive extends ThemeFeature {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Runs during Main's load — Util::is_feature_enabled() / get_shared()
-	 * would re-enter the Singleton here, so construct a Features instance
-	 * directly (see the Features docblock for why that is equivalent).
 	 */
-	public function can_register(): bool {
-		return ( new Features() )->is_enabled( Features::MEDIA_TEXT_INTERACTIVE );
+	protected function get_slug(): string {
+		return 'media-text-interactive';
 	}
 
 	/**
-	 * Register hooks.
+	 * {@inheritDoc}
+	 */
+	protected function get_description(): string {
+		return __( 'Adds interactive behaviour to the core Media & Text block — play/pause controls, scroll-triggered video, and column layout enhancements.', 'elementary-theme' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
 		add_filter( 'render_block_core/button', [ $this, 'render_block_core_button' ], 10, 2 );
@@ -76,10 +78,6 @@ class MediaTextInteractive implements ConditionallyRegistrable {
 			return $block_content;
 		}
 
-		/**
-		 * Enqueue the module script, The prefix `@` is used to indicate that the script is a module.
-		 * This handle with the prefix `@` will be used in other scripts to import this module.
-		 */
 		wp_enqueue_script_module(
 			'@elementary/media-text',
 			sprintf( '%s/js/modules/media-text.js', ELEMENTARY_THEME_BUILD_URI ),
@@ -109,6 +107,7 @@ class MediaTextInteractive implements ConditionallyRegistrable {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}
+
 		$p = new WP_HTML_Tag_Processor( $block_content );
 
 		$p->next_tag();

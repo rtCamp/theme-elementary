@@ -8,7 +8,6 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\Theme\Elementary\Core\Features;
 use rtCamp\Theme\Elementary\Main;
 use rtCamp\Theme\Elementary\Modules\Settings\FeaturesSettingsPage;
 use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
@@ -39,31 +38,19 @@ class FeaturesSettingsPageTest extends TestCase {
 	}
 
 	/**
-	 * The page is driven by the theme's Features selector, so its slug,
-	 * option group, and option keys all carry the `elementary` context.
+	 * The page is driven by the theme's FeatureRegistry (context 'elementary'),
+	 * so it registers the single shared option `elementary_features`.
 	 */
 	public function test_page_is_driven_by_theme_features(): void {
-		$page     = new FeaturesSettingsPage();
-		$selector = ( new ReflectionProperty( FeatureSelectorSettingsPage::class, 'selector' ) )->getValue( $page );
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/template.php';
 
-		$this->assertInstanceOf( Features::class, $selector );
-	}
-
-	/**
-	 * One boolean setting is registered per theme flag.
-	 */
-	public function test_registers_one_setting_per_flag(): void {
 		$page = new FeaturesSettingsPage();
 		$page->register_settings();
 
 		$registered = get_registered_settings();
-		$features   = new Features();
 
-		foreach ( $features->get_registered() as $slug ) {
-			$option_key = $features->option_key( $slug );
-
-			$this->assertArrayHasKey( $option_key, $registered );
-			$this->assertSame( 'boolean', $registered[ $option_key ]['type'] );
-		}
+		$this->assertArrayHasKey( 'elementary_features', $registered );
+		$this->assertSame( 'array', $registered['elementary_features']['type'] );
 	}
 }

@@ -9,17 +9,14 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\Shortcodes;
 
-use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\Theme\Elementary\Core\ThemeFeature;
 use rtCamp\Theme\Elementary\Helpers\Util;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
  * Class AuthorBio
  *
- * Example consumer of the theme's TemplateLoader. Registers the
- * `[elementary_author_bio]` shortcode, which renders the `author-bio`
- * template part through Util::get_template() — a child theme can override the
- * markup by shipping its own template-parts/author-bio.php.
+ * Registers the [elementary_author_bio] shortcode, which renders the
+ * `author-bio` template part through Util::get_template().
  *
  * Gated behind the `author-bio` feature flag (Settings → Features), enabled
  * by default; toggling the flag takes effect on the next request, since
@@ -27,21 +24,24 @@ use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
  *
  * @since 1.0.0
  */
-final class AuthorBio implements ConditionallyRegistrable {
+final class AuthorBio extends ThemeFeature {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * Runs during Main's load — Util::is_feature_enabled() / get_shared()
-	 * would re-enter the Singleton here, so construct a Features instance
-	 * directly (see the Features docblock for why that is equivalent).
 	 */
-	public function can_register(): bool {
-		return ( new Features() )->is_enabled( Features::AUTHOR_BIO );
+	protected function get_slug(): string {
+		return 'author-bio';
 	}
 
 	/**
-	 * Register hooks.
+	 * {@inheritDoc}
+	 */
+	protected function get_description(): string {
+		return __( 'Enables the [elementary_author_bio] shortcode, which renders an author biography block on posts and pages.', 'elementary-theme' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 *
 	 * @since 1.0.0
 	 */

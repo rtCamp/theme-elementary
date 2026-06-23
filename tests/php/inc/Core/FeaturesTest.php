@@ -1,6 +1,6 @@
 <?php
 /**
- * Test Features service.
+ * Test FeatureRegistry service.
  *
  * @package rtCamp\Theme\Elementary
  */
@@ -8,103 +8,103 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 use rtCamp\Theme\Elementary\Helpers\Util;
 use rtCamp\Theme\Elementary\Main;
 use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 use rtCamp\WPFramework\Utils\FeatureSelector;
 
 /**
- * Class FeaturesTest
+ * Class FeatureRegistryTest
  *
  * @since 1.0.0
  */
-class FeaturesTest extends TestCase {
+class FeatureRegistryTest extends TestCase {
 
 	/**
-	 * The class exists and extends the framework FeatureSelector.
+	 * The class exists, extends the framework FeatureSelector, and is shareable.
 	 */
 	public function test_extends_framework_feature_selector(): void {
-		$features = new Features();
+		$registry = new FeatureRegistry();
 
-		$this->assertInstanceOf( FeatureSelector::class, $features );
-		$this->assertInstanceOf( Shareable::class, $features );
+		$this->assertInstanceOf( FeatureSelector::class, $registry );
+		$this->assertInstanceOf( Shareable::class, $registry );
 	}
 
 	/**
-	 * It is shareable, registered in Main, and resolvable from the container.
+	 * It is registered in Main before the feature classes that depend on it.
 	 */
 	public function test_registered_and_shared_in_main(): void {
-		$this->assertContains( Features::class, Main::CLASSES );
-		$this->assertInstanceOf( Features::class, Main::get_instance()->get_shared( Features::class ) );
+		$this->assertContains( FeatureRegistry::class, Main::CLASSES );
+		$this->assertInstanceOf( FeatureRegistry::class, Main::get_instance()->get_shared( FeatureRegistry::class ) );
 	}
 
 	/**
 	 * The instance is namespaced with the theme's context slug.
 	 */
 	public function test_uses_elementary_context(): void {
-		$this->assertSame( 'elementary', ( new Features() )->get_context() );
+		$this->assertSame( 'elementary', ( new FeatureRegistry() )->get_context() );
 	}
 
 	/**
-	 * Every theme flag is registered at construction.
+	 * Every theme feature self-registers at construction, so the shared instance
+	 * already has the expected flags by the time tests run (Main is booted in
+	 * the test bootstrap).
 	 */
 	public function test_registers_theme_flags(): void {
-		$registered = ( new Features() )->get_registered();
+		$registered = Main::get_instance()->get_shared( FeatureRegistry::class )->get_registered();
 
-		$this->assertContains( Features::AUTHOR_BIO, $registered );
-		$this->assertContains( Features::MEDIA_TEXT_INTERACTIVE, $registered );
+		$this->assertContains( 'author-bio', $registered );
+		$this->assertContains( 'media-text-interactive', $registered );
 	}
 
 	/**
-	 * Option keys and override constants derive from the context.
+	 * Shared option key and override constants derive from the context.
 	 */
 	public function test_key_derivation(): void {
-		$features = new Features();
+		$registry = new FeatureRegistry();
 
-		$this->assertSame( 'elementary_feature_author_bio', $features->option_key( Features::AUTHOR_BIO ) );
-		$this->assertSame( 'ELEMENTARY_FEATURE_AUTHOR_BIO', $features->constant_name( Features::AUTHOR_BIO ) );
-		$this->assertSame( 'elementary_feature_media_text_interactive', $features->option_key( Features::MEDIA_TEXT_INTERACTIVE ) );
+		$this->assertSame( 'elementary_features', $registry->shared_option_key() );
+		$this->assertSame( 'author-bio', $registry->flag_key( 'author-bio' ) );
+		$this->assertSame( 'ELEMENTARY_FEATURE_AUTHOR_BIO', $registry->constant_name( 'author-bio' ) );
+		$this->assertSame( 'ELEMENTARY_FEATURE_MEDIA_TEXT_INTERACTIVE', $registry->constant_name( 'media-text-interactive' ) );
 	}
 
 	/**
 	 * Flags default to enabled and follow the persisted option.
 	 */
 	public function test_is_enabled_follows_option(): void {
-		$features = new Features();
+		$registry = Main::get_instance()->get_shared( FeatureRegistry::class );
 
-		$this->assertTrue( $features->is_enabled( Features::AUTHOR_BIO ) );
+		$this->assertTrue( $registry->is_enabled( 'author-bio' ) );
 
-		update_option( $features->option_key( Features::AUTHOR_BIO ), true );
-		$this->assertTrue( $features->is_enabled( Features::AUTHOR_BIO ) );
+		$registry->disable( 'author-bio' );
+		$this->assertFalse( $registry->is_enabled( 'author-bio' ) );
 
-		$features->disable( Features::AUTHOR_BIO );
-		$this->assertFalse( $features->is_enabled( Features::AUTHOR_BIO ) );
-
-		$features->enable( Features::AUTHOR_BIO );
-		$this->assertTrue( $features->is_enabled( Features::AUTHOR_BIO ) );
+		$registry->enable( 'author-bio' );
+		$this->assertTrue( $registry->is_enabled( 'author-bio' ) );
 	}
 
 	/**
-	 * Two instances read the same state — the invariant that makes the
-	 * `new Features()` instances in load-time consumers equivalent to the
-	 * shared one.
+	 * All flags share a single option row; there are no per-flag option rows.
 	 */
-	public function test_instances_are_interchangeable(): void {
-		$writer = new Features();
-		$reader = new Features();
+	public function test_flags_share_one_option_row(): void {
+		$registry = Main::get_instance()->get_shared( FeatureRegistry::class );
 
-		$writer->enable( Features::MEDIA_TEXT_INTERACTIVE );
+		$registry->enable( 'author-bio' );
+		$registry->disable( 'media-text-interactive' );
 
-		$this->assertTrue( $reader->is_enabled( Features::MEDIA_TEXT_INTERACTIVE ) );
-		$this->assertSame( $writer->get_registered(), $reader->get_registered() );
+		$stored = get_option( 'elementary_features' );
+		$this->assertTrue( $stored['author-bio'] );
+		$this->assertFalse( $stored['media-text-interactive'] );
+		$this->assertFalse( get_option( 'elementary_feature_author_bio', false ) );
 	}
 
 	/**
-	 * Display metadata is resolved lazily with non-empty labels for every flag.
+	 * Display metadata is resolved on construction with non-empty labels.
 	 */
 	public function test_get_features_provides_labels(): void {
-		foreach ( ( new Features() )->get_features() as $slug => $meta ) {
+		foreach ( Main::get_instance()->get_shared( FeatureRegistry::class )->get_features() as $slug => $meta ) {
 			$this->assertSame( $slug, $meta['slug'] );
 			$this->assertNotSame( '', $meta['name'] );
 			$this->assertNotSame( $slug, $meta['name'], "Flag {$slug} should have a human-readable name." );
@@ -113,13 +113,13 @@ class FeaturesTest extends TestCase {
 	}
 
 	/**
-	 * Util::is_feature_enabled() proxies the shared instance.
+	 * Util::is_feature_enabled() proxies the shared registry instance.
 	 */
 	public function test_util_helper_reads_flags(): void {
-		$this->assertTrue( Util::is_feature_enabled( Features::AUTHOR_BIO ) );
+		$this->assertTrue( Util::is_feature_enabled( 'author-bio' ) );
 
-		( new Features() )->disable( Features::AUTHOR_BIO );
+		Main::get_instance()->get_shared( FeatureRegistry::class )->disable( 'author-bio' );
 
-		$this->assertFalse( Util::is_feature_enabled( Features::AUTHOR_BIO ) );
+		$this->assertFalse( Util::is_feature_enabled( 'author-bio' ) );
 	}
 }

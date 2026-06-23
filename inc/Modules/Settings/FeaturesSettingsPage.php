@@ -9,7 +9,8 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\Settings;
 
-use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
+use rtCamp\Theme\Elementary\Main;
 use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
 
 /**
@@ -25,14 +26,10 @@ use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
 final class FeaturesSettingsPage extends FeatureSelectorSettingsPage {
 
 	/**
-	 * Constructor.
-	 *
-	 * The Loader instantiates without arguments, so the selector cannot be
-	 * injected; see the Features docblock for why a fresh instance is
-	 * equivalent to the shared one.
+	 * {@inheritDoc}
 	 */
-	public function __construct() {
-		parent::__construct( new Features() );
+	protected function get_selector(): FeatureRegistry {
+		return Main::get_instance()->get_shared( FeatureRegistry::class );
 	}
 
 	/**

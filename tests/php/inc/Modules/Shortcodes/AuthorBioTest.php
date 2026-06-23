@@ -8,7 +8,8 @@
 declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\Theme\Elementary\Core\Features;
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
+use rtCamp\Theme\Elementary\Main;
 use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
 use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
@@ -53,7 +54,7 @@ class AuthorBioTest extends TestCase {
 		$this->assertInstanceOf( ConditionallyRegistrable::class, $this->instance );
 		$this->assertTrue( $this->instance->can_register() );
 
-		( new Features() )->disable( Features::AUTHOR_BIO );
+		Main::get_instance()->get_shared( FeatureRegistry::class )->disable( 'author-bio' );
 
 		$this->assertFalse( $this->instance->can_register() );
 	}
