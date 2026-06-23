@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db06e940e3f311fbccbb71fc2828d672",
+    "content-hash": "2cb40a71ad05e3074aa7f27c09214369",
     "packages": [
         {
             "name": "rtcamp/wp-framework",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5"
+                "reference": "e30352cf578fcba49f889f801311b881cc368908"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5",
-                "reference": "fa9a2b8feecc73cd484740c7d5acc8ff3dfb9bf5",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/e30352cf578fcba49f889f801311b881cc368908",
+                "reference": "e30352cf578fcba49f889f801311b881cc368908",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +75,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-06-19T12:37:08+00:00"
+            "time": "2026-06-23T22:36:13+00:00"
         }
     ],
     "packages-dev": [
@@ -3206,12 +3206,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-cli/wp-cli.git",
-                "reference": "49ad9e440b86ed46da49cc2062970ade9c4d798f"
+                "reference": "fc140030b5c1a47020812b74e2b8d767d7242725"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/49ad9e440b86ed46da49cc2062970ade9c4d798f",
-                "reference": "49ad9e440b86ed46da49cc2062970ade9c4d798f",
+                "url": "https://api.github.com/repos/wp-cli/wp-cli/zipball/fc140030b5c1a47020812b74e2b8d767d7242725",
+                "reference": "fc140030b5c1a47020812b74e2b8d767d7242725",
                 "shasum": ""
             },
             "require": {
@@ -3282,7 +3282,7 @@
                 "issues": "https://github.com/wp-cli/wp-cli/issues",
                 "source": "https://github.com/wp-cli/wp-cli"
             },
-            "time": "2026-06-03T21:33:03+00:00"
+            "time": "2026-06-18T15:36:01+00:00"
         },
         {
             "name": "wp-coding-standards/wpcs",
@@ -3457,6 +3457,9 @@
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.2"
+    },
     "plugin-api-version": "2.6.0"
 }

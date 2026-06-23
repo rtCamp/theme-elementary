@@ -18,6 +18,7 @@ namespace rtCamp\Theme\Elementary\Helpers;
 
 use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Core\Encryption;
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
 
@@ -157,5 +158,27 @@ final class Util {
 		$encryptor = Main::get_instance()->get_shared( Encryption::class );
 
 		return $encryptor;
+	}
+
+	/**
+	 * Whether a theme feature flag is enabled.
+	 *
+	 * Delegates to the shared FeatureRegistry. Safe to call at hook time;
+	 * do not call from constructors during Main::load() since that runs before
+	 * hook registration — use can_register() via AbstractFeature instead.
+	 *
+	 * @param string $flag Feature-flag slug, e.g. 'author-bio'.
+	 *
+	 * @return bool True if enabled, false otherwise.
+	 */
+	public static function is_feature_enabled( string $flag ): bool {
+		/**
+		 * Shared feature registry.
+		 * 
+		 * @var FeatureRegistry $features
+		 */
+		$features = Main::get_instance()->get_shared( FeatureRegistry::class );
+
+		return $features->is_enabled( $flag );
 	}
 }

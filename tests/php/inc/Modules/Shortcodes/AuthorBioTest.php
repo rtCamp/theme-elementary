@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
+use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
  * Class AuthorBioTest
@@ -21,19 +22,10 @@ use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
 class AuthorBioTest extends TestCase {
 
 	/**
-	 * AuthorBio instance.
-	 *
-	 * @var AuthorBio
+	 * AuthorBio implements ConditionallyRegistrable.
 	 */
-	private AuthorBio $instance;
-
-	/**
-	 * Setup test.
-	 */
-	public function set_up(): void {
-		parent::set_up();
-		$this->instance = new AuthorBio();
-		$this->instance->register_hooks();
+	public function test_implements_conditionally_registrable(): void {
+		$this->assertTrue( is_a( AuthorBio::class, ConditionallyRegistrable::class, true ) );
 	}
 
 	/**
