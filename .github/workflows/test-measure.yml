@@ -1,5 +1,8 @@
 name: Test and Measure
 
+# Thin caller that delegates CI to the shared rtCamp orchestrator
+# (rtCamp/wp-shared-workflows). It runs detect-changes first, then the theme
+# preset's lint / test / build jobs, each gated on the changed-file buckets.
 on:
   push:
     branches:
@@ -13,229 +16,19 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  pre-run:
-    name: 'Pre run'
-    runs-on: ubuntu-latest
-    outputs:
-      changed-css-count: ${{ steps.determine-file-counts.outputs.css-count }}
-      changed-js-count: ${{ steps.determine-file-counts.outputs.js-count }}
-      changed-php-count: ${{ steps.determine-file-counts.outputs.php-count }}
-      changed-gha-workflow-count: ${{ steps.determine-file-counts.outputs.gha-workflow-count }}
-
-    steps:
-      - name: Checkout including last 2 commits
-        # Fetch last 2 commits if it's not a PR, so that we can determine the list of modified files.
-        if: ${{ github.base_ref == null }}
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
-
-      - name: Checkout
-        # Do usual checkout if it's a PR.
-        if: ${{ github.base_ref != null }}
-        uses: actions/checkout@v6
-
-      - name: Fetch base branch
-        # Only fetch base ref if it's a PR.
-        if: ${{ github.base_ref != null }}
-        run: git fetch --depth=1 --no-tags origin ${{ github.base_ref }}
-
-      - name: Determine modified files for PR
-        if: ${{ github.base_ref != null }}
-        run: echo "MODIFIED_FILES=$(git diff --name-only FETCH_HEAD HEAD | base64 -w 0)" >> $GITHUB_ENV
-
-      - name: Determine modified files for commit
-        if: ${{ github.base_ref == null }}
-        run: echo "MODIFIED_FILES=$(git diff --name-only HEAD~1 HEAD | base64 -w 0)" >> $GITHUB_ENV
-
-      - id: determine-file-counts
-        name: Determine if modified files should make the workflow run continue
-        run: |
-          MODIFIED_FILES=$(echo "$MODIFIED_FILES" | base64 -d)
-          echo -e "Modified files:\n$MODIFIED_FILES\n"
-
-          MODIFIED_FILES_DATA=$(node .github/bin/determine-modified-files-count.js "$IGNORE_PATH_REGEX" "$MODIFIED_FILES" "all")
-          CSS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.s?css|package\.json|package-lock\.json" "$MODIFIED_FILES")
-          JS_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.(js|snap)|package\.json|package-lock\.json" "$MODIFIED_FILES")
-          PHP_FILE_COUNT=$(node .github/bin/determine-modified-files-count.js ".+\.php|composer\.(json|lock)|phpstan\.neon\.dist" "$MODIFIED_FILES")
-          GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/(workflows|actions)\/.+\.yml)" "$MODIFIED_FILES")
-
-          echo "Changed file count: $MODIFIED_FILES_DATA"
-          echo "Changed ${{ github.event.repository.name }} CSS file count: $CSS_FILE_COUNT"
-          echo "Changed ${{ github.event.repository.name }} JS file count: $JS_FILE_COUNT"
-          echo "Changed ${{ github.event.repository.name }} PHP file count: $PHP_FILE_COUNT"
-          echo "Changed GHA workflow/actions count: $GHA_WORKFLOW_COUNT"
-
-          echo "css-count=$CSS_FILE_COUNT" >> $GITHUB_OUTPUT
-          echo "js-count=$JS_FILE_COUNT" >> $GITHUB_OUTPUT
-          echo "php-count=$PHP_FILE_COUNT" >> $GITHUB_OUTPUT
-          echo "gha-workflow-count=$GHA_WORKFLOW_COUNT" >> $GITHUB_OUTPUT
-        env:
-          # Ignore Paths:
-          # - .github/
-          # - !.github/workflows
-          # - !.github/actions
-          # - .wordpress-org/
-          # - docs/
-          IGNORE_PATH_REGEX: \.github\/(?!workflows)(?!actions)|\.wordpress-org\/|docs\/
-
-      - name: Summarize skipped jobs
-        run: |
-          SKIPPED=()
-
-          [[ "${{ steps.determine-file-counts.outputs.css-count }}" -le 0 ]] && SKIPPED+=("lint-css")
-          [[ "${{ steps.determine-file-counts.outputs.js-count }}" -le 0 ]] && SKIPPED+=("lint-js" "unit-tests-js" "build-prod")
-          [[ "${{ steps.determine-file-counts.outputs.php-count }}" -le 0 ]] && SKIPPED+=("lint-php")
-
-          if [[ ${#SKIPPED[@]} -gt 0 ]]; then
-            echo "The following jobs will be skipped as no relevant files were changed:"
-            for JOB in "${SKIPPED[@]}"; do
-              echo "  - $JOB"
-            done
-          else
-            echo "All jobs will run."
-          fi
-
-  lint-css:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-css-count > 0
-    name: 'Lint CSS'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Detect coding standard violations (stylelint)
-        run: npm run lint:css
-
-  lint-js:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0
-    name: 'Lint JS'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Detect coding standard violations (eslint)
-        run: npm run lint:js
-
-  unit-tests-js:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0
-    name: 'Run JS unit tests'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Run unit tests
-        run: npm run test:js
-        env:
-          CI: true
-
-  lint-php:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0
-    name: 'Lint PHP'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          coverage: none
-          tools: cs2pr
-          github-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Configure Composer cache
-        uses: actions/cache@v5.0.3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Ensure git is installed
-        run: which git || (sudo apt-get update && sudo apt-get install -y git)
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
-
-      - name: Validate composer.json
-        run: composer --no-interaction validate --no-check-all
-
-      - name: Detect coding standard violations (PHPCS)
-        run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 | cs2pr --graceful-warnings
-
-  build-prod:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-css-count > 0
-    name: 'Build production'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Build production
-        id: build
-        run: npm run build:prod
-        env:
-          CI: true
-
-  unit-test-php:
-    needs: pre-run
-    if: needs.pre-run.outputs.changed-php-count > 0 || needs.pre-run.outputs.changed-gha-workflow-count > 0
-    name: "PHP Unit test: PHP ${{ matrix.php }} / WP ${{ matrix.wp }}"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        php: ['8.2', '8.3', '8.4']
-        wp: ['6.5', '6.6', '6.7', '6.8', '6.9', '7.0']
-        exclude:
-          # WordPress added PHP 8.4 support in 6.7.
-          - { php: '8.4', wp: '6.5' }
-          - { php: '8.4', wp: '6.6' }
-    env:
-      WP_ENV_PHP_VERSION: ${{ matrix.php }}
-      WP_ENV_CORE: WordPress/WordPress#${{ matrix.wp }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node with cache
-        uses: ./.github/actions/setup-node-with-cache
-
-      - name: Start WP environment
-        run: npm run wp-env start
-
-      - name: Configure Composer GitHub auth in wp-env
-        run: npx wp-env run cli -- composer config --global github-oauth.github.com "${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}"
-
-      - name: Run tests
-        run: npm run test:php
+  ci:
+    uses: rtCamp/wp-shared-workflows/.github/workflows/wp-ci.yml@release/v1.0.0
+    with:
+      project-type: theme
+      # PHPUnit matrix carried over from the previous workflow: PHP 8.2-8.4 x WP 6.5-7.0.
+      php-versions: '["8.2", "8.3", "8.4"]'
+      wp-versions: '["6.5", "6.6", "6.7", "6.8", "6.9", "7.0"]'
+      # WordPress added PHP 8.4 support in 6.7.
+      test-php-exclude: '[{"php": "8.4", "wp": "6.5"}, {"php": "8.4", "wp": "6.6"}]'
+    secrets:
+      # WP_FRAMEWORK_REPO_TEMP_TOKEN must have read access to both private repos:
+      #   - rtCamp/wp-tooling   (detect-changes installs the interim CLI from it)
+      #   - rtCamp/wp-framework (composer install in lint-php / test-php)
+      wp-tooling-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
+      packages-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
