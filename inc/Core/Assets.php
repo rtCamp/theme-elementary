@@ -25,10 +25,25 @@ use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 class Assets extends AssetLoader implements Registrable, Shareable {
 
 	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		parent::__construct(
+			ELEMENTARY_THEME_PATH,
+			get_template_directory_uri(),
+			'assets/build'
+		);
+	}
+
+	/**
 	 * Whether Tailwind CSS is enabled for this theme.
 	 *
 	 * Off by default. The scaffold's Tailwind feature flips
 	 * ELEMENTARY_THEME_ENABLE_TAILWIND to true in functions.php when enabled.
+	 *
+	 * Resolved at enqueue time (not in the constructor) so the
+	 * elementary_theme_tailwind_enabled filter can be added by child themes or
+	 * plugins that load after this one.
 	 *
 	 * To force-enable or disable before the theme loads, define the constant in
 	 * wp-config.php or a must-use plugin:
@@ -41,21 +56,10 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_true' );
 	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_false' );
 	 *
-	 * @var bool
+	 * @return bool
 	 */
-	private bool $tailwind_enabled = false;
-
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		parent::__construct(
-			ELEMENTARY_THEME_PATH,
-			get_template_directory_uri(),
-			'assets/build'
-		);
-
-		$this->tailwind_enabled = (bool) apply_filters(
+	private function is_tailwind_enabled(): bool {
+		return (bool) apply_filters(
 			'elementary_theme_tailwind_enabled',
 			ELEMENTARY_THEME_ENABLE_TAILWIND
 		);
@@ -85,7 +89,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		$this->register_style( 'core-navigation', 'css/frontend/core-navigation' );
 		$this->register_style( 'elementary-theme-styles', 'css/frontend/styles' );
 
-		if ( $this->tailwind_enabled ) {
+		if ( $this->is_tailwind_enabled() ) {
 			$this->register_style( 'elementary-theme-tailwind', 'css/frontend/tailwind' );
 		}
 	}
@@ -121,7 +125,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	public function enqueue_assets(): void {
 		wp_enqueue_style( 'elementary-theme-styles' );
 
-		if ( $this->tailwind_enabled ) {
+		if ( $this->is_tailwind_enabled() ) {
 			wp_enqueue_style( 'elementary-theme-tailwind' );
 		}
 	}

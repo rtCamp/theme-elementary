@@ -1,1 +1,1 @@
-module.exports = require( '@rtcamp/wp-tooling/tailwind-config/postcss' );
+module.exports = require( '@rtcamp/tailwind-config/postcss' );

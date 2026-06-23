@@ -64,6 +64,7 @@ module.exports = {
 					{ from: 'tailwind/postcss.config.js', to: 'postcss.config.js' },
 				],
 				devDependencies: {
+					'@rtcamp/tailwind-config': '^0.1.0',
 					tailwindcss: '^4.3.0',
 					'@tailwindcss/postcss': '^4.3.0',
 				},

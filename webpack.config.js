@@ -19,9 +19,9 @@ const tailwindEntry = path.resolve( process.cwd(), 'src', 'css', 'frontend', 'ta
 let GenerateTailwindThemePlugin = null;
 if ( fs.existsSync( tailwindEntry ) ) {
 	try {
-		( { GenerateTailwindThemePlugin } = require( '@rtcamp/wp-tooling/tailwind-config' ) );
+		( { GenerateTailwindThemePlugin } = require( '@rtcamp/tailwind-config' ) );
 	} catch ( err ) {
-		// @rtcamp/wp-tooling not installed; skip the theme.json token plugin
+		// @rtcamp/tailwind-config not installed; skip the theme.json token plugin
 		// (Tailwind utilities still compile via PostCSS).
 	}
 }
