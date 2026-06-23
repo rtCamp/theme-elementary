@@ -173,6 +173,8 @@ final class Util {
 	 */
 	public static function is_feature_enabled( string $flag ): bool {
 		/**
+		 * Shared feature registry.
+		 * 
 		 * @var FeatureRegistry $features
 		 */
 		$features = Main::get_instance()->get_shared( FeatureRegistry::class );
