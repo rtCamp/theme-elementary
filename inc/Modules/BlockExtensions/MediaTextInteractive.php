@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use rtCamp\Theme\Elementary\Core\ThemeFeature;
+use rtCamp\Theme\Elementary\Abstracts\AbstractThemeFeature;
 
 /**
  * Class MediaTextInteractive
@@ -19,7 +19,7 @@ use rtCamp\Theme\Elementary\Core\ThemeFeature;
  * Features), enabled by default; toggling the flag takes effect on the next
  * request, since registration is decided once at load.
  */
-class MediaTextInteractive extends ThemeFeature {
+class MediaTextInteractive extends AbstractThemeFeature {
 
 	/**
 	 * {@inheritDoc}

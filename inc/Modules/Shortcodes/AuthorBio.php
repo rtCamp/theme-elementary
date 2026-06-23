@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\Shortcodes;
 
-use rtCamp\Theme\Elementary\Core\ThemeFeature;
+use rtCamp\Theme\Elementary\Abstracts\AbstractThemeFeature;
 use rtCamp\Theme\Elementary\Helpers\Util;
 
 /**
@@ -24,7 +24,7 @@ use rtCamp\Theme\Elementary\Helpers\Util;
  *
  * @since 1.0.0
  */
-final class AuthorBio extends ThemeFeature {
+final class AuthorBio extends AbstractThemeFeature {
 
 	/**
 	 * {@inheritDoc}
