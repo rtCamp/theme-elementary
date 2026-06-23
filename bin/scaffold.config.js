@@ -40,7 +40,7 @@ module.exports = {
 		{ path: 'package.json', kind: 'json', key: 'version' },
 	],
 
-	steps: { composer: true, cleanup: true, git: true, husky: true },
+	steps: { composer: true, cleanup: true, git: true, hooks: true },
 
 	// Optional features toggled in manage mode (none yet).
 	featuresDir: 'bin/features',
