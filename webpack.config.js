@@ -10,6 +10,22 @@ const webpack = require( 'webpack' );
 const rtlcss = require( 'rtlcss' );
 const { optimize: svgoOptimize } = require( 'svgo' );
 
+/**
+ * Tailwind (opt-in). The theme.json token plugin is wired only when the entry
+ * file exists; the build skips it otherwise. Runtime enqueue is gated separately
+ * on ELEMENTARY_THEME_ENABLE_TAILWIND (see functions.php / Assets.php).
+ */
+const tailwindEntry = path.resolve( process.cwd(), 'src', 'css', 'frontend', 'tailwind.css' );
+let GenerateTailwindThemePlugin = null;
+if ( fs.existsSync( tailwindEntry ) ) {
+	try {
+		( { GenerateTailwindThemePlugin } = require( '@rtcamp/tailwind-config' ) );
+	} catch ( err ) {
+		// @rtcamp/tailwind-config not installed; skip the theme.json token plugin
+		// (Tailwind utilities still compile via PostCSS).
+	}
+}
+
 const isHot = process.argv.includes( '--hot' );
 const isWatch =
 	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
@@ -21,6 +37,13 @@ if ( isWatch ) {
 	 */
 	require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
 }
+
+// HMR (BrowserSync) master switch read from .env.local (ENABLE_HMR), defaulting
+// on; only an explicit off value disables it. Mirrors is_hmr_enabled() in
+// inc/Core/Assets.php so one flag controls both the BrowserSync server (here)
+// and its client enqueue (PHP).
+const hmrFlag = String( process.env.ENABLE_HMR || '' ).toLowerCase();
+const isHmrEnabled = ! [ 'false', '0', 'no', 'off' ].includes( hmrFlag );
 
 const DEFAULT_BS_PORT = 3001;
 
@@ -455,7 +478,7 @@ const getCopyPlugin = () =>
  * @return {Array} BrowserSync plugin instances.
  */
 const getBrowserSyncPlugins = () => {
-	if ( ! isWatch ) {
+	if ( ! isWatch || ! isHmrEnabled ) {
 		return [];
 	}
 
@@ -546,6 +569,7 @@ const styles = {
 		...sharedNonHotConfig.plugins.filter(
 			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
 		),
+		...( GenerateTailwindThemePlugin ? [ new GenerateTailwindThemePlugin() ] : [] ),
 		new CssAssetRtlPlugin(),
 	],
 };
