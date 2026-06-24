@@ -246,7 +246,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @return string|null The value, or null when not found.
 	 */
 	private function get_env_value( string $key ): ?string {
-		$env_file = $this->base_dir . '.env.local';
+		$env_file = $this->env_file_path();
 
 		if ( ! is_readable( $env_file ) ) {
 			return null;
@@ -264,5 +264,18 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Absolute path to the .env.local file read for local-dev flags.
+	 *
+	 * Isolated into its own method so tests can point the env lookup at a
+	 * throwaway temp file (via a subclass) instead of touching the developer's
+	 * real .env.local.
+	 *
+	 * @return string Absolute path to .env.local in the theme root.
+	 */
+	protected function env_file_path(): string {
+		return $this->base_dir . '.env.local';
 	}
 }

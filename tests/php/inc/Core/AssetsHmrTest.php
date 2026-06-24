@@ -15,53 +15,43 @@ use rtCamp\Theme\Elementary\Core\Assets;
  *
  * Covers is_hmr_enabled() (the ENABLE_HMR master switch) and
  * is_browser_sync_disabled() (the independent DISABLE_BS override). Both read
- * .env.local in the theme root, so each test writes a fresh file and a new
- * Assets instance re-reads it.
+ * the env file resolved by Assets::env_file_path(); the suite overrides that
+ * seam to a throwaway temp file (one per test), so it never touches — or
+ * depends on — the developer's real .env.local.
  *
  * @since 1.0.0
  */
 class AssetsHmrTest extends TestCase {
 
 	/**
-	 * Absolute path to the theme's .env.local.
+	 * Absolute path to this test's throwaway env file.
 	 *
 	 * @var string
 	 */
 	private string $env_file = '';
 
 	/**
-	 * Contents of a pre-existing .env.local, restored after the test.
-	 *
-	 * @var string|null
-	 */
-	private ?string $env_backup = null;
-
-	/**
-	 * Back up any real .env.local and start each test from a clean slate.
+	 * Point each test at its own temp env file, starting from a clean slate.
 	 */
 	public function set_up(): void {
 		parent::set_up();
 
-		$this->env_file   = trailingslashit( ELEMENTARY_THEME_PATH ) . '.env.local';
-		$this->env_backup = is_readable( $this->env_file ) ? file_get_contents( $this->env_file ) : null;
+		// Unique per test (parallel-safe); start with no file so defaults apply.
+		$this->env_file = tempnam( sys_get_temp_dir(), 'elementary-hmr-env-' );
 		$this->clear_env();
 	}
 
 	/**
-	 * Restore the developer's .env.local exactly as it was.
+	 * Remove the temp env file.
 	 */
 	public function tear_down(): void {
 		$this->clear_env();
-
-		if ( null !== $this->env_backup ) {
-			file_put_contents( $this->env_file, $this->env_backup );
-		}
 
 		parent::tear_down();
 	}
 
 	/**
-	 * Remove the test .env.local if present.
+	 * Delete the temp env file if present.
 	 */
 	private function clear_env(): void {
 		if ( file_exists( $this->env_file ) ) {
@@ -70,7 +60,7 @@ class AssetsHmrTest extends TestCase {
 	}
 
 	/**
-	 * Write a single KEY=value line to .env.local.
+	 * Write a single KEY=value line to the temp env file.
 	 *
 	 * @param string $key   Variable name.
 	 * @param string $value Value.
@@ -80,17 +70,47 @@ class AssetsHmrTest extends TestCase {
 	}
 
 	/**
-	 * Invoke a private Assets method on a fresh instance (which re-reads .env.local).
+	 * Invoke a private Assets method on a fresh instance whose env-file lookup
+	 * is redirected to this test's temp file.
 	 *
 	 * @param string $method Method name.
 	 *
 	 * @return mixed Return value.
 	 */
 	private function invoke( string $method ) {
-		$ref = new \ReflectionMethod( Assets::class, $method );
-		$ref->setAccessible( true );
+		$assets = new class( $this->env_file ) extends Assets {
+			/**
+			 * Path returned by env_file_path().
+			 *
+			 * @var string
+			 */
+			private string $test_env_file;
 
-		return $ref->invoke( new Assets() );
+			/**
+			 * Capture the throwaway env file, then build a normal Assets.
+			 *
+			 * @param string $env_file Throwaway env file to read instead of .env.local.
+			 */
+			public function __construct( string $env_file ) {
+				$this->test_env_file = $env_file;
+				parent::__construct();
+			}
+
+			/**
+			 * Redirect the env lookup to the test's temp file.
+			 *
+			 * @return string
+			 */
+			protected function env_file_path(): string {
+				return $this->test_env_file;
+			}
+		};
+
+		// Private parent methods are invocable on the subclass instance;
+		// setAccessible() is a no-op (and deprecated) on PHP 8.1+, so it is omitted.
+		$ref = new \ReflectionMethod( Assets::class, $method );
+
+		return $ref->invoke( $assets );
 	}
 
 	/**
