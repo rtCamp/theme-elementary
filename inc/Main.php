@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
-use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, Menu, Templates, ThemeSetup};
+use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, Logger, Menu, Templates, ThemeSetup};
 // wp:example:block-extension
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
 // wp:example:block-extension:end
@@ -41,6 +41,7 @@ class Main {
 		Components::class,
 		Templates::class,
 		Encryption::class,
+		Logger::class,
 		// wp:example:block-extension
 		MediaTextInteractive::class,
 		// wp:example:block-extension:end

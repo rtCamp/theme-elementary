@@ -77,6 +77,16 @@ In both the methods, you will be prompted with a theme setup wizard which will h
 
 **Note**: Refer to the `.nvmrc` file to check the supported Node.js version for running this project. If your current Node.js version does not run the project successfully on localhost, please use [Node Version Manager](https://github.com/nvm-sh/nvm) on your terminal to configure the right Node.js version.
 
+## AI tooling :robot:
+
+This theme ships AI-assistant tooling for setup and feature scaffolding, kept in step across assistants:
+
+- **Claude Code:** skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, `/setup`.
+- **GitHub Copilot:** prompt files in [`.github/prompts/`](.github/prompts/) — `/init`, `/scaffold`.
+- A committed knowledge graph in `graphify-out/` lets assistants query the codebase instead of reading it all — see [docs/knowledge-graph.md](docs/knowledge-graph.md).
+
+Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
+
 ## Development :computer:
 
 
