@@ -1,0 +1,49 @@
+{
+  "skill_name": "setup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up a new WordPress theme called My Theme in the rtCamp\\Theme\\MyTheme namespace under inc/. I want PHPCS, PHPStan, and PHPUnit. Then add a reading-time shortcode that I'll fill in later.",
+      "expected_output": "Two-phase plan executed across the greenfield project: Phase A installs editorconfig + psr4 + phpcs/full + phpstan + phpunit (skipping eslint/stylelint/jest/pa11y with reasons), Phase B scaffolds the wp/shortcode. A minimal composer.json (type wordpress-theme) is offered when the file doesn't exist. One consolidated final report covers files written, dev-deps to install, and outstanding manual tasks. No composer require / composer dump-autoload / npm install executed.",
+      "files": [],
+      "expectations": [
+        "Stage 0: The skill parses the request and identifies all stated facts (theme, namespace, base path, features, tests). Does NOT ask clarifying questions for facts already stated.",
+        "Stage 1: Detects the project is greenfield (no tooling configs, no composer.json autoload).",
+        "Stage 2: Plan includes setup/editorconfig + setup/psr4 + lint/phpcs/full + lint/phpstan + setup/phpunit for Phase A, and wp/shortcode for Phase B.",
+        "Stage 2: Skips lint/eslint and lint/stylelint with reasons (no JS or CSS detected). Skips setup/jest and setup/pa11y with reasons (not requested).",
+        "Stage 3: Shows the full plan with scaffold ids + files each will write + inputs + skipped-with-reasons, AND waits for confirmation before executing.",
+        "Stage 4: Executes scaffolds one at a time. For setup/psr4 when no composer.json exists, offers the minimal-composer.json template (type wordpress-theme) with the JSON-escaped namespace key 'rtCamp\\\\Theme\\\\MyTheme\\\\'.",
+        "Stage 5: Defaults to adding setup/phpunit before running wp/shortcode if it wasn't already in Phase A (Phase B test-driven scaffolds need their framework).",
+        "Stage 6: Emits one consolidated final report — files written across both phases, dedup'd `composer require --dev` lines, scripts to add to manifests, skipped-with-reasons, outstanding manual tasks; and the shortcode class wired into Main::CLASSES.",
+        "The skill does NOT run composer require, composer dump-autoload, npm install, or gh secret set on the user's behalf."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Bootstrap this thing for me",
+      "expected_output": "Recognises the request is ambiguous and stops to ask clarifying questions before reading the project directory. Questions are batched (not drip-fed) and cover at minimum: plugin vs theme, VIP vs non-VIP, namespace + base path, which tests are wanted. No scaffolds executed before the developer provides clarification.",
+      "files": [],
+      "expectations": [
+        "The skill recognises the request is ambiguous and STOPS before reading the project directory.",
+        "The skill asks clarifying questions in ONE batch (not drip-fed across multiple turns), covering at minimum: plugin vs theme, VIP vs non-VIP, namespace + base path, which tests are wanted.",
+        "The skill does NOT attempt to infer project type from disk before asking — the developer's message is silent on the basics, and 'ask first' is the rule.",
+        "The skill does NOT execute any scaffolds before the developer provides clarification."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add rtCamp tooling to my existing theme. It's at the repo root. composer.json already declares rtCamp\\Theme\\Acme\\ -> inc/ PSR-4 autoload and there's already a phpcs.xml.dist with the WordPress standard. Add PHPStan and PHPUnit; I don't need JS lint or a11y.",
+      "expected_output": "Detection cites the existing composer.json autoload and phpcs.xml.dist. setup/psr4 and lint/phpcs skipped with reasons. Plan includes setup/editorconfig (if missing), lint/phpstan, setup/phpunit. lint/eslint, lint/stylelint, setup/jest, setup/pa11y NOT included because the developer ruled them out. Plan confirmed with developer before executing. Final report lists skipped scaffolds with the reason for each.",
+      "files": [],
+      "expectations": [
+        "The skill detects the existing composer.json autoload (does not ask for namespace) and the existing phpcs.xml.dist (does not re-add PHPCS).",
+        "Both findings are cited in the confirmation plan with their source (composer.json, phpcs.xml.dist), not silently used.",
+        "The plan skips setup/psr4 (already configured) and lint/phpcs (config exists) — both reported as skipped with reasons.",
+        "The plan includes only setup/editorconfig (if missing), lint/phpstan, setup/phpunit.",
+        "The plan does NOT include lint/eslint, lint/stylelint, setup/jest, or setup/pa11y — developer explicitly ruled them out.",
+        "The skill confirms the plan with the developer before executing.",
+        "The final report explicitly lists skipped scaffolds with the reason for each."
+      ]
+    }
+  ]
+}

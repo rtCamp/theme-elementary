@@ -62,7 +62,7 @@
 		"build:assets": "wp-scripts build --experimental-modules",
 		"build:blocks:dev": "wp-scripts start --no-watch --experimental-modules --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
 		"build:assets:dev": "wp-scripts start --no-watch --experimental-modules",
-		"init": "./bin/init.js && npm run sync-ai",
+		"init": "./bin/init.js",
 		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:*",
 		"lint:css": "wp-scripts lint-style ./src",
