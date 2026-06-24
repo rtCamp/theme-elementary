@@ -5,6 +5,18 @@
  * Stateless utility class — pure functions wrapped in a namespace.
  * Final + private constructor: must be used statically, never instantiated.
  *
+ * The service accessors (logger / encryption / templates) return the theme's
+ * shared framework service from the container, so callers use the framework
+ * API directly with no extra wrapping:
+ *
+ *   Util::logger()->info( 'Cache warmed', [ 'items' => 42 ] );
+ *   $cipher = Util::encryption()->encrypt( $secret );
+ *   Util::templates()->render( 'content', 'card', [ 'title' => 'Hi' ] );
+ *
+ * The component / template / encrypt wrappers below stay for the common cases.
+ * Add a new shared service by adding the Core\<Service> class (implementing
+ * Shareable) to Main::CLASSES and a one-line accessor here.
+ *
  * Future helper classes (string, cache, url, …) should be siblings of this
  * one under `inc/Helpers/`. Keep `Util` for cross-cutting bits that don't
  * earn their own dedicated class.
@@ -19,6 +31,7 @@ namespace rtCamp\Theme\Elementary\Helpers;
 use rtCamp\Theme\Elementary\Core\Components;
 use rtCamp\Theme\Elementary\Core\Encryption;
 use rtCamp\Theme\Elementary\Core\FeatureRegistry;
+use rtCamp\Theme\Elementary\Core\Logger;
 use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
 
@@ -35,6 +48,33 @@ final class Util {
 	private function __construct() {}
 
 	/**
+	 * The theme's shared Logger. Silent unless WP_DEBUG.
+	 *
+	 * @return Logger Shared logger.
+	 */
+	public static function logger(): Logger {
+		return self::shared( Logger::class );
+	}
+
+	/**
+	 * The theme's shared Encryptor.
+	 *
+	 * @return Encryption Shared encryptor.
+	 */
+	public static function encryption(): Encryption {
+		return self::shared( Encryption::class );
+	}
+
+	/**
+	 * The theme's shared template loader (child theme > parent theme).
+	 *
+	 * @return Templates Shared template loader.
+	 */
+	public static function templates(): Templates {
+		return self::shared( Templates::class );
+	}
+
+	/**
 	 * Render a component by name.
 	 *
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
@@ -44,7 +84,7 @@ final class Util {
 	 * @return void
 	 */
 	public static function component( string $name, array $args = [], array $options = [] ): void {
-		self::component_loader()->render( $name, $args, $options );
+		self::components()->render( $name, $args, $options );
 	}
 
 	/**
@@ -57,23 +97,16 @@ final class Util {
 	 * @return string Rendered component HTML.
 	 */
 	public static function get_component( string $name, array $args = [], array $options = [] ): string {
-		return self::component_loader()->get( $name, $args, $options );
+		return self::components()->get( $name, $args, $options );
 	}
 
 	/**
-	 * Get the shared theme component loader.
+	 * The theme's shared component loader.
 	 *
 	 * @return Components Shared component loader.
 	 */
-	private static function component_loader(): Components {
-		/**
-		 * Shared component loader.
-		 *
-		 * @var Components $loader
-		 */
-		$loader = Main::get_instance()->get_shared( Components::class );
-
-		return $loader;
+	public static function components(): Components {
+		return self::shared( Components::class );
 	}
 
 	/**
@@ -86,7 +119,7 @@ final class Util {
 	 * @return void
 	 */
 	public static function render_template( string $slug, ?string $name = null, array $args = [] ): void {
-		self::template_loader()->render( $slug, $name, $args );
+		self::templates()->render( $slug, $name, $args );
 	}
 
 	/**
@@ -99,23 +132,7 @@ final class Util {
 	 * @return string Rendered template output, or '' if not found.
 	 */
 	public static function get_template( string $slug, ?string $name = null, array $args = [] ): string {
-		return self::template_loader()->get( $slug, $name, $args );
-	}
-
-	/**
-	 * Get the shared theme template loader.
-	 *
-	 * @return Templates Shared template loader.
-	 */
-	private static function template_loader(): Templates {
-		/**
-		 * Shared template loader.
-		 *
-		 * @var Templates $loader
-		 */
-		$loader = Main::get_instance()->get_shared( Templates::class );
-
-		return $loader;
+		return self::templates()->get( $slug, $name, $args );
 	}
 
 	/**
@@ -128,7 +145,7 @@ final class Util {
 	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
 	 */
 	public static function encrypt( string $value ): string|false {
-		return self::encryptor()->encrypt( $value );
+		return self::encryption()->encrypt( $value );
 	}
 
 	/**
@@ -141,23 +158,24 @@ final class Util {
 	 * @throws \RuntimeException If ELEMENTARY_ENCRYPTION_KEY is not configured.
 	 */
 	public static function decrypt( string $value ): string|false {
-		return self::encryptor()->decrypt( $value );
+		return self::encryption()->decrypt( $value );
 	}
 
 	/**
-	 * Get the theme's shared Encryptor.
+	 * Resolve a shared service from the container.
 	 *
-	 * @return Encryption Shared encryptor.
+	 * @template T of object
+	 *
+	 * @param string $service Service class name.
+	 *
+	 * @phpstan-param class-string<T> $service
+	 *
+	 * @return object Shared instance.
+	 *
+	 * @phpstan-return T
 	 */
-	private static function encryptor(): Encryption {
-		/**
-		 * Shared encryptor.
-		 *
-		 * @var Encryption $encryptor
-		 */
-		$encryptor = Main::get_instance()->get_shared( Encryption::class );
-
-		return $encryptor;
+	private static function shared( string $service ): object {
+		return Main::get_instance()->get_shared( $service );
 	}
 
 	/**

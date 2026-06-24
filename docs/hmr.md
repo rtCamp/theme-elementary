@@ -134,15 +134,27 @@ This is required to avoid mixed content errors — the BrowserSync client script
 
 ## Advanced
 
-### Disabling BrowserSync
+### Enabling / disabling HMR
 
-To disable BrowserSync without removing it from the webpack config, set this in `.env.local`:
+HMR (BrowserSync live reload) is controlled by a single master switch in `.env.local`, honoured by both the build (BrowserSync server) and PHP (client enqueue):
+
+```
+ENABLE_HMR=false
+```
+
+Default is on — the key only needs setting to turn HMR off. Off values are `0`, `false`, `no`, and `off` (case-insensitive). With it off, `npm start` skips the BrowserSync server entirely and PHP skips the client, so there is no live reload and no console noise from a client pointing at a server that isn't running. The `browser-sync` dev dependencies stay installed, so flipping it back on needs no reinstall.
+
+You can also toggle it from `npm run init` (manage mode → Toggle features → HMR), which just flips `ENABLE_HMR` in `.env.local` for you. Since `.env.local` is gitignored, this is a per-developer local setting.
+
+### Disabling the BrowserSync client only
+
+To keep the BrowserSync server running but stop PHP from enqueuing its client (e.g. when working purely in the block editor), set this in `.env.local`:
 
 ```
 DISABLE_BS=true
 ```
 
-This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync server still starts (webpack still runs it), but the browser won't connect to it. Useful when working purely in the block editor and you don't want the BrowserSync client loading on the frontend.
+This prevents PHP from enqueuing the BrowserSync client script. The BrowserSync server still starts (webpack still runs it), but the browser won't connect to it. For a full off switch (server included), use `ENABLE_HMR=false` above.
 
 ### Overriding the BrowserSync client URL
 
