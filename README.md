@@ -85,7 +85,7 @@ This theme ships AI-assistant tooling for setup and feature scaffolding, kept in
 - **GitHub Copilot:** prompt files in [`.github/prompts/`](.github/prompts/) — `/init`, `/scaffold`.
 - A committed knowledge graph in `graphify-out/` lets assistants query the codebase instead of reading it all — see [docs/knowledge-graph.md](docs/knowledge-graph.md).
 
-Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
+New here? The [quick-start guide](docs/quick-start-guide.md) walks through naming the theme and adding your first feature (AI or raw CLI). Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
 
 ## Development :computer:
 
