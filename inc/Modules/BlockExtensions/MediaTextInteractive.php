@@ -10,15 +10,33 @@ declare( strict_types = 1 );
 namespace rtCamp\Theme\Elementary\Modules\BlockExtensions;
 
 use WP_HTML_Tag_Processor;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\Theme\Elementary\Abstracts\AbstractThemeFeature;
 
 /**
  * Class MediaTextInteractive
+ *
+ * Gated behind the `media-text-interactive` feature flag (Settings →
+ * Features), enabled by default; toggling the flag takes effect on the next
+ * request, since registration is decided once at load.
  */
-class MediaTextInteractive implements Registrable {
+class MediaTextInteractive extends AbstractThemeFeature {
 
 	/**
-	 * Register hooks.
+	 * {@inheritDoc}
+	 */
+	protected function get_slug(): string {
+		return 'media-text-interactive';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_description(): string {
+		return __( 'Adds interactive behaviour to the core Media & Text block — play/pause controls, scroll-triggered video, and column layout enhancements.', 'elementary-theme' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function register_hooks(): void {
 		add_filter( 'render_block_core/button', [ $this, 'render_block_core_button' ], 10, 2 );
@@ -60,10 +78,6 @@ class MediaTextInteractive implements Registrable {
 			return $block_content;
 		}
 
-		/**
-		 * Enqueue the module script, The prefix `@` is used to indicate that the script is a module.
-		 * This handle with the prefix `@` will be used in other scripts to import this module.
-		 */
 		wp_enqueue_script_module(
 			'@elementary/media-text',
 			sprintf( '%s/js/modules/media-text.js', ELEMENTARY_THEME_BUILD_URI ),
@@ -93,6 +107,7 @@ class MediaTextInteractive implements Registrable {
 		if ( ! isset( $block['attrs']['className'] ) || ! str_contains( $block['attrs']['className'], 'elementary-media-text-interactive' ) ) {
 			return $block_content;
 		}
+
 		$p = new WP_HTML_Tag_Processor( $block_content );
 
 		$p->next_tag();

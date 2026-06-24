@@ -9,23 +9,39 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\Shortcodes;
 
+use rtCamp\Theme\Elementary\Abstracts\AbstractThemeFeature;
 use rtCamp\Theme\Elementary\Helpers\Util;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
 /**
  * Class AuthorBio
  *
- * Example consumer of the theme's TemplateLoader. Registers the
- * `[elementary_author_bio]` shortcode, which renders the `author-bio`
- * template part through Util::get_template() — a child theme can override the
- * markup by shipping its own template-parts/author-bio.php.
+ * Registers the [elementary_author_bio] shortcode, which renders the
+ * `author-bio` template part through Util::get_template().
+ *
+ * Gated behind the `author-bio` feature flag (Settings → Features), enabled
+ * by default; toggling the flag takes effect on the next request, since
+ * registration is decided once at load.
  *
  * @since 1.0.0
  */
-final class AuthorBio implements Registrable {
+final class AuthorBio extends AbstractThemeFeature {
 
 	/**
-	 * Register hooks.
+	 * {@inheritDoc}
+	 */
+	protected function get_slug(): string {
+		return 'author-bio';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_description(): string {
+		return __( 'Enables the [elementary_author_bio] shortcode, which renders an author biography block on posts and pages.', 'elementary-theme' );
+	}
+
+	/**
+	 * {@inheritDoc}
 	 *
 	 * @since 1.0.0
 	 */
