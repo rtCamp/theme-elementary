@@ -144,7 +144,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @action wp_enqueue_scripts
 	 */
 	public function enqueue_browser_sync(): void {
-		if ( 'local' !== wp_get_environment_type() || $this->is_browser_sync_disabled() ) {
+		if ( 'local' !== wp_get_environment_type() || ! $this->is_hmr_enabled() || $this->is_browser_sync_disabled() ) {
 			return;
 		}
 
@@ -189,6 +189,29 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	}
 
 	/**
+	 * Whether HMR (BrowserSync live reload) is enabled via ENABLE_HMR in .env.local.
+	 *
+	 * Master switch for both sides: webpack only starts the BrowserSync server,
+	 * and PHP only enqueues its client, when this is on. Defaults ON when the key
+	 * is absent. Off values are `0`, `false`, `no`, and `off` (case-insensitive).
+	 * DISABLE_BS still works as a finer client-only override. Toggle it from
+	 * `npm run init` (manage mode) or by editing .env.local directly.
+	 *
+	 * THIS METHOD IS INTENDED FOR LOCAL DEVELOPMENT ENVIRONMENTS ONLY.
+	 *
+	 * @return bool True when HMR is enabled.
+	 */
+	private function is_hmr_enabled(): bool {
+		$value = $this->get_env_value( 'ENABLE_HMR' );
+
+		if ( null === $value ) {
+			return true;
+		}
+
+		return ! in_array( strtolower( $value ), [ '0', 'false', 'no', 'off' ], true );
+	}
+
+	/**
 	 * Whether BrowserSync is disabled via DISABLE_BS in .env.local.
 	 *
 	 * Disabling prevents PHP from enqueuing the BrowserSync client script. The
@@ -223,7 +246,7 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 * @return string|null The value, or null when not found.
 	 */
 	private function get_env_value( string $key ): ?string {
-		$env_file = $this->base_dir . '.env.local';
+		$env_file = $this->env_file_path();
 
 		if ( ! is_readable( $env_file ) ) {
 			return null;
@@ -241,5 +264,18 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Absolute path to the .env.local file read for local-dev flags.
+	 *
+	 * Isolated into its own method so tests can point the env lookup at a
+	 * throwaway temp file (via a subclass) instead of touching the developer's
+	 * real .env.local.
+	 *
+	 * @return string Absolute path to .env.local in the theme root.
+	 */
+	protected function env_file_path(): string {
+		return $this->base_dir . '.env.local';
 	}
 }

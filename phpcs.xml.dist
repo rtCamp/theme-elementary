@@ -108,6 +108,13 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
+	<!-- The wp:example:* region markers in inc/Main.php are intentional scaffold tags
+	     (stripped by `npm run init`), not prose comments, so exempt just those lines
+	     from the inline-comment end-char rule. -->
+	<rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+		<exclude-pattern>inc/Main.php</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress-VIP-Go">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>

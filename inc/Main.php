@@ -11,7 +11,15 @@ namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, Menu, Templates, ThemeSetup};
-use rtCamp\Theme\Elementary\Modules\{BlockExtensions\MediaTextInteractive, Settings\ThemeOptions, Shortcodes\AuthorBio};
+// wp:example:block-extension
+use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
+// wp:example:block-extension:end
+// wp:example:settings
+use rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions;
+// wp:example:settings:end
+// wp:example:shortcode
+use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
+// wp:example:shortcode:end
 
 /**
  * Class Main
@@ -33,9 +41,15 @@ class Main {
 		Components::class,
 		Templates::class,
 		Encryption::class,
+		// wp:example:block-extension
 		MediaTextInteractive::class,
+		// wp:example:block-extension:end
+		// wp:example:settings
 		ThemeOptions::class,
+		// wp:example:settings:end
+		// wp:example:shortcode
 		AuthorBio::class,
+		// wp:example:shortcode:end
 	];
 
 	/**
