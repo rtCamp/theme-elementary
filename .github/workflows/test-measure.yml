@@ -67,9 +67,9 @@ jobs:
           GHA_WORKFLOW_COUNT=$(node .github/bin/determine-modified-files-count.js "(\.github\/workflows\/.+\.yml)" "$MODIFIED_FILES")
 
           echo "Changed file count: $MODIFIED_FILES_DATA"
-          echo "Changed CK theme CSS file count: $CSS_FILE_COUNT"
-          echo "Changed CK theme JS file count: $JS_FILE_COUNT"
-          echo "Changed CK theme PHP file count: $PHP_FILE_COUNT"
+          echo "Changed the theme CSS file count: $CSS_FILE_COUNT"
+          echo "Changed the theme JS file count: $JS_FILE_COUNT"
+          echo "Changed the theme PHP file count: $PHP_FILE_COUNT"
           echo "Changed GHA workflow count: $GHA_WORKFLOW_COUNT"
 
           echo "::set-output name=count::$MODIFIED_FILES_DATA"
@@ -203,7 +203,7 @@ jobs:
       # name won't be interpolated in order to match the required jobs set up in branch protection.
       - name: Notice
         if: needs.pre-run.outputs.changed-php-count > 0
-        run: echo "No PHP files were changed in CK theme so no PHP unit tests will run"
+        run: echo "No PHP files were changed in the theme so no PHP unit tests will run"
 
       - name: Checkout
         if: needs.pre-run.outputs.changed-php-count > 0
