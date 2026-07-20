@@ -5,7 +5,7 @@ starter theme built on the `rtcamp/wp-framework` package.
 
 ## Development setup
 
-Requires Node 22 (`nvm use`) and PHP 8.2+.
+Requires the Node version in `.nvmrc` (`nvm use`) and PHP 8.2+.
 
 ```bash
 nvm use
@@ -40,4 +40,4 @@ npm test            # JS + PHP test suites (PHP runs via @wordpress/env)
 ## License
 
 By contributing, you agree that your contributions are licensed under the
-project's [GPL-2.0](LICENSE) license.
+project's [GPL-2.0-or-later](LICENSE) license.

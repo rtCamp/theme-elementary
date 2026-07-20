@@ -1,7 +1,7 @@
 <h1 align="center">Theme Elementary</h1>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-blue.svg" alt="License: GPL-2.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg" alt="License: GPL-2.0-or-later"></a>
   <img src="https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg" alt="PHP 8.2+">
   <img src="https://img.shields.io/badge/WordPress-block%20theme-21759b.svg" alt="WordPress block theme">
 </p>
@@ -39,7 +39,7 @@ composer create-project rtcamp/elementary [folder-name]
 **Manual** — clone, then install and let the wizard run:
 
 ```bash
-git clone <repo-url> && cd theme-elementary
+git clone <repo-url> && cd <clone-dir>
 composer install
 npm install
 ```
@@ -80,7 +80,7 @@ vendor/rtcamp/wp-framework/ # framework (Composer-managed; do not modify)
 
 ## License
 
-[GPL-2.0](LICENSE)
+[GPL-2.0-or-later](LICENSE)
 
 <p align="center">
   <a href="https://rtcamp.com"><img src="https://n8e0ka87m9.gdcdn.us/kfnbt046p8/GitHub_Banner.webp" alt="rtCamp — high-performance enterprise WordPress" width="100%"></a>
