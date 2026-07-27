@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2cb40a71ad05e3074aa7f27c09214369",
+    "content-hash": "fc03e049ceadaf9e8cee4fb9a4657381",
     "packages": [
         {
             "name": "rtcamp/wp-framework",
-            "version": "dev-main",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "e30352cf578fcba49f889f801311b881cc368908"
+                "reference": "10f9a4d1fd9d2d56e2cd477605253e82a1317039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/e30352cf578fcba49f889f801311b881cc368908",
-                "reference": "e30352cf578fcba49f889f801311b881cc368908",
+                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/10f9a4d1fd9d2d56e2cd477605253e82a1317039",
+                "reference": "10f9a4d1fd9d2d56e2cd477605253e82a1317039",
                 "shasum": ""
             },
             "require": {
@@ -32,10 +32,9 @@
                 "squizlabs/php_codesniffer": "^3.10",
                 "szepeviktor/phpstan-wordpress": "^2.0",
                 "wp-coding-standards/wpcs": "^3.1",
-                "wp-phpunit/wp-phpunit": "^6.9",
+                "wp-phpunit/wp-phpunit": "^6.9 || ^7.0",
                 "yoast/phpunit-polyfills": "^4.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -75,7 +74,7 @@
                 "issues": "https://github.com/rtCamp/wp-framework/issues",
                 "source": "https://github.com/rtCamp/wp-framework"
             },
-            "time": "2026-06-23T22:36:13+00:00"
+            "time": "2026-07-27T19:49:48+00:00"
         }
     ],
     "packages-dev": [
@@ -3449,15 +3448,13 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "rtcamp/wp-framework": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.2"
     },
