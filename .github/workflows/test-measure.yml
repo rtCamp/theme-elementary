@@ -189,6 +189,43 @@ jobs:
       - name: Detect coding standard violations (PHPCS)
         run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 | cs2pr --graceful-warnings
 
+  analyse-php:
+    needs: pre-run
+    if: needs.pre-run.outputs.changed-php-count > 0
+    name: 'PHPStan Analysis'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          github-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Configure Composer cache
+        uses: actions/cache@v5.0.3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Ensure git is installed
+        run: which git || (sudo apt-get update && sudo apt-get install -y git)
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
+
+      - name: Run PHPStan
+        run: composer phpstan
+
   build-prod:
     needs: pre-run
     if: needs.pre-run.outputs.changed-js-count > 0 || needs.pre-run.outputs.changed-css-count > 0
