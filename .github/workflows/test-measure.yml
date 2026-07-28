@@ -23,6 +23,14 @@ jobs:
       wp-versions: '["6.5", "6.6", "6.7", "6.8", "6.9", "7.0"]'
       # WordPress added PHP 8.4 support in 6.7.
       test-php-exclude: '[{"php": "8.4", "wp": "6.5"}, {"php": "8.4", "wp": "6.6"}]'
+
+      # Optional wp-ci inputs, upstream defaults — uncomment to change.
+      # skip: ''                # lint-css,lint-js,lint-php,test-js,test-php,build,build-artifact,a11y
+      # run-a11y: false         # or: ${{ contains(github.event.pull_request.labels.*.name, 'Run a11y') }}
+      # use-wp-env: true        # false = standalone PHPUnit, no WordPress
+      # build-artifact-path: '' # installable dir the build emits; empty skips the install test
+      # build-artifact-slug: '' # empty = repo name (theme-elementary)
+      # Jobs also gate on changed files: no .php changes = no lint-php.
     secrets:
       # WP_FRAMEWORK_REPO_TEMP_TOKEN must have read access to both private repos:
       #   - rtCamp/wp-tooling   (detect-changes installs the interim CLI from it)
