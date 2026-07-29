@@ -16,4 +16,7 @@ use WP_UnitTestCase;
  *
  * @since 1.0.0
  */
-abstract class TestCase extends WP_UnitTestCase { }
+abstract class TestCase extends WP_UnitTestCase {
+
+	// Shared setup for theme tests belongs here.
+}

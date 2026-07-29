@@ -9,10 +9,10 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
+use rtCamp\Theme\Elementary\Main;
 use rtCamp\WPFramework\AssetLoader;
 use rtCamp\WPFramework\ComponentLoader;
 use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\Theme\Elementary\Main;
 
 /**
  * Class Components
@@ -27,8 +27,6 @@ class Components extends ComponentLoader implements Shareable {
 
 	/**
 	 * Context slug used to namespace the theme's component asset handles.
-	 *
-	 * @return string
 	 */
 	protected function get_context(): string {
 		return 'elementary';

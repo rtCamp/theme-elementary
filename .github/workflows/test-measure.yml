@@ -163,7 +163,9 @@ jobs:
           php-version: '8.2'
           coverage: none
           tools: cs2pr
-          github-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
+          # Rate limits only; all deps are public. setup-php passes this to
+          # Composer's github-oauth, so an expired PAT breaks every download.
+          github-token: ${{ github.token }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -240,8 +242,9 @@ jobs:
       - name: Start WP environment
         run: npm run wp-env start
 
+      # Rate limits only; all deps are public.
       - name: Configure Composer GitHub auth in wp-env
-        run: npx wp-env run cli -- composer config --global github-oauth.github.com "${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}"
+        run: npx wp-env run cli -- composer config --global github-oauth.github.com "${{ github.token }}"
 
       - name: Run tests
         run: npm run test:php

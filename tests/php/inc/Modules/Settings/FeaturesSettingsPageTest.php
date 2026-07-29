@@ -7,9 +7,9 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Main;
 use rtCamp\Theme\Elementary\Modules\Settings\FeaturesSettingsPage;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
 
 /**

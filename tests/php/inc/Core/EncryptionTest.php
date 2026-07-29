@@ -7,10 +7,10 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\Encryption;
 use rtCamp\Theme\Elementary\Helpers\Util;
 use rtCamp\Theme\Elementary\Main;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\WPFramework\Utils\Encryptor;
 
 /**
@@ -40,7 +40,7 @@ class EncryptionTest extends TestCase {
 	 * service falls through to when ELEMENTARY_ENCRYPTION_KEY is missing.
 	 */
 	public function test_missing_key_throws(): void {
-		$this->expectException( RuntimeException::class );
+		$this->expectException( \RuntimeException::class );
 
 		( new Encryptor() )->encrypt( 'no key configured' );
 	}

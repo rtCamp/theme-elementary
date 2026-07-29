@@ -1,6 +1,6 @@
 /**
  * Button component script.
  */
-document.addEventListener( 'DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 	// Component logic goes here.
-} );
+});

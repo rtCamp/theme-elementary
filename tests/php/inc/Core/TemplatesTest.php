@@ -7,9 +7,9 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\Templates;
 use rtCamp\Theme\Elementary\Main;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 
 /**
  * Class TemplatesTest
@@ -30,6 +30,7 @@ class TemplatesTest extends TestCase {
 	 */
 	public function set_up(): void {
 		parent::set_up();
+
 		$this->instance = new Templates();
 	}
 
