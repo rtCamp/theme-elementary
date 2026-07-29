@@ -35,7 +35,7 @@ function constants(): void {
 	}
 
 	if ( ! defined( 'ELEMENTARY_THEME_ENABLE_TAILWIND' ) ) {
-		define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', file_exists( get_template_directory() . '/src/css/frontend/tailwind.css' ) );
+		define( 'ELEMENTARY_THEME_ENABLE_TAILWIND', false );
 	}
 }
 
