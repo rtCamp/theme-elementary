@@ -67,5 +67,12 @@
 			"npm i"
 		],
 		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
+	},
+	"extra": {
+		"phpstan/extension-installer": {
+			"ignore": [
+				"szepeviktor/phpstan-wordpress"
+			]
+		}
 	}
 }
