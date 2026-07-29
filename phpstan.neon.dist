@@ -34,6 +34,8 @@ parameters:
 			- tests/
 			- vendor/
 		analyseAndScan:
-			- node_modules/
+			# Optional: the Lint PHP job never runs `npm install`, so this path is
+			# absent there and PHPStan treats a missing excludePath as a config error.
+			- node_modules/ (?)
 	scanFiles:
 		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
