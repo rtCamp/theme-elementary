@@ -181,6 +181,7 @@ jobs:
         run: which git || (sudo apt-get update && sudo apt-get install -y git)
 
       - name: Install Composer dependencies
+        id: composer-install
         run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction --no-scripts
 
       - name: Validate composer.json
@@ -188,6 +189,11 @@ jobs:
 
       - name: Detect coding standard violations (PHPCS)
         run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 | cs2pr --graceful-warnings
+
+      # Runs even when PHPCS fails, so one push surfaces both classes of error.
+      - name: Run PHPStan
+        if: ${{ !cancelled() && steps.composer-install.conclusion == 'success' }}
+        run: composer phpstan
 
   build-prod:
     needs: pre-run
