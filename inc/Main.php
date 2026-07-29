@@ -26,7 +26,7 @@ class Main {
 	/**
 	 * List of classes to load.
 	 */
-	const CLASSES = [
+	public const CLASSES = [
 		Assets::class,
 		Menu::class,
 		ThemeSetup::class,

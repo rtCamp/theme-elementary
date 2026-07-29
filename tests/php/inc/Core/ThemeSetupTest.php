@@ -7,8 +7,8 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\ThemeSetup;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 
 /**
  * Class ThemeSetupTest
@@ -29,6 +29,7 @@ class ThemeSetupTest extends TestCase {
 	 */
 	public function set_up(): void {
 		parent::set_up();
+
 		$this->instance = new ThemeSetup();
 	}
 
