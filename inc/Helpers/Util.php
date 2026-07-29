@@ -80,8 +80,6 @@ final class Util {
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
 	 * @param array<string, mixed> $args    Arguments to pass to the component.
 	 * @param array<string, mixed> $options Optional. Resolution options. See ComponentLoader::render().
-	 *
-	 * @return void
 	 */
 	public static function component( string $name, array $args = [], array $options = [] ): void {
 		self::components()->render( $name, $args, $options );
@@ -115,8 +113,6 @@ final class Util {
 	 * @param string               $slug Template slug.
 	 * @param string|null          $name Optional. Template variation name.
 	 * @param array<string, mixed> $args Optional. Data passed to the template.
-	 *
-	 * @return void
 	 */
 	public static function render_template( string $slug, ?string $name = null, array $args = [] ): void {
 		self::templates()->render( $slug, $name, $args );

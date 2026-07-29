@@ -7,10 +7,10 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 use rtCamp\Theme\Elementary\Helpers\Util;
 use rtCamp\Theme\Elementary\Main;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
 use rtCamp\WPFramework\Utils\FeatureSelector;
 

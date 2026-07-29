@@ -61,8 +61,6 @@ class Assets extends AssetLoader implements Registrable, Shareable {
 	 *
 	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_true' );
 	 *   add_filter( 'elementary_theme_tailwind_enabled', '__return_false' );
-	 *
-	 * @return bool
 	 */
 	private function is_tailwind_enabled(): bool {
 		return (bool) apply_filters(

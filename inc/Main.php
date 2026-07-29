@@ -11,6 +11,7 @@ namespace rtCamp\Theme\Elementary;
 
 use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, FeatureRegistry, Logger, Menu, Templates, ThemeSetup};
+
 use rtCamp\Theme\Elementary\Modules\Settings\FeaturesSettingsPage;
 // wp:example:block-extension
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
@@ -35,7 +36,7 @@ class Main {
 	/**
 	 * List of classes to load.
 	 */
-	const CLASSES = [
+	public const CLASSES = [
 		Assets::class,
 		Menu::class,
 		ThemeSetup::class,

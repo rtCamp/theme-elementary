@@ -7,8 +7,8 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\Assets;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 
 /**
  * Class AssetsHmrTest
@@ -79,6 +79,7 @@ class AssetsHmrTest extends TestCase {
 	 */
 	private function invoke( string $method ) {
 		$assets = new class( $this->env_file ) extends Assets {
+
 			/**
 			 * Path returned by env_file_path().
 			 *
@@ -93,13 +94,12 @@ class AssetsHmrTest extends TestCase {
 			 */
 			public function __construct( string $env_file ) {
 				$this->test_env_file = $env_file;
+
 				parent::__construct();
 			}
 
 			/**
 			 * Redirect the env lookup to the test's temp file.
-			 *
-			 * @return string
 			 */
 			protected function env_file_path(): string {
 				return $this->test_env_file;

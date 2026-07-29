@@ -44,7 +44,7 @@
 	#############################################################################
 	-->
 
-	<rule ref="WordPress">
+	<rule ref="rtCampWP">
 		<!-- Excluding sniff to allow shorthand array syntax usage. -->
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
@@ -116,6 +116,21 @@
 	</rule>
 
 	<rule ref="WordPress-VIP-Go">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!--
+		rtCampWP bundles the VIP sniffs itself, so the exclusion above (which only
+		applies to this ruleset's own WordPress-VIP-Go reference) no longer reaches
+		them. Tests legitimately write temp fixtures; the VIP filesystem restrictions
+		target production runtime code.
+	-->
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!-- Tests read local fixture files; the caching advice is about remote URLs. -->
+	<rule ref="WordPressVIPMinimum.Performance.FetchingRemoteData">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 

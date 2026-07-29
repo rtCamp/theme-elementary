@@ -9,10 +9,10 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Abstracts;
 
+use rtCamp\Theme\Elementary\Core\FeatureRegistry;
+use rtCamp\Theme\Elementary\Main;
 use rtCamp\WPFramework\Contracts\Abstracts\AbstractFeature;
 use rtCamp\WPFramework\Utils\FeatureSelector;
-use rtCamp\Theme\Elementary\Main;
-use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 
 /**
  * Class AbstractThemeFeature
