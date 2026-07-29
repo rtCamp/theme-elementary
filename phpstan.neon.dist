@@ -1,5 +1,10 @@
 # https://phpstan.org/config-reference
+#
+# The shared baseline loads szepeviktor/phpstan-wordpress exactly once, so
+# composer.json tells extension-installer to ignore it. `level` below overrides
+# the baseline's 5.
 includes:
+	- vendor/rtcamp/wp-phpstan/phpstan.neon.dist
 	- phpstan-baseline.neon
 parameters:
 	# Rules
