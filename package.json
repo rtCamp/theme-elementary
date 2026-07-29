@@ -76,7 +76,7 @@
 		"lint:php:fix": "node ./bin/phpcbf.js",
 		"lint:staged": "lint-staged",
 		"pot": "composer run pot",
-		"prepare": "npm run init",
+		"prepare": "npm run sync-ai",
 		"pretest:php": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/${PWD##*/} composer install --no-interaction --no-scripts",
 		"start": "npm-run-all --parallel start:assets start:blocks",
 		"start:assets": "wp-scripts start  --experimental-modules --config webpack.config.js",
