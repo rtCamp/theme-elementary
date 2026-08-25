@@ -7,8 +7,8 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Core\Menu;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 
 /**
  * Class MenuTest
@@ -29,6 +29,7 @@ class MenuTest extends TestCase {
 	 */
 	public function set_up(): void {
 		parent::set_up();
+
 		$this->instance = new Menu();
 	}
 

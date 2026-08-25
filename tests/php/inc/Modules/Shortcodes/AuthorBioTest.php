@@ -7,8 +7,8 @@
 
 declare( strict_types = 1 );
 
-use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\Theme\Elementary\Modules\Shortcodes\AuthorBio;
+use rtCamp\Theme\Elementary\Tests\TestCase;
 use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**

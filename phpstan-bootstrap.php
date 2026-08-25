@@ -7,6 +7,8 @@
  * @package rtCamp\Theme\Elementary
  */
 
+declare(strict_types = 1);
+
 define( 'ELEMENTARY_THEME_VERSION', '1.0.0' );
 define( 'ELEMENTARY_THEME_PATH', __DIR__ );
 define( 'ELEMENTARY_THEME_BUILD_DIR', __DIR__ . '/assets/build' );

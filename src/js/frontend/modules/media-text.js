@@ -7,7 +7,7 @@
  */
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
-store( 'elementary/media-text', {
+store('elementary/media-text', {
 	actions: {
 		/**
 		 * Update the video play state.
@@ -28,10 +28,10 @@ store( 'elementary/media-text', {
 		playVideo() {
 			const context = getContext();
 			const { ref } = getElement();
-			if ( context.isPlaying ) {
-				ref.querySelector( 'video' )?.play();
+			if (context.isPlaying) {
+				ref.querySelector('video')?.play();
 				context.isPlaying = false;
 			}
 		},
 	},
-} );
+});

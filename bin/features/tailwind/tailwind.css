@@ -1,0 +1,6 @@
+/* Tailwind CSS entry — edit freely. WordPress preset tokens live in _tailwind-theme.css. */
+@source "../../../";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./_tailwind-theme.css";

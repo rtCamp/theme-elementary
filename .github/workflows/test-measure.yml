@@ -31,9 +31,3 @@ jobs:
       # build-artifact-path: '' # installable dir the build emits; empty skips the install test
       # build-artifact-slug: '' # empty = repo name (theme-elementary)
       # Jobs also gate on changed files: no .php changes = no lint-php.
-    secrets:
-      # WP_FRAMEWORK_REPO_TEMP_TOKEN must have read access to both private repos:
-      #   - rtCamp/wp-tooling   (detect-changes installs the interim CLI from it)
-      #   - rtCamp/wp-framework (composer install in lint-php / test-php)
-      wp-tooling-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
-      packages-token: ${{ secrets.WP_FRAMEWORK_REPO_TEMP_TOKEN }}
