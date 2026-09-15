@@ -1,157 +1,294 @@
-# Development Guide
+# Development guide
 
-## Architecture overview
+Use this guide after [initialization](docs/initialization.md). Run the commands
+from the theme directory (the directory containing `composer.json` and
+`package.json`). The examples use an initialized project named **Acme Blog**;
+replace its namespace and text domain with the values in your own
+`composer.json` and `style.css`.
 
-The theme is split into two layers:
+## Before adding code
 
-- **`vendor/rtcamp/wp-framework/`** — The upstream framework, installed as a Composer dependency. Provides reusable scaffolding (`Singleton`, `Loader`, `Container`, `AssetLoaderTrait`, `TemplateLoaderTrait`) and abstract base classes (`AbstractSettingsPage`, `AbstractPostType`, etc.). **Do not modify.** Changes belong in the framework repository.
-- **`inc/`** — All theme-specific code. Extends framework abstracts, registers theme services, and bootstraps the theme.
+The theme has a small set of locations with distinct responsibilities:
 
-The `vendor/` boundary enforces the rule by convention: editing files there gets blown away on every `composer install`.
+| Location | Purpose |
+| --- | --- |
+| `inc/` | Theme PHP classes, loaded through Composer's PSR-4 autoloader. |
+| `inc/Main.php` | Theme bootstrap and the `Main::CLASSES` registration list. |
+| `tests/php/` | PHPUnit tests that mirror the `inc/` class path. |
+| `src/` | Editable JavaScript, CSS, component, and block sources. |
+| `assets/build/` | Generated asset output; never edit it by hand. |
+| `templates/`, `parts/`, `patterns/`, `styles/`, `theme.json` | Block-theme markup and configuration. |
 
-## PSR-4 namespace convention
+After initialization, read the `autoload.psr-4` entry in `composer.json` before
+creating a namespace. The starter uses
+`rtCamp\Theme\Elementary\`; an Acme Blog project uses
+`rtCamp\Theme\Acme_Blog\` and maps it to `inc/`. Keep directory segments and
+class names aligned with that mapping. Keep the working tree clean enough to
+review the generated changes, and install dependencies before adding a class:
 
-Single PSR-4 root, declared in `composer.json`:
-
-```json
-"autoload": {
-    "psr-4": {
-        "rtCamp\\Theme\\Elementary\\": "inc/"
-    }
-}
+```bash
+composer install
 ```
 
-Directory segments map 1:1 to namespace segments. Files are PascalCase.
+Theme classes are registered by `Main::CLASSES`. The framework `Loader` creates
+each listed class and calls its `register_hooks()` method when it implements
+`Registrable`. A class that is not in this list does not run, even when its file
+autoloads successfully. Read the framework's short
+[registration and loader overview](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md)
+for the lifecycle details.
 
-| Namespace                                                              | File                                                  |
-|------------------------------------------------------------------------|-------------------------------------------------------|
-| `rtCamp\Theme\Elementary\Main`                                         | `inc/Main.php`                                        |
-| `rtCamp\Theme\Elementary\Autoloader`                                   | `inc/Autoloader.php`                                  |
-| `rtCamp\Theme\Elementary\Core\Assets`                                  | `inc/Core/Assets.php`                                 |
-| `rtCamp\Theme\Elementary\Core\Menu`                                    | `inc/Core/Menu.php`                                   |
-| `rtCamp\Theme\Elementary\Core\ThemeSetup`                              | `inc/Core/ThemeSetup.php`                             |
-| `rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive` | `inc/Modules/BlockExtensions/MediaTextInteractive.php`|
-| `rtCamp\Theme\Elementary\Modules\Settings\ThemeOptions`                | `inc/Modules/Settings/ThemeOptions.php`               |
-| `rtCamp\Theme\Elementary\Helpers\Util`                                 | `inc/Helpers/Util.php`                                |
+## Adapt an included example
 
-## Directory layout
+This example requires the retained author-bio shortcode. First add an assertion
+for `By Ada Lovelace` to its existing render test in
+`tests/php/inc/Modules/Shortcodes/AuthorBioTest.php`. Run `AuthorBioTest` using
+the focused PHP command in [Local development](docs/local-development.md#check-a-change)
+and confirm that assertion fails. Then edit `template-parts/author-bio.php`
+and change the name line to:
 
-```
-inc/
-├── Autoloader.php              # Wraps vendor/autoload.php with graceful failure
-├── Main.php                    # Theme bootstrap — loads services
-├── Helpers/                    # Stateless static utility classes (final, private __construct)
-│   └── Util.php                # General-purpose helpers (add static methods as needed)
-├── Core/                       # Theme-wide infrastructure
-│   ├── Assets.php              # Asset registration (uses AssetLoaderTrait)
-│   ├── Menu.php                # Navigation menu registration
-│   └── ThemeSetup.php          # Theme support, image sizes, textdomain
-└── Modules/                    # Feature areas
-    ├── BlockExtensions/        # Block render filters and integrations
-    │   └── MediaTextInteractive.php
-    └── Settings/               # Admin settings pages (extend AbstractSettingsPage)
-        └── ThemeOptions.php
+```php
+<p class="acme-blog-author-bio__name">
+	<?php echo esc_html( sprintf( __( 'By %s', 'acme-blog' ), $name ) ); ?>
+</p>
 ```
 
-## Helpers
-
-`inc/Helpers/` is the home for stateless utility classes — `final`, `private __construct()`, static methods only. Today it holds one class, `Util`, kept as a placeholder for theme-wide helpers that don't earn their own dedicated class. Add siblings (e.g. `Str`, `Cache`, `Url`) as cross-cutting helpers accumulate, rather than letting `Util` grow into a grab-bag.
-
-## Picking a base
-
-| Feature                                  | Extends / implements                |
-|------------------------------------------|-------------------------------------|
-| Settings page                            | `AbstractSettingsPage`              |
-| Admin (non-settings) page                | `AbstractAdminPage`                 |
-| Dynamic block (server-side render)       | `AbstractBlock`                     |
-| REST controller                          | `AbstractRESTController`            |
-| Shortcode                                | `AbstractShortcode`                 |
-| Anything else that just wires hooks      | `Registrable` interface             |
-| Same, but registration is conditional    | `ConditionallyRegistrable` interface|
+Keep the generated CSS prefix and text domain from your project. The existing
+`AuthorBio::class` entry in `inc/Main.php` activates the shortcode, and the
+`author-bio` flag is enabled by default under Settings → Features. Use the
+generated shortcode tag (for Acme Blog, `[acme_blog_author_bio]`) in a Shortcode
+block and confirm that the frontend displays **By** followed by the author's
+name. Rerun `AuthorBioTest` and confirm it passes.
 
 ## Adding a new class
 
-1. Pick the right abstract or interface from the table above.
-2. Drop the file in the matching `inc/Modules/<Area>/` directory (or `inc/Core/` if it's theme-wide infrastructure).
-3. Add it to the `Main::CLASSES` constant.
-4. Run `composer dump-autoload`.
+The following small feature appends a notice to post content. It shows the four
+pieces every theme feature needs: a destination, behavior, registration, and a
+check.
 
-Example:
+Start with `tests/php/inc/Modules/ReadingTimeTest.php`, extending the theme's
+`TestCase`. The test namespace follows the project's `autoload-dev.psr-4`
+mapping:
 
 ```php
-// inc/Modules/Example/Feature.php
-namespace rtCamp\Theme\Elementary\Modules\Example;
+<?php
+
+declare( strict_types = 1 );
+
+namespace rtCamp\Theme\Acme_Blog\Tests\inc\Modules;
+
+use rtCamp\Theme\Acme_Blog\Modules\ReadingTime;
+use rtCamp\Theme\Acme_Blog\Tests\TestCase;
+
+final class ReadingTimeTest extends TestCase {
+	public function test_appends_the_notice(): void {
+		$this->assertSame(
+			'Article body<p class="acme-blog-reading-time">Reading time: about one minute</p>',
+			( new ReadingTime() )->append_notice( 'Article body' )
+		);
+	}
+
+	public function test_leaves_empty_content_unchanged(): void {
+		$this->assertSame( '', ( new ReadingTime() )->append_notice( '' ) );
+	}
+}
+```
+
+Next create `inc/Modules/ReadingTime.php` from the class below, initially using
+only `return $content;` as the body of `append_notice()`. Run the focused PHP
+command from [Local development](docs/local-development.md#check-a-change) with
+`--filter ReadingTimeTest`: the notice assertion should fail. Then implement
+the method as shown and rerun the test to confirm both assertions pass.
+
+```php
+<?php
+
+declare( strict_types = 1 );
+
+namespace rtCamp\Theme\Acme_Blog\Modules;
 
 use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
 
-final class Feature implements Registrable {
-    public function register_hooks(): void {
-        add_action( 'init', [ $this, 'do_something' ] );
-    }
+final class ReadingTime implements Registrable {
+	public function register_hooks(): void {
+		add_filter( 'the_content', [ $this, 'append_notice' ] );
+	}
 
-    public function do_something(): void {
-        // ...
-    }
+	public function append_notice( string $content ): string {
+		if ( '' === trim( $content ) ) {
+			return $content;
+		}
+
+		return $content . '<p class="acme-blog-reading-time">'
+			. esc_html__( 'Reading time: about one minute', 'acme-blog' )
+			. '</p>';
+	}
 }
 ```
 
-Then in `Main::CLASSES`:
+Add the class to the existing registration list without replacing any entries:
 
 ```php
-const CLASSES = [
-    Assets::class,
-    Menu::class,
-    ThemeSetup::class,
-    MediaTextInteractive::class,
-    ThemeOptions::class,
-    \rtCamp\Theme\Elementary\Modules\Example\Feature::class,
+// inc/Main.php
+use rtCamp\Theme\Acme_Blog\Modules\ReadingTime;
+
+public const CLASSES = [
+	// Keep every existing entry here.
+	ReadingTime::class,
 ];
 ```
 
-## Conditional registration
+The real list already contains the core services and retained examples; the
+snippet shows only the new import and entry. Run `composer dump-autoload`, then
+run the focused test and open a post on the active site. The notice should
+appear after the post content. For generated classes and their test stubs, use
+[Scaffolding](docs/scaffolding.md); the CLI and AI routes are alternatives.
 
-A class can opt out of registration at runtime by implementing `ConditionallyRegistrable` instead of `Registrable`:
+The framework supplies the `Registrable` contract and loader. Its
+[contracts reference](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/contracts.md)
+and [abstract-class cookbook](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/abstracts.md)
+cover inherited methods and lifecycle behavior.
+
+## Register a post type and taxonomy
+
+Content that must survive a theme switch belongs in a companion plugin. Do not
+put these classes in the theme or add them to the theme's `Main::CLASSES`.
+
+These examples extend an **existing, configured framework-based plugin** at
+`wp-content/plugins/acme-content/`. Before adding the classes, it must have:
+
+- An installed `rtcamp/wp-framework` 1.0.x dependency and Composer mapping
+  `Acme\Content\` to `inc/`.
+- A plugin entry file with a WordPress plugin header, loading its Composer
+  autoloader through `inc/Autoloader.php` and booting `Acme\Content\Main`
+  before `init`.
+- A `Main` class using the framework `Loader`, and `PostTypes` and `Taxonomies`
+  modules extending `AbstractModule` with `get_classes()` lists.
+- A configured PHPUnit suite that boots the plugin.
+
+The theme does not create this plugin. If it is not set up, complete its
+bootstrap first using the framework's
+[module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders).
+Paths below are relative to the plugin root; use that directory for Composer
+commands and its WordPress environment for `wp` commands.
+
+```text
+acme-content.php                 # Autoloader::autoload() → Main::get_instance()
+inc/Main.php                     # plugin Main::CLASSES
+inc/Modules/PostTypes.php        # owns post-type classes
+inc/Modules/PostTypes/Book.php
+inc/Modules/Taxonomies.php       # owns taxonomy classes
+inc/Modules/Taxonomies/Genre.php
+tests/php/PostTypesTest.php
+tests/php/TaxonomiesTest.php
+```
+
+The root plugin file loads `inc/Autoloader.php` and calls
+`Acme\Content\Main::get_instance()`. The plugin's `Main::CLASSES` must contain
+`\Acme\Content\Modules\PostTypes::class` and
+`\Acme\Content\Modules\Taxonomies::class`; each module's `get_classes()` returns
+its concrete classes. Activate the plugin with `wp plugin activate acme-content`.
+Before adding each class below, add its registration assertion to the plugin's
+tests and run the focused test to confirm it fails.
+
+### Post type
+
+Put this class in `inc/Modules/PostTypes/Book.php`:
 
 ```php
-final class DevToolbarExtension implements ConditionallyRegistrable {
-    public function can_register(): bool {
-        return defined( 'WP_DEBUG' ) && WP_DEBUG;
-    }
+<?php
 
-    public function register_hooks(): void {
-        // Wire dev-only hooks here.
-    }
+declare( strict_types = 1 );
+
+namespace Acme\Content\Modules\PostTypes;
+
+use rtCamp\WPFramework\Contracts\Abstracts\AbstractPostType;
+
+final class Book extends AbstractPostType {
+	public static function get_slug(): string {
+		return 'book';
+	}
+
+	public function get_singular_label(): string {
+		return __( 'Book', 'acme-content' );
+	}
+
+	public function get_plural_label(): string {
+		return __( 'Books', 'acme-content' );
+	}
+
+	public function get_menu_icon(): string {
+		return 'dashicons-media-document';
+	}
 }
 ```
 
-The `Loader` calls `can_register()` first and skips `register_hooks()` when it returns false.
+In `inc/Modules/PostTypes.php`, append
+`\Acme\Content\Modules\PostTypes\Book::class` to the existing array returned by
+`get_classes()`. Keep its other entries and run `composer dump-autoload`.
 
-## Running Composer
+`AbstractPostType` registers the type on WordPress's `init` hook. After
+activating the plugin, confirm `wp post-type list` includes `book` and create a
+book in the admin. Rerun `tests/php/PostTypesTest.php` and confirm its
+`post_type_exists( 'book' )` assertion passes.
 
-```bash
-# First-time setup
-composer install
+### Taxonomy
 
-# After adding, renaming, or moving a class
-composer dump-autoload
+Put this class in `inc/Modules/Taxonomies/Genre.php`. Its object type list is
+the association that makes the taxonomy available to books:
+
+```php
+<?php
+
+declare( strict_types = 1 );
+
+namespace Acme\Content\Modules\Taxonomies;
+
+use rtCamp\WPFramework\Contracts\Abstracts\AbstractTaxonomy;
+
+final class Genre extends AbstractTaxonomy {
+	public static function get_slug(): string {
+		return 'genre';
+	}
+
+	public static function get_object_types(): array {
+		return [ 'book' ];
+	}
+
+	public function get_singular_label(): string {
+		return __( 'Genre', 'acme-content' );
+	}
+
+	public function get_plural_label(): string {
+		return __( 'Genres', 'acme-content' );
+	}
+}
 ```
 
-If `vendor/autoload.php` is missing at runtime, the theme shows an admin notice instead of fataling — see `inc/Autoloader.php` and `AutoloaderTrait` in the framework.
-## Notes
+In `inc/Modules/Taxonomies.php`, append
+`\Acme\Content\Modules\Taxonomies\Genre::class` to the existing array returned
+by `get_classes()` and run `composer dump-autoload`.
 
-- Do not use `classmap` autoloading for namespaced classes.
-- Keep the `rtCamp\Theme\Elementary\` PSR-4 root aligned with `inc/`.
+After plugin activation, `wp taxonomy list` should include `genre`, and the
+Book editor should show its Genre control. Rerun `tests/php/TaxonomiesTest.php`:
+`taxonomy_exists( 'genre' )` should be true and its `object_type` should contain
+`book`. The framework's
+[post-type and taxonomy reference](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/abstracts.md#content-registration)
+documents the available overrides. Its [module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders)
+explains why the plugin module owns these classes.
 
-## Tailwind CSS
+## When a feature does not appear
 
-Tailwind CSS v4 is integrated into the webpack build pipeline via PostCSS (`postcss.config.js`).
+Check the failure at the first boundary that can explain it:
 
-**Entry point:** `src/css/frontend/tailwind.css` — compiled to `assets/build/css/frontend/tailwind.css`.
+| Symptom | Check and next action |
+| --- | --- |
+| PHP class is found but no behavior runs | Confirm the namespace matches the `composer.json` PSR-4 prefix, the file path mirrors it, and the class is in the correct `Main::CLASSES` list (or companion-plugin module). Run `composer dump-autoload` and reload WordPress. |
+| Shortcode or hook is missing | Confirm the class implements `Registrable`, its `register_hooks()` method adds the expected hook, and the active theme/plugin is the one you edited. Run the focused PHPUnit test. |
+| A block or script is missing | Check the editable source under `src/`, run `npm run build:dev`, and confirm the matching file exists under `assets/build/`. Do not edit generated output. |
+| The page shows a PHP error | Check the WordPress debug log and the first file/line in the error. Run the focused test and `composer phpcs`; fix the namespace, hook signature, or escaping issue reported there. |
+| Companion content type is absent | Confirm the plugin is active, the concrete class is returned by its owning module's `get_classes()`, and `Main::CLASSES` contains that module. Run `wp post-type list` or `wp taxonomy list` again. |
 
-**Preflight is disabled** by importing only `tailwindcss/theme.css` and `tailwindcss/utilities.css`, omitting `tailwindcss/preflight.css`. Tailwind's preflight is a CSS reset that conflicts with the block editor's own base styles and `wp-block-styles`.
-
-**Design tokens:** The `@theme {}` block in `tailwind.css` maps Tailwind utility names to WordPress CSS custom properties generated from `theme.json` (e.g. `--color-primary: var(--wp--preset--color--primary)`). This means tokens stay in sync with `theme.json` automatically — no manual duplication.
-
-**Content detection:** `tailwind.css` contains an `@source` directive pointing from the CSS file's directory back to the project root (e.g. `@source "../../../";`). This is generated automatically by `GenerateTailwindThemePlugin` using `path.relative(cssDir, process.cwd())` — `process.cwd()` is assumed to be the project root (where webpack is invoked). Tailwind v4 auto-detection is not relied on.
-
-**Opt-in:** The stylesheet is only enqueued when `src/css/frontend/tailwind.css` is present. The init script (TASK-008) controls whether this file is created during project setup.
+Finish a change with the full checks and browser review in [Local
+development](docs/local-development.md#check-a-change). Keep the detailed
+framework API in its upstream documentation and use the [feature
+catalogue](docs/features.md) to see what this starter already supplies.

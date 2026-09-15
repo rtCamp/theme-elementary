@@ -16,7 +16,7 @@ Before reading source files to answer questions about architecture, symbols, cal
 - Use the `/graphify` skill, or the CLI: `graphify query "<question>"`, `graphify path "A" "B"`, `graphify explain "<symbol>"`, `graphify affected "<symbol>"`.
 - The graph is structural (tree-sitter, local, no API key). Read files only when the graph does not answer.
 
-Regenerate after large changes; recipe in [docs/knowledge-graph.md](docs/knowledge-graph.md).
+Regenerate after large changes; recipe in [docs/internal/knowledge-graph.md](docs/internal/knowledge-graph.md).
 
 Claude-specific notes:
 - _(none currently; keep Claude overrides here if they ever diverge from AGENTS.md)_

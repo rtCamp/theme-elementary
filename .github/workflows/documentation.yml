@@ -1,0 +1,41 @@
+name: Documentation
+
+on:
+  push:
+    branches: [theme-elementary-v2]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'DEVELOPMENT.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/documentation.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'DEVELOPMENT.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/documentation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    name: Build and publish documentation
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: rtCamp/action-docusaurus-build/.github/workflows/documentation.yml@6d6acb09ab4368f44a5d31fbce92ba490c331d93
+    with:
+      source-branch: theme-elementary-v2
+      site-title: Theme Elementary
+      sidebar: >-
+        ["index", "getting-started", "initialization", "local-development", "features", "scaffolding"]
+      upload-artifact: ${{ github.event_name != 'pull_request' && github.ref_name == 'theme-elementary-v2' }}
