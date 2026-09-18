@@ -22,7 +22,7 @@ for managing the full feature selection.
 
 | File | Purpose |
 | --- | --- |
-| `theme.json` | WordPress presets used to generate Tailwind tokens. |
+| `theme.json` | WordPress presets used to generate Tailwind tokens — color palette, font sizes, font families, spacing sizes, and shadow presets. |
 | `src/css/frontend/tailwind.css` | Editable Tailwind entry; commit your changes. |
 | `src/css/frontend/_tailwind-theme.css` | Generated token definitions; ignored by Git, do not edit. |
 | `postcss.config.js` | Theme's connection to the shared PostCSS config. |

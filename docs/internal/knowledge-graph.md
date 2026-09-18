@@ -29,3 +29,11 @@ This refreshes the local structural graph. The maintained repository artifacts
 are `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md`. Regenerating
 committed artifacts is a separate maintainer decision; see
 [maintenance](maintenance.md#knowledge-graph).
+
+## Optional: semantic layer
+
+The committed graph is structural only. An optional semantic layer (community
+naming, inferred "why" edges) needs an LLM, via either an API key (for example
+`GEMINI_API_KEY`) with `graphify extract . --mode deep`, or by running the
+`/graphify` skill inside Claude Code, which uses the active session instead of
+a key.

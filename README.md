@@ -18,14 +18,13 @@
 
 ---
 
-Use this starter to create a named WordPress block theme. It provides the theme
+This is a starter WordPress blocks theme. It provides the
 structure, examples, asset pipeline, checks, and optional development features
-needed for a new project.
+needed for building a new blocks theme.
 
-Runtime abstractions ship separately in the
-[`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework) Composer package.
-The init and feature-scaffolding workflows use
-[`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling).
+This theme uses [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework)
+as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling)
+for streamlined project initialization and feature scaffolding.
 
 > **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the
 > architecture overview, the module pattern, and how to add new classes.
@@ -61,10 +60,10 @@ See [Included features](docs/features.md) for the available examples and options
 
 ## AI tooling
 
-This source repository includes AI-assisted setup and feature scaffolding:
+This theme ships AI-assisted setup and feature scaffolding, kept in step across assistants:
 
 - **Claude Code:** retained skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, and `/setup`.
-- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository; initialization removes `.github` from the resulting project.
+- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository; initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`). Issue templates, the PR template, and workflows stay.
 
 Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
 

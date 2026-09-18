@@ -18,6 +18,7 @@ The theme has a small set of locations with distinct responsibilities:
 | `src/` | Editable JavaScript, CSS, component, and block sources. |
 | `assets/build/` | Generated asset output; never edit it by hand. |
 | `templates/`, `parts/`, `patterns/`, `styles/`, `theme.json` | Block-theme markup and configuration. |
+| `vendor/` | Framework code, Composer-managed. Do not edit — `composer install` overwrites it. |
 
 After initialization, read the `autoload.psr-4` entry in `composer.json` before
 creating a namespace. The starter uses
@@ -36,6 +37,18 @@ each listed class and calls its `register_hooks()` method when it implements
 autoloads successfully. Read the framework's short
 [registration and loader overview](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md)
 for the lifecycle details.
+
+## Picking a base
+
+| Feature | Extends / implements |
+| --- | --- |
+| Settings page | `AbstractSettingsPage` |
+| Admin (non-settings) page | `AbstractAdminPage` |
+| Dynamic block (server-side render) | `AbstractBlock` |
+| REST controller | `AbstractRESTController` |
+| Shortcode | `AbstractShortcode` |
+| Anything else that just wires hooks | `Registrable` interface |
+| Same, but registration is conditional | `ConditionallyRegistrable` interface — `Loader` checks `can_register()` before calling `register_hooks()` |
 
 ## Adapt an included example
 

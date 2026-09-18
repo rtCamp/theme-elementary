@@ -1,23 +1,20 @@
 # Getting started
 
-Create an **Acme Blog** theme, activate it in local WordPress, and see a source
-edit on the frontend. Run commands from the theme directory unless a step says
-otherwise. These instructions use the `theme-elementary-v2` branch.
+This guide walks you through turning this starter into a working theme: you'll
+create a personalized **Acme Blog** theme, activate it on a local WordPress
+site, and confirm a source-code edit shows up on the frontend. By the end,
+you'll have the theme running locally and a repeatable checklist for the
+workflows that follow. Run commands from the theme directory unless a step
+says otherwise, and follow along on the `theme-elementary-v2` branch.
 
-## Before you start
+## Prerequisites
 
-Have Git, Composer 2, PHP 8.2+, Node and npm matching [`.nvmrc`](../.nvmrc), and a
-running Docker installation for the recommended `wp-env` route. Use `nvm` or
-another Node version manager to select the version in `.nvmrc`.
-
-```bash
-git --version
-composer --version
-php --version
-node --version
-npm --version
-docker info
-```
+- **Git**
+- **Composer 2**
+- **PHP 8.2+**
+- **Node and npm** matching [`.nvmrc`](../.nvmrc) — use `nvm` or another Node
+  version manager to select it
+- **Docker**, running, for the recommended `wp-env` route
 
 An existing local WordPress installation can replace `wp-env`; Docker is still
 needed for this repository's container-based PHP test command.
@@ -38,13 +35,8 @@ nvm install
 nvm use
 ```
 
-For an existing WordPress repository, place the starter files in its theme
-directory, such as `wp-content/themes/acme-blog`, according to that repository's
-checkout workflow. Run theme-local commands from **that directory** and keep the
-parent repository's environment and deployment tooling at its root. Do not run
-theme init from the repository or `wp-content` root. If the parent repository owns
-the theme history, do not add a nested `.git`. On VIP,
-follow the [VIP local-development guide](https://docs.wpvip.com/local-development/)
+If you're on VIP, follow the
+[VIP local-development guide](https://docs.wpvip.com/local-development/)
 for project-level setup; this guide covers only the theme-local steps.
 
 ## 2. Install dependencies
@@ -57,8 +49,7 @@ Composer's install hook also runs `npm i`, which runs `sync-ai`. Do not repeat
 npm installation immediately afterwards. If you used Composer's `--no-scripts`
 option, run `npm install` separately.
 
-At this point, `vendor/autoload.php` and `node_modules/@rtcamp/wp-tooling` should
-exist. Resolve installation errors before continuing; see
+Resolve installation errors before continuing; see
 [initialization troubleshooting](initialization.md#when-init-fails).
 
 ## 3. Personalize
