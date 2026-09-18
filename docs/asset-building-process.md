@@ -1,110 +1,86 @@
-# Asset Building Process
+# Asset builds
 
-This document outlines the process of building and managing assets (CSS, JS, and modules) within the theme. It also explains how to add new scripts or modules into the build process.
+Edit source under `src/`; builds go under the gitignored `assets/build/`.
+[Local development](local-development.md) owns the watch/build commands.
+The pipeline is Webpack, configured in `webpack.config.js`; build scripts and
+dependencies live in `package.json`.
 
-## Overview
+## Source to output
 
-Our asset pipeline is managed by **Webpack**, using the configuration provided by WordPress and some additional optimizations. The build process involves the following steps:
+| Source | Output |
+| --- | --- |
+| `src/css/frontend/*.css` / `*.scss` | `assets/build/css/frontend/` |
+| `src/css/admin/`, `src/css/editor/` | Matching directories under `assets/build/css/` |
+| `src/js/frontend/`, `src/js/admin/`, `src/js/editor/` | Matching directories under `assets/build/js/` |
+| `src/js/frontend/modules/*.js` | `assets/build/js/modules/` (Interactivity API modules) |
+| `src/components/button/button.js` | `assets/build/js/components/button.js` |
+| `src/components/button/button.scss` | `assets/build/css/components/button.css` |
+| `src/fonts/` | `assets/build/fonts/` |
+| `src/images/svg/` | Optimized SVGs under `assets/build/images/svg/` |
+| `src/blocks/` | `assets/build/blocks/` via the separate block build |
 
-1. **JS and CSS Files** are processed, concatenated, and minified for production.
-2. **Modules** are handled separately to ensure they're loaded correctly.
-3. **CSS/SCSS files** are extracted and moved to a dedicated `css` directory.
-4. **Fonts** are copied from `src/fonts/` to `assets/build/fonts/`.
-5. **SVGs** are optimized with SVGO and copied from `src/images/svg/` to `assets/build/images/svg/`.
+JavaScript asset metadata records dependencies and versions. Component CSS also
+gets metadata; RTL styles are generated alongside the relevant stylesheets.
+Keep generated files out of source edits.
 
-### Key Configuration Files
+CSS files are extracted with `MiniCssExtractPlugin` and, in production builds,
+minified with `CssMinimizerPlugin`. JavaScript is processed through Babel for
+browser compatibility, and `webpack-remove-empty-scripts` drops any script
+entry that has no content (so a directory with only CSS doesn't emit an empty
+`.js` file). New files under `src/js/` and `src/css/` are picked up
+automatically — a `readAllFileEntries` helper scans each context directory at
+build time, so nothing needs registering in `webpack.config.js` itself.
+Interactivity API modules under `src/js/frontend/modules/` are discovered the
+same way, through a dedicated `moduleScripts` entry.
 
-- **webpack.config.js**: This is the main configuration file for building assets.
-- **package.json**: Contains the scripts and dependencies necessary for the build process.
+`frontend/`, `admin/`, and `editor/` are the three contexts under both
+`src/css/` and `src/js/`, for public-facing, wp-admin, and block-editor code
+respectively. Frontend and admin scripts share one build; editor scripts build
+separately so they keep webpack-dev-server's Fast Refresh during development.
 
-### Directory Structure
+Fonts and SVGs are copied rather than compiled: `CopyWebpackPlugin` copies
+`src/fonts/` to `assets/build/fonts/` as-is, and copies `src/images/svg/` to
+`assets/build/images/svg/` after optimizing each file with SVGO — an SVG that
+fails to optimize is copied unchanged rather than failing the build.
 
-- **src/css/{frontend,admin,editor}**: Contains CSS/SCSS files, organized by context.
-- **src/js/{frontend,admin,editor}**: Contains JavaScript files, organized by context.
-- **src/js/frontend/modules**: Contains Interactivity API module scripts.
-- **src/fonts**: Font files copied to `assets/build/fonts/` during build via `CopyWebpackPlugin`.
-- **src/images/svg**: Source SVGs optimized by SVGO and copied to `assets/build/images/svg/` during build via `CopyWebpackPlugin`.
-- **assets/build/js**: Where built JavaScript files are output.
-- **assets/build/css**: Where built CSS files are output.
+## Add an asset
 
----
-
-## How the Asset Building Works
-
-### JS and CSS Build Process
-
-1. **CSS Files**: All `.css` or `.scss` files in `src/css/frontend/`, `src/css/admin/`, and `src/css/editor/` are collected into the build process. They are extracted into separate CSS files in the `assets/build/css` folder.
-   
-   - The main `webpack.config.js` file uses the `MiniCssExtractPlugin` to extract the CSS.
-   - The extracted CSS files are minified using `CssMinimizerPlugin` in production builds.
-
-2. **JS Files**: JavaScript files in `src/js/frontend/`, `src/js/admin/`, and `src/js/editor/` are bundled and output to `assets/build/js/`.
-
-   - JavaScript files are processed using Babel to ensure compatibility with different browsers.
-   - We use `webpack-remove-empty-scripts` to remove any empty JavaScript files that do not have content.
-
-3. **Modules**: Files located in `src/js/frontend/modules` are treated as separate entry points. These are compiled into separate files and stored in the `assets/build/js/modules` directory.
-   
-   - The configuration for modules is handled through the `moduleScripts` entry in the `webpack.config.js`.
-
----
-
-## Adding New Scripts or Modules
-
-To add a new script or module to the build process, follow these steps:
-
-### Adding a New Script
-
-1. Place your JavaScript file in the appropriate context subdirectory under `src/js/`.
-   
-   Example: `src/js/frontend/my-script.js`
-
-2. The `readAllFileEntries` helper in `webpack.config.js` automatically discovers files in `src/js/frontend/`, `src/js/admin/`, and `src/js/editor/`. No webpack config changes are needed.
-
-3. If necessary, add any required dependencies or libraries and import them in your new script.
-
-4. Run the build script:
-
+1. Put a file in the appropriate source directory, for example
+   `src/js/frontend/gallery.js`.
+2. Build it:
    ```bash
-   npm run build:dev  # For development
-   npm run build:prod # For production
+   npm run build:dev  # development
+   npm run build:prod # production
    ```
+   and confirm `assets/build/js/frontend/gallery.js` exists.
+3. Register and enqueue it through the theme's `inc/Core/Assets.php` on the
+   appropriate hook, following the existing asset registrations.
+4. Check the frontend or admin network panel for the file and its dependencies.
 
----
+Discovery adds a file to the build; it does not automatically enqueue every new
+entry in WordPress. The framework's [asset-loader reference](https://github.com/rtCamp/wp-framework/blob/main/docs/loaders.md)
+explains its methods.
 
-### Adding a New Module
+Files prefixed with `_` are not standalone entries — Webpack excludes them
+from the build so they can't be enqueued directly. Use this for imported
+partials that other files pull in, such as `_variables.scss` or a shared
+`_helpers.js`. Do not put ordinary scripts inside the `modules` directory:
+that directory is reserved for Interactivity API modules.
 
-1. Place your module JavaScript file in the `src/js/frontend/modules` directory.
+## Components and blocks
 
-   Example: `src/js/frontend/modules/my-module.js`
+A component's asset filename matches its directory, for example
+`src/components/card/card.js` and `card.scss`. Its PHP render file stays in
+`src/components/card/card.php`. The theme component loader connects rendering
+and assets; see [Included features](features.md#supplied-examples).
 
-2. The modules will automatically be included in the Webpack build process via the `readAllFileEntries` helper:
+Custom blocks have their own build and registration. Keep their metadata and
+sources under `src/blocks/`, and point PHP registration at the corresponding
+`assets/build/blocks/` output. The starter does not require a custom block to
+render its standard block-theme templates.
 
-   ```js
-   entry: () => readAllFileEntries( './src/js/frontend/modules' ),
-   ```
+## Styles and Tailwind
 
-3. Add any necessary logic in your module's JavaScript code to ensure it functions correctly within the theme. Modules are usually self-contained and independent, so make sure to export and import dependencies as needed.
-
-4. Run the build script:
-
-   ```bash
-   npm run build:dev  # For development
-   npm run build:prod # For production
-   ```
-
-## Avoid Bundling Specific Files
-
-For example, if you have a file like `_my-excluded-script.js` or `_my-excluded-styles.css`, Webpack will **ignore** it when bundling and it won't be included in the final output.
-
-### How to Exclude Files
-
-- **CSS/SCSS**: If you want to add a CSS file without bundling it, name it starting with an underscore.
-  
-  Example: `_my-excluded-styles.scss`
-
-- **JavaScript**: Similarly, prefix JS files with an underscore to prevent bundling.
-  
-  Example: `_my-excluded-script.js`
-
-By naming files with the underscore, we make sure they are excluded from the Webpack build process but can still be used elsewhere in the project.
+SCSS globals/mixins and shared imports live under `src/css/`. Optional Tailwind
+uses its own entry and generates WordPress preset tokens at build time; see
+[Tailwind](tailwind.md). Webpack is already configured for these theme inputs.

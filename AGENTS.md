@@ -36,7 +36,7 @@ feature, TDD-first), exist for both assistants and must stay in step:
 
 ## Knowledge graph (graphify)
 
-The repo keeps a queryable code graph in `graphify-out/` (`graph.json` + `GRAPH_REPORT.md`) covering this theme (and, optionally, the `wp-framework`/`wp-tooling` it builds on). Use it to understand the codebase, and keep it current. Tell the user each graphify step in <=30 words (50 max). Only the `init`/`scaffold` agentic tools run these commands; Copilot review does not. Setup detail: `docs/knowledge-graph.md`.
+The repo keeps a queryable code graph in `graphify-out/` (`graph.json` + `GRAPH_REPORT.md`) covering this theme (and, optionally, the `wp-framework`/`wp-tooling` it builds on). Use it to understand the codebase, and keep it current. Tell the user each graphify step in <=30 words (50 max). Only the `init`/`scaffold` agentic tools run these commands; Copilot review does not. Setup detail: `docs/internal/knowledge-graph.md`.
 
 **Graph-first: do not read source files to understand them when the graph can answer.** Before opening a file to learn what a symbol does, how a subsystem works, or how the theme wires together - including `wp-tooling` engine internals (token derivation, capability removal, etc.) - query the graph (`/graphify query "<q>"`, `explain "<symbol>"`, `path "A" "B"`). You almost never need to read engine source: the engine is a black box these skills invoke, and the skill already documents the outcome (how a theme name becomes namespace/package/prefixes). Read a file only when the graph does not answer, or when you need exact code to edit.
 

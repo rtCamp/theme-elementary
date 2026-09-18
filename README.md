@@ -18,10 +18,13 @@
 
 ---
 
-Reusable scaffolding (singleton, autoloader, asset loader, template loader, and
-abstract base classes) ships separately as the
-[`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework) Composer package
-and is loaded from `vendor/`.
+This is a starter WordPress blocks theme. It provides the
+structure, examples, asset pipeline, checks, and optional development features
+needed for building a new blocks theme.
+
+This theme uses [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework)
+as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling)
+for streamlined project initialization and feature scaffolding.
 
 > **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the
 > architecture overview, the module pattern, and how to add new classes.
@@ -29,64 +32,40 @@ and is loaded from `vendor/`.
 
 ## Get started
 
-**Recommended** — scaffold a new project (runs `composer install && npm install`
-and a setup wizard that does the search-replace):
+Start with the [Getting Started guide](docs/getting-started.md). It covers
+prerequisites, acquiring the starter, initialization, and running the theme in
+local WordPress.
 
-```bash
-composer create-project rtcamp/elementary [folder-name]
-```
+> **Current v2 path:** The verified guide follows the `theme-elementary-v2`
+> branch
 
-**Manual** — clone, then install and let the wizard run:
+## What is included
 
-```bash
-git clone <repo-url> && cd <clone-dir>
-composer install
-npm install
-```
+Initialization personalizes the theme and lets you keep or remove the supplied
+examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR, Tailwind,
+and Dev Tools are optional. Linting, static analysis, tests, and AI-assisted
+setup and scaffolding are included for project development.
 
-Use the Node version in `.nvmrc` (`nvm use`). That's it — you're ready to build
-your block theme. ✨
+See [Included features](docs/features.md) for the available examples and options.
 
-## Development
+## Choose your next task
 
-```bash
-npm start            # watch build
-npm run build:prod   # production build
-
-npm run lint:js      # + lint:css, lint:php (PHPCS)
-npm run lint:js:fix  # + lint:css:fix, lint:php:fix (PHPCBF)
-
-npm run test         # all tests; also test:js, test:js:watch, test:php
-```
+| I want to…                                          | Read                                              |
+| --------------------------------------------------- | ------------------------------------------------- |
+| Initialize or manage a theme                        | [Initialization](docs/initialization.md)          |
+| Run WordPress locally, build, or check a change     | [Local development](docs/local-development.md)    |
+| Explore the supplied examples and optional features | [Included features](docs/features.md)             |
+| Generate a feature                                  | [Scaffolding](docs/scaffolding.md)                |
+| Extend the theme by hand                            | [Development guide](DEVELOPMENT.md)               |
 
 ## AI tooling
 
-This theme ships AI-assistant tooling for setup and feature scaffolding, kept in step across assistants:
+This theme ships AI-assisted setup and feature scaffolding, kept in step across assistants:
 
-- **Claude Code:** skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, `/setup`.
-- **GitHub Copilot:** prompt files in [`.github/prompts/`](.github/prompts/) — `/init`, `/scaffold`.
-- A committed knowledge graph in `graphify-out/` lets assistants query the codebase instead of reading it all — see [docs/knowledge-graph.md](docs/knowledge-graph.md).
+- **Claude Code:** retained skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, and `/setup`.
+- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository; initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`). Issue templates, the PR template, and workflows stay.
 
-New here? The [quick-start guide](docs/quick-start-guide.md) walks through naming the theme and adding your first feature (AI or raw CLI). Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
-
-## Folder structure
-
-```
-functions.php               # PHP entry point
-inc/                        # project PHP (PSR-4 root)
-├── Autoloader.php          # wraps vendor/autoload.php with graceful failure
-├── Main.php                # theme bootstrap — loads services
-├── Helpers/                # stateless static utilities
-├── Core/                   # theme-wide infra — assets, menus, theme setup
-└── Modules/                # feature areas
-    ├── BlockExtensions/    # block render filters and integrations
-    └── Settings/           # admin settings pages (extend AbstractSettingsPage)
-src/{css,js,fonts,images}/  # frontend sources → assets/build/
-parts/ patterns/ templates/ # block parts, patterns, templates
-theme.json  style.css       # theme config
-tests/{js,php}/             # JS & PHP tests
-vendor/rtcamp/wp-framework/ # framework (Composer-managed; do not modify)
-```
+Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
 
 ## License
 

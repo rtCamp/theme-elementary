@@ -5,35 +5,28 @@ starter theme built on the `rtcamp/wp-framework` package.
 
 ## Development setup
 
-Requires the Node version in `.nvmrc` (`nvm use`) and PHP 8.2+.
+Use [Getting started](docs/getting-started.md) for dependency installation and
+[Local development](docs/local-development.md) for the daily environment,
+build, and verification workflow. The project requires the Node version in
+`.nvmrc` and PHP 8.2+.
 
-```bash
-nvm use
-composer install   # PHP dependencies + tooling (PHPCS, PHPStan)
-npm install        # build toolchain
-```
+For release validation, local dependency work, and documentation publishing, use
+the [maintainer guidance](docs/internal/README.md).
 
 ## Building assets
 
-```bash
-npm start           # watch build (blocks + assets)
-npm run build:prod  # production build
-```
+Use [Local development](docs/local-development.md#edit-source-and-see-the-result)
+for watch builds and [the delivery build](docs/local-development.md#build-for-delivery)
+for production output.
 
 ## Before you open a PR
 
-Run the checks — all must pass:
-
-```bash
-npm run lint:all    # PHP (PHPCS) + JS (ESLint) + CSS (Stylelint)
-composer phpstan    # static analysis
-npm test            # JS + PHP test suites (PHP runs via @wordpress/env)
-```
+Run the relevant focused tests and lint commands in
+[Local development](docs/local-development.md#check-a-change); all must pass.
 
 ## Pull request checklist
 
-- [ ] `npm run lint:all` and `composer phpstan` pass.
-- [ ] `npm test` passes.
+- [ ] The relevant focused tests and lint commands pass.
 - [ ] New/changed behavior is covered by tests.
 - [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 
