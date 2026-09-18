@@ -156,7 +156,14 @@ module.exports = {
 		],
 	},
 
-	cleanup: { targets: ['.github', 'languages'] },
+	cleanup: {
+		targets: [
+			'.github/copilot-instructions.md',
+			'.github/prompts',
+			'.github/instructions',
+			'languages',
+		],
+	},
 
 	docsUrl: 'https://github.com/rtCamp/theme-elementary/blob/main/README.md',
 	repoUrl: 'https://github.com/rtCamp/theme-elementary',
