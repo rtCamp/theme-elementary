@@ -9,7 +9,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const readline = require( 'readline' );
 const { promisify } = require( 'util' );
-const { execSync } = require( 'child_process' );
+const { execSync, execFileSync } = require( 'child_process' );
 
 /**
  * Define Constants
@@ -213,7 +213,7 @@ const initializeGit = async () => {
 	}
 
 	const pathToRoot = path.resolve( getRoot() );
-	const gitInitCommand = `git init '${ pathToRoot }'`;
+	const gitInitCommand = [ 'init', pathToRoot ];
 	const pathToAllFiles = path.resolve( getRoot(), '.' );
 	const gitAddCommand = `git add '${ pathToAllFiles }'`;
 	// Apply --no-verify flag to skip husky pre-commit hook.
@@ -221,7 +221,7 @@ const initializeGit = async () => {
 
 	try {
 		// Execute git init command in the root directory.
-		execSync( gitInitCommand );
+		execFileSync( 'git', gitInitCommand );
 		console.log( info.success( '\nGit initialized successfully!' ), '✨' );
 		isGitInitialized = true;
 
