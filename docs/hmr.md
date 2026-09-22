@@ -52,7 +52,7 @@ wp-env. In another environment, use its WordPress configuration.
 
 ## How it works
 
-**Theme assets (`start:assets` + BrowserSync):**
+### Theme assets (`start:assets` + BrowserSync)
 
 1. `start:assets` runs the asset watcher in watch mode using
    `webpack.config.js`.
@@ -67,7 +67,7 @@ and `**/*.html`. It's wired into only the frontend/admin JS webpack config,
 not the style or block-editor configs — adding it to more than one would
 start multiple BrowserSync instances on the same port.
 
-**Blocks (`start:blocks` + Fast Refresh):**
+### Blocks (`start:blocks` + Fast Refresh)
 
 5. `start:blocks` starts a webpack dev server, using
    `webpack.blocks.config.js`.
@@ -175,7 +175,7 @@ client — for example when working purely in the block editor — set
 `DISABLE_BS=true` in `.env.local` instead. The server still starts, but the
 browser won't connect to it.
 
-## Verify or diagnose
+## Troubleshooting
 
 - Edit a frontend stylesheet: wait for compilation, then check the style
   changes.

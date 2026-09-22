@@ -7,7 +7,7 @@ starter theme built on the `rtcamp/wp-framework` package.
 
 Use [Getting started](docs/getting-started.md) for dependency installation —
 it installs PHP dependencies and tooling like PHPCS/PHPStan via Composer, and
-the build toolchain via npm — and [Local development](docs/local-development.md)
+the build toolchain via npm. Then use [Local development](docs/local-development.md)
 for the daily environment, build, and verification workflow. The project
 requires the Node version in `.nvmrc` and PHP 8.2+.
 

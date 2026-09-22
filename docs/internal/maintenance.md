@@ -39,9 +39,13 @@ verification signal rather than diffing `inc/` by hand.
 
 ### Cleanup checks
 
-Check that `.github` and `languages` are removed, the init wrapper survives, and
-`sync-ai` restores only generated framework instructions. Claude skills and
-documentation remain; Copilot prompts and theme-specific GitHub rules do not.
+Check that the Copilot-specific `.github` files (`copilot-instructions.md`,
+`prompts/`, `instructions/`) and `languages` are removed, while workflows,
+issue templates, and the PR template stay untouched. Also confirm the init
+wrapper script is not removed by cleanup, and that `sync-ai` (see
+[initialization.md](../initialization.md#what-changes)) restores only
+generated framework instructions. Claude skills and documentation remain;
+Copilot prompts and theme-specific GitHub rules do not.
 Run POT generation separately to verify the language output can be recreated.
 
 Check references in retained documentation and AI instructions. Use upstream

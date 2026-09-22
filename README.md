@@ -66,7 +66,8 @@ Once the theme is running, here's where to go next:
 This theme ships AI-assisted setup and feature scaffolding, kept in step across assistants:
 
 - **Claude Code:** retained skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, and `/setup`.
-- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository; initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`). Issue templates, the PR template, and workflows stay.
+- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository.
+  - Initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`); issue templates, the PR template, and workflows stay.
 - A committed knowledge graph in [`graphify-out/`](graphify-out/) lets AI
   assistants query the codebase's structure instead of reading it all; see
   [docs/internal/knowledge-graph.md](docs/internal/knowledge-graph.md) for how

@@ -1,15 +1,19 @@
 # Add a feature with CLI or AI
 
 This page shows two ways to generate a new theme feature — a raw CLI command
-or the AI-guided `/scaffold` skill — using the same worked example: an
+or the AI-guided `/scaffold` skill — using the same worked example below: an
 `acme_blog_site_name` shortcode that returns the escaped WordPress site title.
 Both routes target the same Acme Blog project and register the class in
 `inc/Main.php`.
 
-| Route | Produces | Your remaining work |
+| Aspect | AI `/scaffold` | Raw CLI (`wp-tooling add`) |
 | --- | --- | --- |
-| CLI | Class/test stubs and wiring instructions | Implement behavior, apply theme-specific wiring, expand tests, and run checks. |
-| AI `/scaffold` | A guided implementation using the same generator, tests, and wiring | Review the proposed changes, approve required actions, and verify the result. |
+| Conventions and inputs | Inferred from your brief and the codebase (namespace, paths, text domain) | Specified explicitly via flags |
+| Wiring | Inserted into `Main::CLASSES` for you, with your consent | You add the `::class` line and `use` import yourself |
+| Code written | Implemented from your brief and codebase context | Scaffolded with a stub; the logic is yours |
+| Tests | Written first (TDD) and run for you | Provided as a stub to complete |
+| Quality gates (`phpcs` / `phpstan`) | Run and fixed for you | Run at your discretion |
+| Output | Generated from intent — worth a quick review | Deterministic, exactly as specified |
 
 Rule of thumb: use the CLI for a single artifact you can fully specify; use
 `/scaffold` for multi-feature setups, unfamiliar conventions, or when you want
@@ -108,22 +112,6 @@ test results; a generated stub alone is not a finished feature.
 Copilot prompts are available in the starter before cleanup. For their retention
 behavior, see [Initialization](initialization.md#cli-or-ai). You do not need to
 run the CLI route as well as the AI route.
-
-## AI route vs. CLI route
-
-The worked example above shows the difference: the AI route implements the
-feature and its wiring from one sentence, while the CLI route reaches the same
-result through precise flags and hands-on tests, wiring, and gates. Both are
-valid; they trade convenience for control.
-
-| Aspect | AI `/scaffold` | Raw CLI (`wp-tooling add`) |
-| --- | --- | --- |
-| Conventions and inputs | Inferred from your brief and the codebase (namespace, paths, text domain) | Specified explicitly via flags |
-| Wiring | Inserted into `Main::CLASSES` for you, with your consent | You add the `::class` line and `use` import yourself |
-| Code written | Implemented from your brief and codebase context | Scaffolded with a stub; the logic is yours |
-| Tests | Written first (TDD) and run for you | Provided as a stub to complete |
-| Quality gates (`phpcs` / `phpstan`) | Run and fixed for you | Run at your discretion |
-| Output | Generated from intent — worth a quick review | Deterministic, exactly as specified |
 
 ## Code consistency and standards
 

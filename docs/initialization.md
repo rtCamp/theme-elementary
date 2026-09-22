@@ -98,7 +98,7 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
 | Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations; Dev Tools adds Composer/scripts and a gitignored `.wp-env.override.json`. |
 | State | `.wp-scaffold.json` records identity and feature choices; do not hand-edit it. |
 | Autoload | Setup regenerates Composer's autoloader. |
-| Cleanup | Before the wrapper's final sync, `.github` and `languages` are removed, including workflows, Copilot prompts, theme-specific GitHub rules, and the starter POT file. |
+| Cleanup | Before the wrapper's final sync, the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` (including the starter POT file) are removed. Workflows, issue templates, the PR template, `dependabot.yml`, and `release.yml` stay untouched. |
 | AI instructions | After a successful change, the wrapper runs `sync-ai`; in a standalone project with the framework installed, it refreshes the generated framework PHP instructions. It does not restore the removed prompts or theme-specific rules. |
 | Retained files | Theme source, `bin/`, Claude skills, documentation, and test infrastructure remain; files belonging to removed example sets do not. |
 
@@ -167,7 +167,7 @@ change.
   it, then follow the Composer update instruction. Package configuration and
   usage belong in the [Dev Tools guide](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md#install-consumer-project).
 
-## When init fails
+## Troubleshooting
 
 | Symptom | Check and next action |
 | --- | --- |

@@ -50,7 +50,7 @@ npm installation immediately afterwards. If you used Composer's `--no-scripts`
 option, run `npm install` separately.
 
 Resolve installation errors before continuing; see
-[initialization troubleshooting](initialization.md#when-init-fails).
+[initialization troubleshooting](initialization.md#troubleshooting).
 
 ## 3. Personalize
 

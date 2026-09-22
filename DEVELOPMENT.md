@@ -34,8 +34,10 @@ After initialization, read the `autoload.psr-4` entry in `composer.json` before
 creating a namespace. The starter uses
 `rtCamp\Theme\Elementary\`; an Acme Blog project uses
 `rtCamp\Theme\Acme_Blog\` and maps it to `inc/`. Keep directory segments and
-class names aligned with that mapping. Keep the working tree clean enough to
-review the generated changes, and install dependencies before adding a class:
+class names aligned with that mapping, and do not use `classmap` autoloading
+for namespaced classes — it works against this PSR-4 mapping. Keep the
+working tree clean enough to review the generated changes, and install
+dependencies before adding a class:
 
 ```bash
 composer install
@@ -319,13 +321,7 @@ Book editor should show its Genre control. Rerun `tests/php/TaxonomiesTest.php`:
 documents the available overrides. Its [module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders)
 explains why the plugin module owns these classes.
 
-## Notes
-
-Do not use `classmap` autoloading for namespaced classes — it works against
-the PSR-4 mapping every convention above assumes. Keep the project's PSR-4
-root aligned with `inc/` as directory segments and class names change.
-
-## When a feature does not appear
+## Troubleshooting
 
 Check the failure at the first boundary that can explain it:
 
