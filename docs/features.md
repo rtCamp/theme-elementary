@@ -1,17 +1,10 @@
 # What the theme includes
 
-The starter theme provides infrastructure you build on, examples you can
-adapt, and optional development tools you can turn on when you need them.
-This page is a map of all three — what each one is, where its source lives,
-and how to see it working. [Initialization](initialization.md) owns the
-commands that select and toggle them; [Local development](local-development.md)
-owns builds and checks.
+The starter theme provides infrastructure you build on, examples you can adapt, and optional development tools you can turn on when you need them. This page is a map of all three — what each one is, where its source lives, and how to see it working. [Initialization](initialization.md) owns the commands that select and toggle them; [Local development](local-development.md) owns builds and checks.
 
 ## Theme infrastructure
 
-These facilities are part of the starter and remain after an example is
-removed. The loaders and utilities are theme-owned adapters around the linked
-wp-framework services.
+These facilities are part of the starter and remain after an example is removed. The loaders and utilities are theme-owned adapters around the linked wp-framework services.
 
 | Facility | Ownership and source | Default / lifecycle | Try or verify |
 | --- | --- | --- | --- |
@@ -27,9 +20,7 @@ wp-framework services.
 
 ## Supplied examples
 
-All example sets are kept by default. Removing a set during init deletes its
-configured files and consumes its registration markers; it is not an on/off
-switch you can later use to restore the example.
+All example sets are kept by default. Removing a set during init deletes its configured files and consumes its registration markers; it is not an on/off switch you can later use to restore the example.
 
 | Init key | Ownership and source | Default / lifecycle | How to see it |
 | --- | --- | --- | --- |
@@ -39,8 +30,7 @@ switch you can later use to restore the example.
 | `components` | Skeleton: `src/components/button/`, `src/components/card/` | Kept by default; remove during first init only. | Call a component from a PHP template and build its assets. |
 | `patterns` | Skeleton: `patterns/page-creation-pattern.php` | Kept by default; remove during first init only. | Create a page and use the supplied page-creation pattern. |
 
-For an Acme Blog project that retained the button example, call this from a PHP
-template:
+For an Acme Blog project that retained the button example, call this from a PHP template:
 
 ```php
 \rtCamp\Theme\Acme_Blog\Helpers\Util::component(
@@ -49,22 +39,15 @@ template:
 );
 ```
 
-The [development guide](../DEVELOPMENT.md#adding-a-new-class) shows the manual
-extension pattern. To generate a new feature, follow [Scaffolding](scaffolding.md).
-Original examples remain browsable in the
-[starter theme source](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/inc/Modules)
-after you remove them from your project.
+The [development guide](../DEVELOPMENT.md#adding-a-new-class) shows the manual extension pattern. To generate a new feature, follow [Scaffolding](scaffolding.md). Original examples remain browsable in the [starter theme source](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/inc/Modules) after you remove them from your project.
 
 ## Optional development features
 
-Unlike the supplied examples, these aren't source you keep or remove once —
-they're features you can turn on or off at any time through init.
+Unlike the supplied examples, these aren't source you keep or remove once — they're features you can turn on or off at any time through init.
 
 | Init key | Ownership and source | Default / lifecycle | Theme-visible result | Verify |
 | --- | --- | --- | --- | --- |
 | `hmr` | Skeleton: `webpack.config.js`, `inc/Core/Assets.php`, `.env.local` | On by default; toggle repeatedly with init or `ENABLE_HMR`. Dependencies remain installed. | BrowserSync watches compiled assets and reloads or injects changes. | Start the asset watcher in a local WordPress environment and edit CSS. See [Live reload](hmr.md). |
 | `tailwind` | Skeleton: `bin/features/tailwind/`, `webpack.config.js`, `functions.php`, `inc/Core/Assets.php`; tooling package: `@rtcamp/tailwind-config` | Off by default; enable or disable with init. The generated token file and build output are ignored. | Adds the entry and PostCSS config, declares dependencies, and enables the Tailwind enqueue constant. | Run `npm install`, build, and inspect a utility class. See [Tailwind](tailwind.md). |
 
-The Settings → Features runtime switches, such as `author-bio` and
-`media-text-interactive`, control whether retained PHP hooks register. They are
-separate from init's optional development features and never delete source files.
+The Settings → Features runtime switches, such as `author-bio` and `media-text-interactive`, control whether retained PHP hooks register. They are separate from init's optional development features and never delete source files.

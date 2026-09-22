@@ -1,23 +1,15 @@
 # Theme Elementary
 
-Build a WordPress block theme from this starter theme, then keep the examples and
-tools your project needs. Start with [Getting Started](getting-started.md).
+Build a WordPress block theme from this starter theme, then keep the examples and tools your project needs. Start with [Getting Started](getting-started.md).
 
 ## Two ways to work
 
-This starter is set up and extended in two ways: **AI skills** (guided —
-`/init` and `/scaffold` in Claude Code) or the **raw CLI** (manual —
-`npm run init` and `npx wp-tooling add`).
+This starter is set up and extended in two ways: **AI skills** (guided — `/init` and `/scaffold` in Claude Code) or the **raw CLI** (manual — `npm run init` and `npx wp-tooling add`).
 
-- **`/init` / `npm run init`** — names the theme and selects which example
-  sets ship. Run once per repo; see [Initialization](initialization.md).
-- **`/scaffold` / `npx wp-tooling add`** — adds one feature (a block,
-  shortcode, settings page, service, and so on), wired into `Main::CLASSES`.
-  See [Scaffolding](scaffolding.md).
+- **`/init` / `npm run init`** — names the theme and selects which example sets ship. Run once per repo; see [Initialization](initialization.md).
+- **`/scaffold` / `npx wp-tooling add`** — adds one feature (a block, shortcode, settings page, service, and so on), wired into `Main::CLASSES`. See [Scaffolding](scaffolding.md).
 
-Both are valid — pick the CLI when you want full control over every input,
-or the AI skill when you want the wizard to infer conventions from a brief
-and check its own work.
+Both are valid — pick the CLI when you want full control over every input, or the AI skill when you want the wizard to infer conventions from a brief and check its own work.
 
 | I want to… | Read |
 | --- | --- |
@@ -30,17 +22,12 @@ and check its own work.
 
 ## Further reading
 
-- [Asset builds](asset-building-process.md), [live reload](hmr.md), and
-  [Tailwind](tailwind.md) cover theme-specific configuration.
-- [Contributing](../CONTRIBUTING.md) and [maintenance](internal/README.md) are for
-  developers maintaining the starter theme itself.
+- [Asset builds](asset-building-process.md), [live reload](hmr.md), and [Tailwind](tailwind.md) cover theme-specific configuration.
+- [Contributing](../CONTRIBUTING.md) and [maintenance](internal/README.md) are for developers maintaining the starter theme itself.
 
 ## Shared dependencies
 
-PHP contracts: [wp-framework](https://github.com/rtCamp/wp-framework/blob/main/docs/index.md).
-Init and scaffold tooling: [wp-tooling](https://github.com/rtCamp/wp-tooling/blob/main/README.md).
-Runtime telemetry: [wp-devtools](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md)
-(repository access required).
+PHP contracts: [wp-framework](https://github.com/rtCamp/wp-framework/blob/main/docs/index.md). Init and scaffold tooling: [wp-tooling](https://github.com/rtCamp/wp-tooling/blob/main/README.md). Runtime telemetry: [wp-devtools](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md) (repository access required).
 
 ## Command reference
 
