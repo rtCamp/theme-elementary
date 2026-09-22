@@ -1,13 +1,20 @@
 # Add a feature with CLI or AI
 
-Create an `acme_blog_site_name` shortcode that returns the escaped WordPress
-site title. Both routes below target the same Acme Blog project and register the
-class in `inc/Main.php`.
+This page shows two ways to generate a new theme feature — a raw CLI command
+or the AI-guided `/scaffold` skill — using the same worked example: an
+`acme_blog_site_name` shortcode that returns the escaped WordPress site title.
+Both routes target the same Acme Blog project and register the class in
+`inc/Main.php`.
 
 | Route | Produces | Your remaining work |
 | --- | --- | --- |
 | CLI | Class/test stubs and wiring instructions | Implement behavior, apply theme-specific wiring, expand tests, and run checks. |
 | AI `/scaffold` | A guided implementation using the same generator, tests, and wiring | Review the proposed changes, approve required actions, and verify the result. |
+
+Rule of thumb: use the CLI for a single artifact you can fully specify; use
+`/scaffold` for multi-feature setups, unfamiliar conventions, or when you want
+the tests and gates handled for you. Both are valid — they trade convenience
+for control.
 
 ## Before generating
 
@@ -92,13 +99,53 @@ Test registration, a plain title, and a title containing an ampersand.
 
 The assistant confirms conventions and asks you to approve the test checklist
 before generating. It shows the wiring diff and waits for your consent before
-applying it, then runs failing behavior tests and implements and checks the
-feature. Installation/build actions also need your consent. Check the actual
-diff and test results; a generated stub alone is not a finished feature.
+applying it, then runs failing behavior tests and implements the feature. It
+then runs the project's quality gates, fixing what it can — see [Code
+consistency and standards](#code-consistency-and-standards) below.
+Installation/build actions also need your consent. Check the actual diff and
+test results; a generated stub alone is not a finished feature.
 
 Copilot prompts are available in the starter before cleanup. For their retention
 behavior, see [Initialization](initialization.md#cli-or-ai). You do not need to
 run the CLI route as well as the AI route.
+
+## AI route vs. CLI route
+
+The worked example above shows the difference: the AI route implements the
+feature and its wiring from one sentence, while the CLI route reaches the same
+result through precise flags and hands-on tests, wiring, and gates. Both are
+valid; they trade convenience for control.
+
+| Aspect | AI `/scaffold` | Raw CLI (`wp-tooling add`) |
+| --- | --- | --- |
+| Conventions and inputs | Inferred from your brief and the codebase (namespace, paths, text domain) | Specified explicitly via flags |
+| Wiring | Inserted into `Main::CLASSES` for you, with your consent | You add the `::class` line and `use` import yourself |
+| Code written | Implemented from your brief and codebase context | Scaffolded with a stub; the logic is yours |
+| Tests | Written first (TDD) and run for you | Provided as a stub to complete |
+| Quality gates (`phpcs` / `phpstan`) | Run and fixed for you | Run at your discretion |
+| Output | Generated from intent — worth a quick review | Deterministic, exactly as specified |
+
+## Code consistency and standards
+
+Consistency is a primary requirement: code should read the same no matter who,
+or what, writes it. The AI route is built around that.
+
+- **The same standards, enforced every run.** Generated code is checked
+  against the project's actual gates — the same ones you'd run by hand: PHP
+  style ([`phpcs.xml.dist`](../phpcs.xml.dist), the WordPress Theme Coding
+  Standards), PHP static analysis ([`phpstan.neon.dist`](../phpstan.neon.dist)),
+  JS ([`eslint.config.mjs`](../eslint.config.mjs)), and CSS
+  ([`.stylelintrc.json`](../.stylelintrc.json)). Run the PHP linters inside
+  `wp-env` when the host PHP is newer than the pinned WPCS.
+- **Verified, not just formatted.** `/scaffold` writes the test first and runs
+  it, then `composer phpcs:fix` → `composer phpcs` → `composer phpstan`,
+  fixing what it can. A feature ships passing the gates, not merely looking
+  right.
+- **No drift between developers.** Registration, wiring, and lifecycle come
+  from the shared [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework)
+  abstracts, so the structure is identical no matter who generates it.
+
+The conventions these gates enforce are documented in [AGENTS.md](../AGENTS.md).
 
 ## Verify and continue
 
@@ -125,6 +172,9 @@ For a manual feature, read [Development](../DEVELOPMENT.md).
 | Feature runs twice | Remove duplicate registration, not the class implementation. |
 | A generated block has missing assets | Build its source and verify its configured block build directory. |
 
-Persistent content types and taxonomies belong in a companion plugin so they
-remain available when the theme changes. Generate and register them in that
-plugin, following its namespace, paths, and bootstrap conventions.
+Persistent content types, taxonomies, REST controllers, CLI commands, cron
+jobs, and user roles belong in a companion plugin so they remain available
+when the theme changes — a theme switch must not drop a site's content or its
+REST API. `/scaffold` flags the placement and suggests a companion plugin
+before proceeding if you ask it for one of these. Generate and register them
+in that plugin, following its namespace, paths, and bootstrap conventions.

@@ -18,9 +18,9 @@
 
 ---
 
-This is a starter WordPress blocks theme. It provides the
+This is a starter WordPress block theme. It provides the
 structure, examples, asset pipeline, checks, and optional development features
-needed for building a new blocks theme.
+needed for building a new block theme.
 
 This theme uses [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework)
 as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling)
@@ -32,12 +32,13 @@ for streamlined project initialization and feature scaffolding.
 
 ## Get started
 
-Start with the [Getting Started guide](docs/getting-started.md). It covers
-prerequisites, acquiring the starter, initialization, and running the theme in
-local WordPress.
+Start with the [Getting Started guide](docs/getting-started.md) — a short,
+concrete walkthrough covering prerequisites, acquiring the starter, installing
+dependencies, personalizing the theme, and seeing it running in local
+WordPress.
 
 > **Current v2 path:** The verified guide follows the `theme-elementary-v2`
-> branch
+> branch.
 
 ## What is included
 
@@ -49,6 +50,8 @@ setup and scaffolding are included for project development.
 See [Included features](docs/features.md) for the available examples and options.
 
 ## Choose your next task
+
+Once the theme is running, here's where to go next:
 
 | I want to…                                          | Read                                              |
 | --------------------------------------------------- | ------------------------------------------------- |
@@ -64,6 +67,10 @@ This theme ships AI-assisted setup and feature scaffolding, kept in step across 
 
 - **Claude Code:** retained skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, and `/setup`.
 - **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository; initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`). Issue templates, the PR template, and workflows stay.
+- A committed knowledge graph in [`graphify-out/`](graphify-out/) lets AI
+  assistants query the codebase's structure instead of reading it all; see
+  [docs/internal/knowledge-graph.md](docs/internal/knowledge-graph.md) for how
+  it's built and kept current.
 
 Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
 

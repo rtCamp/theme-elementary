@@ -1,10 +1,20 @@
 # Development guide
 
-Use this guide after [initialization](docs/initialization.md). Run the commands
-from the theme directory (the directory containing `composer.json` and
-`package.json`). The examples use an initialized project named **Acme Blog**;
-replace its namespace and text domain with the values in your own
-`composer.json` and `style.css`.
+This guide shows how to extend the theme by hand: where new code belongs,
+which framework base class to start from, and worked examples for adding a
+class, a post type, and a taxonomy. Use it after
+[initialization](docs/initialization.md). Run the commands from the theme
+directory (the directory containing `composer.json` and `package.json`). The
+examples use an initialized project named **Acme Blog**; replace its
+namespace and text domain with the values in your own `composer.json` and
+`style.css`.
+
+The theme sits on two layers: `vendor/rtcamp/wp-framework/` is the upstream
+framework — reusable scaffolding (the loader and abstract base classes)
+installed as a Composer dependency — and `inc/` is everything theme-specific,
+extending those framework abstracts and registering theme services. The
+`vendor/` boundary is enforced by convention, not code: anything edited there
+is overwritten on the next `composer install`.
 
 ## Before adding code
 
@@ -18,7 +28,7 @@ The theme has a small set of locations with distinct responsibilities:
 | `src/` | Editable JavaScript, CSS, component, and block sources. |
 | `assets/build/` | Generated asset output; never edit it by hand. |
 | `templates/`, `parts/`, `patterns/`, `styles/`, `theme.json` | Block-theme markup and configuration. |
-| `vendor/` | Framework code, Composer-managed. Do not edit — `composer install` overwrites it. |
+| `vendor/` | Framework code, Composer-managed. Do not edit — `composer install` overwrites it; changes belong in the framework repository. |
 
 After initialization, read the `autoload.psr-4` entry in `composer.json` before
 creating a namespace. The starter uses
@@ -49,6 +59,26 @@ for the lifecycle details.
 | Shortcode | `AbstractShortcode` |
 | Anything else that just wires hooks | `Registrable` interface |
 | Same, but registration is conditional | `ConditionallyRegistrable` interface — `Loader` checks `can_register()` before calling `register_hooks()` |
+
+### Conditional registration
+
+A class can opt out of registration at runtime by implementing
+`ConditionallyRegistrable` instead of `Registrable`:
+
+```php
+final class DevToolbarExtension implements ConditionallyRegistrable {
+	public function can_register(): bool {
+		return defined( 'WP_DEBUG' ) && WP_DEBUG;
+	}
+
+	public function register_hooks(): void {
+		// Wire dev-only hooks here.
+	}
+}
+```
+
+The `Loader` calls `can_register()` first and skips `register_hooks()` when
+it returns false.
 
 ## Adapt an included example
 
@@ -289,6 +319,12 @@ Book editor should show its Genre control. Rerun `tests/php/TaxonomiesTest.php`:
 documents the available overrides. Its [module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders)
 explains why the plugin module owns these classes.
 
+## Notes
+
+Do not use `classmap` autoloading for namespaced classes — it works against
+the PSR-4 mapping every convention above assumes. Keep the project's PSR-4
+root aligned with `inc/` as directory segments and class names change.
+
 ## When a feature does not appear
 
 Check the failure at the first boundary that can explain it:
@@ -300,6 +336,7 @@ Check the failure at the first boundary that can explain it:
 | A block or script is missing | Check the editable source under `src/`, run `npm run build:dev`, and confirm the matching file exists under `assets/build/`. Do not edit generated output. |
 | The page shows a PHP error | Check the WordPress debug log and the first file/line in the error. Run the focused test and `composer phpcs`; fix the namespace, hook signature, or escaping issue reported there. |
 | Companion content type is absent | Confirm the plugin is active, the concrete class is returned by its owning module's `get_classes()`, and `Main::CLASSES` contains that module. Run `wp post-type list` or `wp taxonomy list` again. |
+| Composer dependencies aren't installed | Not a hard crash — `inc/Autoloader.php` shows an admin notice instead of fataling; run `composer install` and reload. |
 
 Finish a change with the full checks and browser review in [Local
 development](docs/local-development.md#check-a-change). Keep the detailed

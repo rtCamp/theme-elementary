@@ -1,7 +1,9 @@
 # Local development
 
-Start here after [initialization](initialization.md). Commands run from the theme
-directory; examples assume the folder is `acme-blog`.
+This guide covers day-to-day work on an initialized theme: running WordPress
+locally, editing source and seeing the result, checking a change, and building
+for delivery. Start here after [initialization](initialization.md). Commands
+run from the theme directory; examples assume the folder is `acme-blog`.
 
 ## Start and stop WordPress
 
@@ -44,8 +46,10 @@ With `start:assets`, edit a stylesheet or script and confirm the watcher writes
 the matching file under `assets/build/`; BrowserSync then injects CSS or reloads
 the frontend. For template and block markup, refresh the frontend or Site Editor
 after the build. With `start:blocks`, edit a custom block and confirm the editor
-refreshes and the browser console has no build error. A visible source change on
-the active site is the basic success check.
+refreshes and the browser console has no build error. Whichever watcher you're
+using, a visible source change reaching the active site is the basic success
+check — if it doesn't show up, that's the first thing to debug before writing
+more code.
 
 For a one-time development build, use `npm run build:dev`. See
 [Asset builds](asset-building-process.md) for entry naming and enqueueing.
@@ -72,7 +76,8 @@ For HTTPS, custom ports, or block refresh, read [Live reload](hmr.md). Leave
 
 ## Check a change
 
-These host commands run once:
+Run these once, from the host machine, before committing or opening a PR —
+they're the same checks CI runs, just faster to iterate on locally:
 
 ```bash
 npm run test:js -- --runInBand --watch=false
@@ -82,6 +87,11 @@ npm run lint:package-json
 composer phpcs
 composer phpstan
 ```
+
+`npm run lint:js` reads `eslint.config.mjs`, `npm run lint:css` reads
+`.stylelintrc.json`, `composer phpcs` reads `phpcs.xml.dist` (the WordPress
+Theme Coding Standards), and `composer phpstan` reads `phpstan.neon.dist` —
+edit those files to change the actual rules.
 
 For a focused JavaScript test, add its path while keeping watch mode off:
 
@@ -136,8 +146,10 @@ npm run build:prod
 
 Verify `assets/build/` contains the CSS, JavaScript, metadata, and any custom
 blocks needed by the theme. The directory is gitignored: commit source and
-build configuration, and ensure your deployment process builds or packages the
-output. This starter theme does not define your project's deployment pipeline.
+build configuration, not the build output itself, and make sure your
+deployment process runs this build (or an equivalent) before the theme goes
+live. This starter theme does not define your project's deployment pipeline —
+that decision is yours.
 
 Review visible behavior and checks before feature integration; make a separate
 feature commit when that checkpoint is useful for your workflow.

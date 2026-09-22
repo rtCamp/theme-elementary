@@ -1,9 +1,10 @@
 # Initialize and manage the theme
 
-Initialization turns an acquired starter theme into a named project. It does not
-install WordPress or implement new feature classes. It starts after acquisition
-and dependency installation and ends after the identity, capabilities, generated
-state, and cleanup have been applied.
+Initialization turns an acquired starter theme into a named project: it sets
+the theme's identity, applies your chosen capabilities, and cleans up
+starter-only files. It runs after you've acquired the starter and installed
+dependencies, and it does not install WordPress or implement new feature
+classes.
 
 ## Before init
 
@@ -39,11 +40,14 @@ an assistant that supports it, or the CLI, for subsequent work. The maintained
 [AI entry points](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/.claude/skills)
 describe assistant-specific instructions.
 
-The lifecycle is complete at each checkpoint: acquisition puts the starter in
-the target directory, installation provides `vendor/autoload.php` and
-`node_modules/@rtcamp/wp-tooling`, initialization writes the named project state,
-and feature work starts after the review checkpoint and ends with the new feature
-wired and verified through [Scaffolding](scaffolding.md).
+Each stage hands off a concrete result to the next:
+
+1. **Acquisition** puts the starter in the target directory.
+2. **Dependency install** provides `vendor/autoload.php` and
+   `node_modules/@rtcamp/wp-tooling`.
+3. **Initialization** writes the named project state.
+4. **Feature work** starts after you've reviewed that state, and ends with the
+   new feature wired and verified through [Scaffolding](scaffolding.md).
 
 The [Getting Started](getting-started.md) guide verifies the clone route. If a
 parent project acquires the starter through its Composer/VCS workflow, continue
@@ -75,6 +79,13 @@ from the same theme-root checkpoint after that workflow has placed the files.
 
 Examples are kept by default. HMR is on; Tailwind and Dev Tools are off. See
 [Included features](features.md) for their purpose and source locations.
+
+For a scripted, non-interactive first run — for example a feature-focused
+brief that doesn't need any supplied example set:
+
+```bash
+npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
+```
 
 ## What changes
 

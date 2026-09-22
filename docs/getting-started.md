@@ -74,6 +74,11 @@ Alternatively, open the clone in your AI assistant and ask:
 Use one route. The AI route can handle dependency installation too if you start
 it before step 2.
 
+> **Using a different AI assistant?** `/init` and `/scaffold` are Claude Code
+> skills. [AGENTS.md](../AGENTS.md) is the tool-agnostic source of truth, with
+> matching Copilot prompts in `.github/prompts/`; with another tool, describe
+> the task and use the CLI route instead.
+
 Review the resulting `style.css`, Composer namespace, `.wp-scaffold.json`, and
 removed files. Initialization changes the display name; the theme's directory
 remains `acme-blog`. A baseline commit after this review gives you a useful
@@ -123,6 +128,9 @@ checking it. Stop the watcher with Ctrl+C.
 Manual refresh works without further configuration.
 [Local development](local-development.md) shows how to enable automatic reload,
 watch custom blocks, run checks, and create a production build.
+
+The theme is now running locally with a source-to-frontend edit confirmed —
+you're ready to build on it.
 
 Next, [explore the supplied features](features.md),
 [generate a feature](scaffolding.md), or [extend the theme manually](../DEVELOPMENT.md).

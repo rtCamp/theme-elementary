@@ -1,9 +1,11 @@
 # What the theme includes
 
-The starter theme provides infrastructure you build on, examples you can adapt, and
-optional development tools. This page shows where to find them.
-[Initialization](initialization.md) owns selection commands;
-[Local development](local-development.md) owns builds and checks.
+The starter theme provides infrastructure you build on, examples you can
+adapt, and optional development tools you can turn on when you need them.
+This page is a map of all three — what each one is, where its source lives,
+and how to see it working. [Initialization](initialization.md) owns the
+commands that select and toggle them; [Local development](local-development.md)
+owns builds and checks.
 
 ## Theme infrastructure
 
@@ -54,6 +56,9 @@ Original examples remain browsable in the
 after you remove them from your project.
 
 ## Optional development features
+
+Unlike the supplied examples, these aren't source you keep or remove once —
+they're features you can turn on or off at any time through init.
 
 | Init key | Ownership and source | Default / lifecycle | Theme-visible result | Verify |
 | --- | --- | --- | --- | --- |

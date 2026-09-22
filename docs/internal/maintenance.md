@@ -1,8 +1,11 @@
 # Maintain the starter theme
 
-Use a disposable project for initialization tests. Keep it outside the maintained
-checkout so its tests, package manifests, and generated files cannot be picked
-up by the main project's tooling. Never personalize the maintained starter theme.
+This is the maintainer checklist for releasing a change to the starter itself:
+release validation, checks, local dependency development, documentation
+publishing, and the knowledge graph. Use a disposable project for
+initialization tests, kept outside the maintained checkout so its tests,
+package manifests, and generated files cannot be picked up by the main
+project's tooling. Never personalize the maintained starter theme.
 
 ## Release validation
 
@@ -15,7 +18,8 @@ Record `git rev-parse HEAD`, Node/PHP versions, the framework revision in
 2. Run interactive init and a separate non-interactive setup. Check identity,
    retained examples, generated state, and optional Git decisions.
 3. Exercise each example-removal group in a fresh fixture. Check both deleted
-   files and the remaining registration array, then load WordPress.
+   files and the remaining registration array, then run `composer dump-autoload`
+   and `php -l` for a fast syntax/autoload check before loading WordPress.
 4. Enable/disable optional features. Install the changed declarations before
    checking Tailwind output or Dev Tools runtime integration. For Dev Tools,
    verify the development override does not change test configuration.
@@ -29,7 +33,9 @@ Record `git rev-parse HEAD`, Node/PHP versions, the framework revision in
 If an installation route or feature cannot be exercised, report the missing
 prerequisite and affected acceptance criterion. Do not describe an untested path
 as verified. A local dependency override is a separate integration test, not a
-substitute for the declared-dependency route.
+substitute for the declared-dependency route. The init engine's own output
+reports what it renamed, removed, and toggled; treat that as the primary
+verification signal rather than diffing `inc/` by hand.
 
 ### Cleanup checks
 
