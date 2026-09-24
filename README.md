@@ -49,6 +49,32 @@ This theme ships AI-assisted setup and feature scaffolding, kept in step across 
 
 Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
 
+## Folder structure
+
+```
+functions.php               # PHP entry point
+inc/                        # project PHP (PSR-4 root)
+├── Autoloader.php          # wraps vendor/autoload.php with graceful failure
+├── Main.php                # theme bootstrap — loads services
+├── Abstracts/              # base classes for theme features
+├── Helpers/                # stateless static utilities
+├── Core/                   # theme-wide infra — assets, components, menus, templates, theme setup
+└── Modules/                # feature areas
+    ├── BlockExtensions/    # block render filters and integrations
+    ├── Settings/           # admin settings pages (extend AbstractSettingsPage)
+    └── Shortcodes/         # shortcodes
+src/{components,css,js,fonts,images}/ # frontend sources → assets/build/
+parts/ patterns/ templates/ # block parts, patterns, templates
+template-parts/             # PHP template partials
+styles/                     # theme.json style variations
+theme.json  style.css       # theme config
+bin/                        # init and scaffold scripts
+tests/{js,php}/             # JS & PHP tests
+vendor/rtcamp/wp-framework/ # framework (Composer-managed; do not modify)
+```
+
+Some of these directories hold supplied examples that initialization can remove; see [Included features](docs/features.md).
+
 ## License
 
 [GPL-2.0-or-later](LICENSE)

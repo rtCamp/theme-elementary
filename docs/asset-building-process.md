@@ -21,21 +21,16 @@ Our asset pipeline is managed by **Webpack**. The build process involves the fol
 - **webpack.config.js**: This is the main configuration file for building assets.
 - **package.json**: Contains the scripts and dependencies necessary for the build process.
 
-## Source to output
+### Directory Structure
 
-| Source | Output |
-| --- | --- |
-| `src/css/frontend/*.css` / `*.scss` | `assets/build/css/frontend/` |
-| `src/css/admin/`, `src/css/editor/` | Matching directories under `assets/build/css/` |
-| `src/js/frontend/`, `src/js/admin/`, `src/js/editor/` | Matching directories under `assets/build/js/` |
-| `src/js/frontend/modules/*.js` | `assets/build/js/modules/` (Interactivity API modules) |
-| `src/components/button/button.js` | `assets/build/js/components/button.js` |
-| `src/components/button/button.scss` | `assets/build/css/components/button.css` |
-| `src/fonts/` | `assets/build/fonts/` |
-| `src/images/svg/` | Optimized SVGs under `assets/build/images/svg/` |
-| `src/blocks/` | `assets/build/blocks/` via the separate block build |
-
-JavaScript asset metadata records dependencies and versions. Component CSS also gets metadata; RTL styles are generated alongside the relevant stylesheets. Keep generated files out of source edits.
+- **src/css/{frontend,admin,editor}**: Contains CSS/SCSS files, organized by context.
+- **src/js/{frontend,admin,editor}**: Contains JavaScript files, organized by context.
+- **src/js/frontend/modules**: Contains Interactivity API module scripts.
+- **src/components**: Contains component assets, built into `assets/build/js/components/` and `assets/build/css/components/`.
+- **src/fonts**: Font files copied to `assets/build/fonts/` during build via `CopyWebpackPlugin`.
+- **src/images/svg**: Source SVGs optimized by SVGO and copied to `assets/build/images/svg/` during build via `CopyWebpackPlugin`.
+- **assets/build/js**: Where built JavaScript files are output.
+- **assets/build/css**: Where built CSS files are output.
 
 ## Adding New Scripts or Modules
 
