@@ -9,7 +9,7 @@ Skills for AI assistants (Claude Code, Cursor, and any tool that reads the Claud
 
 `init` is theme-specific. `scaffold` tracks `@rtcamp/wp-tooling` and introspects the project, so it stays correct as the layout evolves. [`setup/`](setup/SKILL.md) (`/setup`) is the generic natural-language tooling bootstrapper for empty/existing projects. Use `/init` to personalize this skeleton; `/setup` does not replace its identity and capability flow.
 
-**Copilot parity:** `init` and `scaffold` also exist for GitHub Copilot as prompt files in [`.github/prompts/`](../../.github/prompts/) (`/init`, `/scaffold`), kept consistent with these skills. Shared conventions and the knowledge-graph (graphify) policy live in [`AGENTS.md`](../../AGENTS.md).
+**Copilot parity:** `init` and `scaffold` also exist for GitHub Copilot as prompt files in [the maintained Copilot prompts](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/.github/prompts) (`/init`, `/scaffold`), kept consistent with these skills. Shared conventions and the knowledge-graph (graphify) policy live in [`AGENTS.md`](../../AGENTS.md).
 
 ## Safety
 
@@ -17,4 +17,4 @@ These skills are opinionated about safety and never: run a package manager or `n
 
 Dependency installation and `npm run init` require consent. The init skill uses the declared dependencies; Composer's install hook already runs npm. Sibling dependency checkouts are maintainer work. After file changes, refresh the local graph with `graphify update .`.
 
-Cleanup currently removes `.github`, including Copilot prompts; `sync-ai` restores only generated framework instructions. The Claude skills remain. Review these removals before personalizing a clone.
+Cleanup removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`); issue templates, the PR template, `dependabot.yml`, `release.yml`, and workflows stay. `sync-ai` restores only generated framework instructions. The Claude skills remain. Review these removals before personalizing a clone.

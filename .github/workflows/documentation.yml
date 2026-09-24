@@ -1,0 +1,87 @@
+name: Documentation
+
+on:
+  push:
+    branches: [theme-elementary-v2]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'DEVELOPMENT.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/documentation.yml'
+  pull_request:
+    branches: [theme-elementary-v2]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'DEVELOPMENT.md'
+      - 'CONTRIBUTING.md'
+      - '.github/workflows/documentation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - name: Checkout documentation
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read Pages configuration
+        id: pages
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref_type == 'branch' && github.ref_name == 'theme-elementary-v2'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Build documentation
+        id: docs
+        uses: rtCamp/action-docusaurus-build@b671d6800c68a74da8913edb9321422fe8afaedc
+        with:
+          site-title: Theme Elementary
+          site-url: ${{ steps.pages.outputs.origin }}
+          base-url: ${{ steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_path) || '' }}
+          sidebar: >-
+            ["index", "getting-started", "initialization", "local-development", "features", "scaffolding"]
+
+      - name: Upload GitHub Pages artifact
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          github.ref_type == 'branch' && github.ref_name == 'theme-elementary-v2'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ steps.docs.outputs.build-directory }}
+          include-hidden-files: true
+
+  deploy:
+    name: Deploy documentation
+    needs: build
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref_type == 'branch' && github.ref_name == 'theme-elementary-v2'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
