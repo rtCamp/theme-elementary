@@ -37,7 +37,7 @@ test -f .wp-scaffold.json && echo manage || echo setup
 No `.wp-scaffold.json` → **setup**. Present → **manage** (read it for current identity; `npm run init -- --list` shows feature status).
 
 ### 2. Setup: offer the pilot bootstrap
-The rtCamp tooling packages are private/unpublished during the pilot. If `npm install` can resolve `@rtcamp/wp-tooling` from the registry and `composer install` resolves `rtcamp/wp-framework` from its VCS repo, no bootstrap is needed - skip to step 3. Otherwise ask: "Bootstrap local dependencies now? (clones the tooling engine, points npm at it, installs). y/n". On **yes**, with consent, run in order (tell the developer each step in <=30 words):
+The rtCamp tooling packages are private/unpublished during the pilot. If `npm install` can resolve `@rtcamp/wp-tooling` from the registry and `composer install` resolves `rtcamp/wp-primitives` from its VCS repo, no bootstrap is needed - skip to step 3. Otherwise ask: "Bootstrap local dependencies now? (clones the tooling engine, points npm at it, installs). y/n". On **yes**, with consent, run in order (tell the developer each step in <=30 words):
 
 ```bash
 nvm use                                                          # Node from .nvmrc
@@ -49,10 +49,10 @@ git clone git@github.com:rtCamp/wp-tooling.git ../wp-tooling
 # Local-only npm ref: this theme's only @rtcamp/* dependency is @rtcamp/wp-tooling.
 npm pkg set devDependencies.@rtcamp/wp-tooling=file:../wp-tooling/node-packages/wp-tooling
 
-# wp-framework already resolves from the VCS "repositories" entry in composer.json (dev-main);
+# wp-primitives already resolves from the VCS "repositories" entry in composer.json (dev-main);
 # composer update pulls it. For local framework development, optionally add a path repo instead:
-#   { "type": "path", "url": "../wp-framework", "options": { "symlink": false } }
-composer update rtcamp/wp-framework
+#   { "type": "path", "url": "../wp-primitives", "options": { "symlink": false } }
+composer update rtcamp/wp-primitives
 # --install-links is REQUIRED: it copies the file: @rtcamp package into node_modules instead of
 # symlinking, so its peer deps resolve from this theme. Add --legacy-peer-deps on ERESOLVE.
 npm install --install-links

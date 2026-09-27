@@ -303,7 +303,7 @@ Deduplicate packages. Sort alphabetically within each block. Pinned packages use
 
 | Scaffold ID | When to use | Ruleset |
 |---|---|---|
-| `lint/phpcs/full` | Most rtCamp projects (recommended default) | `vendor/rtcamp/wp-framework/phpcs.xml.dist`, WordPress-Core + Extra + Docs + VIP-Go |
+| `lint/phpcs/full` | Most rtCamp projects (recommended default) | `vendor/rtcamp/wp-primitives/phpcs.xml.dist`, WordPress-Core + Extra + Docs + VIP-Go |
 | `lint/phpcs/vip` | WordPress VIP platform projects | `WordPress-VIP-Minimum` + `WordPress-Docs` |
 | `lint/phpcs/core` | Projects explicitly opting out of VIP-Go rules | `WordPress` - Core + Extra + Docs only |
 

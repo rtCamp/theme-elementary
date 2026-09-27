@@ -9,7 +9,7 @@ Claude Code skills live in [`.claude/skills/`](.claude/skills/):
 
 ## Knowledge graph (Graphify)
 
-A knowledge graph of this theme (optionally extended to `wp-framework` and `wp-tooling`) is committed at [`graphify-out/graph.json`](graphify-out/graph.json) (human summary in [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md)), built with the official [Graphify](https://graphify.net) utility.
+A knowledge graph of this theme (optionally extended to `wp-primitives` and `wp-tooling`) is committed at [`graphify-out/graph.json`](graphify-out/graph.json) (human summary in [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md)), built with the official [Graphify](https://graphify.net) utility.
 
 Before reading source files to answer questions about architecture, symbols, call paths, or how the theme wires together, query the graph first to save tokens:
 

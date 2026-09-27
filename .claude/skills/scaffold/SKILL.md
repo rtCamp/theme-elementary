@@ -48,7 +48,7 @@ Result: `{ scaffolds: [{ id, slug, category, kind, origin, counts }, ...] }`. Pi
 
 ### 2. Introspect once per session (cache result)
 
-**Reuse `/init`'s findings if it handed off to you in this session.** When `/init` chained here, you already established the resolved identity and conventions while running init - root namespace, base path (`inc/`), tests namespace + path (`<Root>\Tests` -> `tests/php/`), text domain, and constant prefix. They are facts you set, not guesses: reuse them and SKIP the `composer.json` / `style.css` / `Main.php` reads below that only recover them. You still read a sample implementation for the registration pattern (next paragraph); sample it from a remaining example under `inc/Modules/` or from the framework abstract for the kind (`vendor/rtcamp/wp-framework/inc/Contracts/Abstracts/Abstract<Kind>.php`); do not guess.
+**Reuse `/init`'s findings if it handed off to you in this session.** When `/init` chained here, you already established the resolved identity and conventions while running init - root namespace, base path (`inc/`), tests namespace + path (`<Root>\Tests` -> `tests/php/`), text domain, and constant prefix. They are facts you set, not guesses: reuse them and SKIP the `composer.json` / `style.css` / `Main.php` reads below that only recover them. You still read a sample implementation for the registration pattern (next paragraph); sample it from a remaining example under `inc/Modules/` or from the framework abstract for the kind (`vendor/rtcamp/wp-primitives/inc/Contracts/Abstracts/Abstract<Kind>.php`); do not guess.
 
 **The graph saves tokens for orientation only; read the file for any data you copy.** This repo commits a queryable graph (`graphify-out/graph.json`). Use it to LOCATE things cheaply so you open fewer files: which classes implement a kind, what references a symbol, the path between two classes - `graphify query "..."`, `graphify explain "<Class>"`, `graphify affected "<Class>"`, `graphify path "A" "B"`. The graph is structural (not the full source), so it is NOT a source of truth for the patterns you act on. For registration shape, exact namespace, how `Main::CLASSES` lists classes, and wiring location, **read the actual file** - 100% accuracy beats a few saved tokens. (If you or init changed code this session, refresh the local slice first with `graphify update .`, seconds - AGENTS.md graphify policy.)
 
@@ -132,7 +132,7 @@ Result shape: `{ scaffold, engine, developer, ai, warnings }`.
 | Block | Action |
 |---|---|
 | `engine.wrote` / `engine.skipped` | Already on disk. Report. |
-| `developer.install.composer` / `developer.install.npm` | Print as copy-paste command. **Never run `composer require` / `npm install`.** Pilot notes: npm installs need `npm install --install-links`; the framework (`rtcamp/wp-framework`) already ships, so ignore a `composer require rtcamp/wp-framework` suggestion. |
+| `developer.install.composer` / `developer.install.npm` | Print as copy-paste command. **Never run `composer require` / `npm install`.** Pilot notes: npm installs need `npm install --install-links`; the framework (`rtcamp/wp-primitives`) already ships, so ignore a `composer require rtcamp/wp-primitives` suggestion. |
 | `developer.secrets` | Print as `gh secret set` checklist. **Never read/write/log/transmit values.** |
 | `ai.wiring` | Adaptive wiring with consent (see 6a). |
 | `ai.tests` | Mandatory expansion under TDD loop (see 7). |

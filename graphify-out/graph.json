@@ -394,14 +394,14 @@
       "norm_label": "php"
     },
     {
-      "label": "rtcamp/wp-framework",
+      "label": "rtcamp/wp-primitives",
       "file_type": "code",
       "source_file": "composer.json",
       "source_location": "L16",
       "_origin": "ast",
-      "id": "composer_require_rtcamp_wp_framework",
+      "id": "composer_require_rtcamp_wp_primitives",
       "community": 1,
-      "norm_label": "rtcamp/wp-framework"
+      "norm_label": "rtcamp/wp-primitives"
     },
     {
       "label": "require-dev",
@@ -6184,19 +6184,19 @@
       "norm_label": "review conduct"
     },
     {
-      "label": "framework-php.instructions.md",
+      "label": "primitives-php.instructions.md",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L1",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions",
       "community": 8,
-      "norm_label": "framework-php.instructions.md"
+      "norm_label": "primitives-php.instructions.md"
     },
     {
       "label": "PHP rules: framework, WordPress, security, tests",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L6",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_php_rules_framework_wordpress_security_tests",
@@ -6206,7 +6206,7 @@
     {
       "label": "Architecture",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L10",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_architecture",
@@ -6216,7 +6216,7 @@
     {
       "label": "Mandatory",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L23",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_mandatory",
@@ -6226,7 +6226,7 @@
     {
       "label": "WordPress security (always)",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L30",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_wordpress_security_always",
@@ -6236,7 +6236,7 @@
     {
       "label": "WordPress conventions",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L38",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_wordpress_conventions",
@@ -6246,7 +6246,7 @@
     {
       "label": "Flag on review (priority order)",
       "file_type": "document",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L45",
       "_origin": "ast",
       "id": "instructions_framework_php_instructions_flag_on_review_priority_order",
@@ -8004,7 +8004,7 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "composer_require",
-      "target": "composer_require_rtcamp_wp_framework"
+      "target": "composer_require_rtcamp_wp_primitives"
     },
     {
       "relation": "contains",
@@ -15088,7 +15088,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L6",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -15098,7 +15098,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L10",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -15108,7 +15108,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L45",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -15118,7 +15118,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L23",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -15128,7 +15128,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L38",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -15138,7 +15138,7 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": ".github/instructions/framework-php.instructions.md",
+      "source_file": ".github/instructions/primitives-php.instructions.md",
       "source_location": "L30",
       "weight": 1.0,
       "confidence_score": 1.0,

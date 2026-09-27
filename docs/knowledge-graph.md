@@ -13,7 +13,7 @@ framework it builds on by checking the dependencies out as siblings under the sa
 directory and merging (see Regenerate):
 
 - `theme-elementary` (this repo)
-- `wp-framework` (the framework in `vendor/`, mirrored as a sibling for source-level nodes)
+- `wp-primitives` (the framework in `vendor/`, mirrored as a sibling for source-level nodes)
 - `wp-tooling` (the init/scaffold engine)
 
 Committed artifacts (only these two; everything else in `graphify-out/` is gitignored):
@@ -56,15 +56,15 @@ graphify cluster-only . --no-label --no-viz   # refresh GRAPH_REPORT.md, skip HT
 # Optional cross-repo graph (run from this repo's root, siblings checked out under ..):
 ROOT="$(cd .. && pwd)"
 graphify update .
-( cd "$ROOT/wp-framework" && graphify update . )
+( cd "$ROOT/wp-primitives" && graphify update . )
 ( cd "$ROOT/wp-tooling"   && graphify update . )
 graphify merge-graphs \
   graphify-out/graph.json \
-  "$ROOT/wp-framework/graphify-out/graph.json" \
+  "$ROOT/wp-primitives/graphify-out/graph.json" \
   "$ROOT/wp-tooling/graphify-out/graph.json" \
   --out graphify-out/graph.json
 graphify cluster-only . --no-label --no-viz
-rm -rf "$ROOT"/wp-framework/graphify-out "$ROOT"/wp-tooling/graphify-out
+rm -rf "$ROOT"/wp-primitives/graphify-out "$ROOT"/wp-tooling/graphify-out
 ```
 
 ## Optional: semantic layer

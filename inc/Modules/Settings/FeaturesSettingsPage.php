@@ -11,7 +11,7 @@ namespace rtCamp\Theme\Elementary\Modules\Settings;
 
 use rtCamp\Theme\Elementary\Core\FeatureRegistry;
 use rtCamp\Theme\Elementary\Main;
-use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
+use rtCamp\WPPrimitives\Utils\FeatureSelectorSettingsPage;
 
 /**
  * Class FeaturesSettingsPage

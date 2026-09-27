@@ -7,16 +7,16 @@
     "content-hash": "15fc088e8f68ad6f81312546e67cdfbe",
     "packages": [
         {
-            "name": "rtcamp/wp-framework",
+            "name": "rtcamp/wp-primitives",
             "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/rtCamp/wp-framework.git",
+                "url": "https://github.com/rtCamp/wp-primitives.git",
                 "reference": "87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d",
+                "url": "https://api.github.com/repos/rtCamp/wp-primitives/zipball/87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d",
                 "reference": "87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d",
                 "shasum": ""
             },
@@ -38,12 +38,12 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "rtCamp\\WPFramework\\": "inc/"
+                    "rtCamp\\WPPrimitives\\": "inc/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "rtCamp\\WPFramework\\Tests\\": "tests/"
+                    "rtCamp\\WPPrimitives\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -69,10 +69,10 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Shared PHP utilities for rtCamp WordPress projects",
-            "homepage": "https://github.com/rtCamp/wp-framework",
+            "homepage": "https://github.com/rtCamp/wp-primitives",
             "support": {
-                "issues": "https://github.com/rtCamp/wp-framework/issues",
-                "source": "https://github.com/rtCamp/wp-framework"
+                "issues": "https://github.com/rtCamp/wp-primitives/issues",
+                "source": "https://github.com/rtCamp/wp-primitives"
             },
             "time": "2026-07-29T11:38:56+00:00"
         }

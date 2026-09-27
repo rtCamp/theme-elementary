@@ -9,8 +9,8 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\WPFramework\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Class FeatureRegistry

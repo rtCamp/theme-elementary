@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\WPFramework\AssetLoader;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\AssetLoader;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
 
 /**
  * Class Assets

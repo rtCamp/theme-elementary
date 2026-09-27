@@ -22,7 +22,7 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Modules\Settings;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractSettingsPage;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractSettingsPage;
 
 /**
  * Class ThemeOptions

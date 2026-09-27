@@ -20,7 +20,7 @@
 
 Reusable scaffolding (singleton, autoloader, asset loader, template loader, and
 abstract base classes) ships separately as the
-[`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework) Composer package
+[`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives) Composer package
 and is loaded from `vendor/`.
 
 > **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the
@@ -85,7 +85,7 @@ src/{css,js,fonts,images}/  # frontend sources → assets/build/
 parts/ patterns/ templates/ # block parts, patterns, templates
 theme.json  style.css       # theme config
 tests/{js,php}/             # JS & PHP tests
-vendor/rtcamp/wp-framework/ # framework (Composer-managed; do not modify)
+vendor/rtcamp/wp-primitives/ # framework (Composer-managed; do not modify)
 ```
 
 ## License
