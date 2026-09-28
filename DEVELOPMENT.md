@@ -4,7 +4,7 @@
 
 The theme is split into two layers:
 
-- **`vendor/rtcamp/wp-primitives/`** — The upstream framework, installed as a Composer dependency. Provides reusable scaffolding (`Singleton`, `Loader`, `Container`, `AssetLoaderTrait`, `TemplateLoaderTrait`) and abstract base classes (`AbstractSettingsPage`, `AbstractPostType`, etc.). **Do not modify.** Changes belong in the framework repository.
+- **`vendor/rtcamp/wp-primitives/`** — The upstream framework, installed as a Composer dependency. Provides reusable scaffolding (`Singleton`, `Loader`, `Container`, `AssetLoaderTrait`, `TemplateLoaderTrait`) and abstract base classes (`AbstractSettingsPage`, `AbstractPostType`, etc.). **Do not modify.** Changes belong in the `rtcamp/wp-primitives` repository.
 - **`inc/`** — All theme-specific code. Extends framework abstracts, registers theme services, and bootstraps the theme.
 
 The `vendor/` boundary enforces the rule by convention: editing files there gets blown away on every `composer install`.

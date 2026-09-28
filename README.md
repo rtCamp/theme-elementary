@@ -72,19 +72,19 @@ New here? The [quick-start guide](docs/quick-start-guide.md) walks through namin
 ## Folder structure
 
 ```
-functions.php               # PHP entry point
-inc/                        # project PHP (PSR-4 root)
-├── Autoloader.php          # wraps vendor/autoload.php with graceful failure
-├── Main.php                # theme bootstrap — loads services
-├── Helpers/                # stateless static utilities
-├── Core/                   # theme-wide infra — assets, menus, theme setup
-└── Modules/                # feature areas
-    ├── BlockExtensions/    # block render filters and integrations
-    └── Settings/           # admin settings pages (extend AbstractSettingsPage)
-src/{css,js,fonts,images}/  # frontend sources → assets/build/
-parts/ patterns/ templates/ # block parts, patterns, templates
-theme.json  style.css       # theme config
-tests/{js,php}/             # JS & PHP tests
+functions.php                # PHP entry point
+inc/                         # project PHP (PSR-4 root)
+├── Autoloader.php           # wraps vendor/autoload.php with graceful failure
+├── Main.php                 # theme bootstrap — loads services
+├── Helpers/                 # stateless static utilities
+├── Core/                    # theme-wide infra — assets, menus, theme setup
+└── Modules/                 # feature areas
+    ├── BlockExtensions/     # block render filters and integrations
+    └── Settings/            # admin settings pages (extend AbstractSettingsPage)
+src/{css,js,fonts,images}/   # frontend sources → assets/build/
+parts/ patterns/ templates/  # block parts, patterns, templates
+theme.json  style.css        # theme config
+tests/{js,php}/              # JS & PHP tests
 vendor/rtcamp/wp-primitives/ # framework (Composer-managed; do not modify)
 ```
 
