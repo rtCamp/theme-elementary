@@ -1,8 +1,9 @@
 module.exports = {
 	rootDir: '../../',
-	...require( '@wordpress/scripts/config/jest-unit.config' ),
+	...require('@wordpress/scripts/config/jest-unit.config'),
 	transform: {
-		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
+		'^.+\\.[jt]sx?$':
+			'<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
 	preset: '@wordpress/jest-preset-default',
 	testPathIgnorePatterns: [
@@ -20,10 +21,10 @@ module.exports = {
 	modulePathIgnorePatterns: [
 		// Add more specific patterns here if needed.
 	],
-	coverageReporters: [ 'lcov' ],
+	coverageReporters: ['lcov'],
 	coverageDirectory: '<rootDir>/tests/logs',
 	reporters: [
-		[ 'jest-silent-reporter', { useDots: true } ],
+		['jest-silent-reporter', { useDots: true }],
 		'<rootDir>/node_modules/@wordpress/scripts/config/jest-github-actions-reporter',
 	],
 };
