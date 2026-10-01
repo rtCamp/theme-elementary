@@ -4,12 +4,13 @@
  * Layered on top of wp-scripts' default config to fix the dev-server issue that
  * bites during `wp-scripts start --hot` for blocks in this stack:
  *
- * webpack-dev-server v5 (resolved at the top level for the CVE-2025-30359 /
- * CVE-2025-30360 fix) is what `webpack serve` loads, but `@wordpress/scripts`
+ * webpack-dev-server 5 and later (forced at the top level by package.json
+ * overrides for security fixes, starting with CVE-2025-30359 / CVE-2025-30360)
+ * is what `webpack serve` loads, but `@wordpress/scripts`
  * still defines `devServer.proxy` in the webpack-dev-server v4 object form, so
- * v5's schema rejects it with "options.proxy should be an array". The bundled
+ * their schema rejects it with "options.proxy should be an array". The bundled
  * `/build` rewrite has no `target`, isn't needed for block HMR, and would fail
- * at runtime even if converted to the v5 array form, so we remove it.
+ * at runtime even if converted to the array form, so we remove it.
  *
  * All dev-server knobs are read from `.env.local` so they can change without
  * editing this file.
@@ -56,7 +57,7 @@ const devServerPort = toPort(
  * Apply the dev-server fixes to a single webpack config.
  *
  * @param {Object} singleConfig A webpack configuration object.
- * @return {Object} The same config, dev-server v5 compatible.
+ * @return {Object} The same config, compatible with webpack-dev-server 5 and later.
  */
 const fixDevServer = (singleConfig) => {
 	/*
@@ -68,7 +69,7 @@ const fixDevServer = (singleConfig) => {
 	}
 
 	/*
-	 * webpack-dev-server v5 requires `proxy` to be an array; wp-scripts ships a
+	 * webpack-dev-server 5 and later require `proxy` to be an array; wp-scripts ships a
 	 * v4-style object. Not needed for block HMR, so drop it.
 	 */
 	delete singleConfig.devServer.proxy;
