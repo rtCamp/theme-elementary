@@ -57,7 +57,7 @@ git clone https://github.com/rtCamp/wp-tooling.git '/absolute/path/to/wp-tooling
 git clone https://github.com/rtCamp/wp-primitives.git '/absolute/path/to/wp-primitives'
 ```
 
-In the dependency checkout, select and record the revision under test. The tooling override below needs the source monorepo's `node-packages/wp-tooling/` directory; the `npm/wp-tooling` distribution branch has a different layout. Follow the [tooling](https://github.com/rtCamp/wp-tooling/blob/main/CONTRIBUTING.md#development-setup) or [framework](https://github.com/rtCamp/wp-primitives/blob/main/CONTRIBUTING.md#development-setup) maintainer guide for that package's setup and checks.
+In the dependency checkout, select and record the revision under test. The tooling override below needs the source monorepo's `node-packages/wp-tooling/` directory; the published npm package has a different layout. Follow the [tooling](https://github.com/rtCamp/wp-tooling/blob/main/CONTRIBUTING.md#development-setup) or [framework](https://github.com/rtCamp/wp-primitives/blob/main/CONTRIBUTING.md#development-setup) maintainer guide for that package's setup and checks.
 
 From the disposable theme directory, point only the tooling declaration at your checkout:
 

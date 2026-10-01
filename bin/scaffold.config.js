@@ -22,7 +22,7 @@ module.exports = {
 	source: {
 		name: 'Elementary Theme',
 		namespace: 'rtCamp\\Theme\\Elementary',
-		package: 'rtcamp/elementary',
+		package: 'rtcamp/theme-elementary',
 	},
 
 	// Derive the namespace and composer package from the chosen name.
@@ -74,8 +74,7 @@ module.exports = {
 					},
 				],
 				devDependencies: {
-					'@rtcamp/tailwind-config':
-						'github:rtCamp/wp-tooling#npm/tailwind-config',
+					'@rtcamp/tailwind-config': '^1.1.0',
 					tailwindcss: '^4.3.0',
 					'@tailwindcss/postcss': '^4.3.0',
 				},

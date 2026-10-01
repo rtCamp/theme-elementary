@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cb15141c1588adc39299cb7e20fe01a",
+    "content-hash": "d378f98e212306678211685c07df4b4a",
     "packages": [
         {
             "name": "rtcamp/wp-primitives",
@@ -46,30 +46,7 @@
                     "rtCamp\\WPPrimitives\\": "inc/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "rtCamp\\WPPrimitives\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "lint": [
-                    "phpcs"
-                ],
-                "lint:fix": [
-                    "phpcbf"
-                ],
-                "analyse": [
-                    "phpstan analyse --memory-limit=1G"
-                ],
-                "test": [
-                    "phpunit"
-                ],
-                "check": [
-                    "@lint",
-                    "@analyse",
-                    "@test"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -91,9 +68,9 @@
                 "wordpress-theme"
             ],
             "support": {
+                "docs": "https://opensource.rtcamp.com/wp-primitives/",
                 "issues": "https://github.com/rtCamp/wp-primitives/issues",
-                "source": "https://github.com/rtCamp/wp-primitives",
-                "docs": "https://opensource.rtcamp.com/wp-primitives/"
+                "source": "https://github.com/rtCamp/wp-primitives"
             },
             "time": "2026-10-01T16:46:31+00:00"
         }
@@ -2002,16 +1979,16 @@
         },
         {
             "name": "rtcamp/wp-phpcs",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-phpcs.git",
-                "reference": "c109b87a2c784f3834068c9d63aea96178c46159"
+                "reference": "c209e4385f9cf0cb673b09c10af8f713a4116c09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-phpcs/zipball/c109b87a2c784f3834068c9d63aea96178c46159",
-                "reference": "c109b87a2c784f3834068c9d63aea96178c46159",
+                "url": "https://api.github.com/repos/rtCamp/wp-phpcs/zipball/c209e4385f9cf0cb673b09c10af8f713a4116c09",
+                "reference": "c209e4385f9cf0cb673b09c10af8f713a4116c09",
                 "shasum": ""
             },
             "require": {
@@ -2026,32 +2003,44 @@
                 "phpunit/phpunit": "^11.5"
             },
             "type": "phpcodesniffer-standard",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
+            "authors": [
+                {
+                    "name": "rtCamp",
+                    "homepage": "https://rtcamp.com"
+                }
+            ],
             "description": "rtCamp PHP_CodeSniffer standards for WordPress projects (rtCampWP + rtCampWP-Basic).",
+            "homepage": "https://github.com/rtCamp/wp-tooling/tree/main/composer-packages/phpcs",
             "keywords": [
-                "WordPress",
                 "phpcs",
                 "standards",
                 "static analysis",
                 "vipcs",
+                "wordpress",
                 "wpcs"
             ],
-            "time": "2026-07-29T22:18:33+00:00"
+            "support": {
+                "issues": "https://github.com/rtCamp/wp-tooling/issues",
+                "source": "https://github.com/rtCamp/wp-tooling/tree/main/composer-packages/phpcs"
+            },
+            "time": "2026-10-01T18:10:21+00:00"
         },
         {
             "name": "rtcamp/wp-phpstan",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rtCamp/wp-phpstan.git",
-                "reference": "8f5f0acb1d02ccdd24fd2fa25e59d669e843dcf1"
+                "reference": "3252dfb4264f3de4a574201ee7f6ec3c0ad2bc26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-phpstan/zipball/8f5f0acb1d02ccdd24fd2fa25e59d669e843dcf1",
-                "reference": "8f5f0acb1d02ccdd24fd2fa25e59d669e843dcf1",
+                "url": "https://api.github.com/repos/rtCamp/wp-phpstan/zipball/3252dfb4264f3de4a574201ee7f6ec3c0ad2bc26",
+                "reference": "3252dfb4264f3de4a574201ee7f6ec3c0ad2bc26",
                 "shasum": ""
             },
             "require": {
@@ -2063,27 +2052,29 @@
                 "phpunit/phpunit": "^11.5"
             },
             "type": "library",
-            "autoload-dev": {
-                "psr-4": {
-                    "rtCamp\\WPPhpstan\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
+            "authors": [
+                {
+                    "name": "rtCamp",
+                    "homepage": "https://rtcamp.com"
+                }
+            ],
             "description": "rtCamp PHPStan configuration and baseline for WordPress projects.",
+            "homepage": "https://github.com/rtCamp/wp-tooling/tree/main/composer-packages/phpstan",
             "keywords": [
-                "phpstan",
+                "PHPStan",
                 "rtcamp",
                 "static analysis",
                 "wordpress"
             ],
-            "time": "2026-07-29T22:18:33+00:00"
+            "support": {
+                "issues": "https://github.com/rtCamp/wp-tooling/issues",
+                "source": "https://github.com/rtCamp/wp-tooling/tree/main/composer-packages/phpstan"
+            },
+            "time": "2026-10-01T18:10:21+00:00"
         },
         {
             "name": "sebastian/cli-parser",

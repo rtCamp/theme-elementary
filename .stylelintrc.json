@@ -2,6 +2,7 @@
 	"extends": "@rtcamp/stylelint-config",
 	"ignoreFiles": [
 		"**/*.js",
+		"**/*.json",
 		"**/*.php"
 	],
 	"rules": {
