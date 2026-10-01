@@ -176,10 +176,17 @@ describe('toPort', () => {
 		expect(toPort(value, 3001)).toBe(expected);
 	});
 
-	it.each([[undefined], [''], ['0'], ['65536'], ['abc'], ['-5']])(
-		'falls back for %p',
-		(value) => {
-			expect(toPort(value, 3001)).toBe(3001);
-		}
-	);
+	it.each([
+		[undefined],
+		[''],
+		['0'],
+		['65536'],
+		['abc'],
+		['-5'],
+		['8888foo'],
+		['30.5'],
+		['0x10'],
+	])('falls back for %p', (value) => {
+		expect(toPort(value, 3001)).toBe(3001);
+	});
 });

@@ -40,7 +40,8 @@ const DEFAULT_DEV_SERVER_PORT = 8887;
  * @return {number} A valid port.
  */
 const toPort = (value, fallback) => {
-	const port = parseInt(value, 10);
+	// Digits only: parseInt would read '8888foo' as 8888, and Number would accept hex.
+	const port = /^\d+$/.test(String(value ?? '')) ? Number(value) : NaN;
 	return Number.isInteger(port) && port >= 1 && port <= 65535
 		? port
 		: fallback;
