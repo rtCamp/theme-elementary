@@ -25,7 +25,7 @@ v2 rebuilds the starter on rtCamp's shared WordPress stack: runtime code from [`
 
 - **Breaking:** PSR-4 PHP under `inc/` (`Core/`, `Modules/`, `Abstracts/`, `Helpers/`) in the `rtCamp\Theme\Elementary` namespace, with a `Main` bootstrap and an `Autoloader`. Replaces 1.x's `inc/classes`, `inc/helpers` and `inc/traits`.
 - **Breaking:** sources live in `src/` and build to `assets/build/`, with blocks under `assets/build/blocks/`. Builds use `@wordpress/scripts` 36.
-- **Breaking:** requires PHP 8.2+, WordPress 6.6+ and Node.js 22.19+.
+- **Breaking:** requires PHP 8.2+, WordPress 6.6+ and Node.js 22.22.2+.
 - **Breaking:** the Composer package is now `rtcamp/theme-elementary`.
 - PHP tests run in their own wp-env environment (`.wp-env.tests.json`), so they never touch the development site.
 
