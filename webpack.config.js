@@ -697,4 +697,7 @@ const configs = [
 ];
 
 module.exports = configs;
+// Exposed for tests/js/webpack-config.test.js; webpack itself only reads `configs`.
 module.exports.getComponentEntries = getComponentEntries;
+module.exports.readAllFileEntries = readAllFileEntries;
+module.exports.toPort = toPort;
