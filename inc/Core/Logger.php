@@ -9,8 +9,8 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary\Core;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\WPFramework\Utils\Logger as FrameworkLogger;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Utils\Logger as FrameworkLogger;
 
 /**
  * Class Logger

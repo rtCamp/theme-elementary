@@ -2,7 +2,7 @@
 
 This guide shows how to extend the theme by hand: where new code belongs, which framework base class to start from, and worked examples for adding a class, a post type, and a taxonomy. Use it after [initialization](docs/initialization.md). Run the commands from the theme directory (the directory containing `composer.json` and `package.json`). The examples use an initialized project named **Acme Blog**; replace its namespace and text domain with the values in your own `composer.json` and `style.css`.
 
-The theme sits on two layers: `vendor/rtcamp/wp-framework/` is the upstream framework — reusable scaffolding (the loader and abstract base classes) installed as a Composer dependency — and `inc/` is everything theme-specific, extending those framework abstracts and registering theme services. The `vendor/` boundary is enforced by convention, not code: anything edited there is overwritten on the next `composer install`.
+The theme sits on two layers: `vendor/rtcamp/wp-primitives/` is the upstream framework — reusable scaffolding (the loader and abstract base classes) installed as a Composer dependency — and `inc/` is everything theme-specific, extending those framework abstracts and registering theme services. The `vendor/` boundary is enforced by convention, not code: anything edited there is overwritten on the next `composer install`.
 
 ## Before adding code
 
@@ -24,7 +24,7 @@ After initialization, read the `autoload.psr-4` entry in `composer.json` before 
 composer install
 ```
 
-Theme classes are registered by `Main::CLASSES`. The framework `Loader` creates each listed class and calls its `register_hooks()` method when it implements `Registrable`. A class that is not in this list does not run, even when its file autoloads successfully. Read the framework's short [registration and loader overview](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md) for the lifecycle details.
+Theme classes are registered by `Main::CLASSES`. The framework `Loader` creates each listed class and calls its `register_hooks()` method when it implements `Registrable`. A class that is not in this list does not run, even when its file autoloads successfully. Read the framework's short [registration and loader overview](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/architecture.md) for the lifecycle details.
 
 ## Picking a base
 
@@ -107,7 +107,7 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Acme_Blog\Modules;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 final class ReadingTime implements Registrable {
 	public function register_hooks(): void {
@@ -140,7 +140,7 @@ public const CLASSES = [
 
 The real list already contains the core services and retained examples; the snippet shows only the new import and entry. Run `composer dump-autoload`, then run the focused test and open a post on the active site. The notice should appear after the post content. For generated classes and their test stubs, use [Scaffolding](docs/scaffolding.md); the CLI and AI routes are alternatives.
 
-The framework supplies the `Registrable` contract and loader. Its [contracts reference](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/contracts.md) and [abstract-class cookbook](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/abstracts.md) cover inherited methods and lifecycle behavior.
+The framework supplies the `Registrable` contract and loader. Its [contracts reference](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/contracts.md) and [abstract-class cookbook](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/abstracts.md) cover inherited methods and lifecycle behavior.
 
 ## Register a post type and taxonomy
 
@@ -148,12 +148,12 @@ Content that must survive a theme switch belongs in a companion plugin. Do not p
 
 These examples extend an **existing, configured framework-based plugin** at `wp-content/plugins/acme-content/`. Before adding the classes, it must have:
 
-- An installed `rtcamp/wp-framework` 1.0.x dependency and Composer mapping `Acme\Content\` to `inc/`.
+- An installed `rtcamp/wp-primitives` 2.0.x dependency and Composer mapping `Acme\Content\` to `inc/`.
 - A plugin entry file with a WordPress plugin header, loading its Composer autoloader through `inc/Autoloader.php` and booting `Acme\Content\Main` before `init`.
 - A `Main` class using the framework `Loader`, and `PostTypes` and `Taxonomies` modules extending `AbstractModule` with `get_classes()` lists.
 - A configured PHPUnit suite that boots the plugin.
 
-The theme does not create this plugin. If it is not set up, complete its bootstrap first using the framework's [module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders). Paths below are relative to the plugin root; use that directory for Composer commands and its WordPress environment for `wp` commands.
+The theme does not create this plugin. If it is not set up, complete its bootstrap first using the framework's [module and loader guide](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/architecture.md#modules-loaders-that-hold-loaders). Paths below are relative to the plugin root; use that directory for Composer commands and its WordPress environment for `wp` commands.
 
 ```text
 acme-content.php                 # Autoloader::autoload() → Main::get_instance()
@@ -179,7 +179,7 @@ declare( strict_types = 1 );
 
 namespace Acme\Content\Modules\PostTypes;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractPostType;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractPostType;
 
 final class Book extends AbstractPostType {
 	public static function get_slug(): string {
@@ -215,7 +215,7 @@ declare( strict_types = 1 );
 
 namespace Acme\Content\Modules\Taxonomies;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractTaxonomy;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractTaxonomy;
 
 final class Genre extends AbstractTaxonomy {
 	public static function get_slug(): string {
@@ -238,7 +238,7 @@ final class Genre extends AbstractTaxonomy {
 
 In `inc/Modules/Taxonomies.php`, append `\Acme\Content\Modules\Taxonomies\Genre::class` to the existing array returned by `get_classes()` and run `composer dump-autoload`.
 
-After plugin activation, `wp taxonomy list` should include `genre`, and the Book editor should show its Genre control. Rerun `tests/php/TaxonomiesTest.php`: `taxonomy_exists( 'genre' )` should be true and its `object_type` should contain `book`. The framework's [post-type and taxonomy reference](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/abstracts.md#content-registration) documents the available overrides. Its [module and loader guide](https://github.com/rtCamp/wp-framework/blob/v1.0.1/docs/architecture.md#modules-loaders-that-hold-loaders) explains why the plugin module owns these classes.
+After plugin activation, `wp taxonomy list` should include `genre`, and the Book editor should show its Genre control. Rerun `tests/php/TaxonomiesTest.php`: `taxonomy_exists( 'genre' )` should be true and its `object_type` should contain `book`. The framework's [post-type and taxonomy reference](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/abstracts.md#content-registration) documents the available overrides. Its [module and loader guide](https://github.com/rtCamp/wp-primitives/blob/v2.0.0/docs/architecture.md#modules-loaders-that-hold-loaders) explains why the plugin module owns these classes.
 
 ## Troubleshooting
 

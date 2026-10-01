@@ -11,8 +11,8 @@ use rtCamp\Theme\Elementary\Core\Logger;
 use rtCamp\Theme\Elementary\Helpers\Util;
 use rtCamp\Theme\Elementary\Main;
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\WPFramework\Utils\Logger as FrameworkLogger;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Utils\Logger as FrameworkLogger;
 
 /**
  * Class LoggerTest

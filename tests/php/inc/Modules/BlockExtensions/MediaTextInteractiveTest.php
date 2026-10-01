@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 use rtCamp\Theme\Elementary\Modules\BlockExtensions\MediaTextInteractive;
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
  * Class MediaTextInteractiveTest

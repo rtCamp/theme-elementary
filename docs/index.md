@@ -27,7 +27,7 @@ Both are valid — pick the CLI when you want full control over every input, or 
 
 ## Shared dependencies
 
-PHP contracts: [wp-framework](https://github.com/rtCamp/wp-framework/blob/main/docs/index.md). Init and scaffold tooling: [wp-tooling](https://github.com/rtCamp/wp-tooling/blob/main/README.md). Runtime telemetry: [wp-devtools](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md) (repository access required).
+PHP contracts: [wp-primitives](https://github.com/rtCamp/wp-primitives/blob/main/docs/index.md). Init and scaffold tooling: [wp-tooling](https://github.com/rtCamp/wp-tooling/blob/main/README.md). Runtime telemetry: [wp-devtools](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md) (repository access required).
 
 ## Command reference
 

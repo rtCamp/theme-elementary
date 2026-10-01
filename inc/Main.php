@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 namespace rtCamp\Theme\Elementary;
 
-use rtCamp\WPFramework\Contracts\Traits\{Singleton, Loader};
+use rtCamp\WPPrimitives\Contracts\Traits\{Singleton, Loader};
 use rtCamp\Theme\Elementary\Core\{Assets, Components, Encryption, FeatureRegistry, Logger, Menu, Templates, ThemeSetup};
 
 use rtCamp\Theme\Elementary\Modules\Settings\FeaturesSettingsPage;

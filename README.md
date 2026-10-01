@@ -10,7 +10,7 @@
 
 This is a starter WordPress block theme. It provides the structure, examples, asset pipeline, checks, and optional development features needed for building a new block theme.
 
-This theme uses [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework) as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling) for streamlined project initialization and feature scaffolding.
+This theme uses [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives) as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling) for streamlined project initialization and feature scaffolding.
 
 > **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the architecture overview, the module pattern, and how to add new classes. [CONTRIBUTING.md](CONTRIBUTING.md) covers the dev setup and PR flow.
 
@@ -70,7 +70,7 @@ styles/                     # theme.json style variations
 theme.json  style.css       # theme config
 bin/                        # init and scaffold scripts
 tests/{js,php}/             # JS & PHP tests
-vendor/rtcamp/wp-framework/ # framework (Composer-managed; do not modify)
+vendor/rtcamp/wp-primitives/ # framework (Composer-managed; do not modify)
 ```
 
 Some of these directories hold supplied examples that initialization can remove; see [Included features](docs/features.md).

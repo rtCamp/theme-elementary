@@ -47,7 +47,7 @@ To add a new script or module to the build process, follow these steps:
    npm run build:prod # For production
    ```
 
-4. Register and enqueue it through the theme's `inc/Core/Assets.php` on the appropriate hook, following the existing asset registrations. Discovery adds a file to the build; it does not automatically enqueue every new entry in WordPress. The framework's [asset-loader reference](https://github.com/rtCamp/wp-framework/blob/main/docs/loaders.md) explains its methods.
+4. Register and enqueue it through the theme's `inc/Core/Assets.php` on the appropriate hook, following the existing asset registrations. Discovery adds a file to the build; it does not automatically enqueue every new entry in WordPress. The framework's [asset-loader reference](https://github.com/rtCamp/wp-primitives/blob/main/docs/loaders.md) explains its methods.
 
 ### Adding a New Module
 

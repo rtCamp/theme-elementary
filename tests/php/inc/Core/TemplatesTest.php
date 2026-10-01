@@ -38,14 +38,14 @@ class TemplatesTest extends TestCase {
 	 * The class exists and extends the framework TemplateLoader.
 	 */
 	public function test_extends_framework_template_loader(): void {
-		$this->assertInstanceOf( 'rtCamp\WPFramework\TemplateLoader', $this->instance );
+		$this->assertInstanceOf( 'rtCamp\WPPrimitives\TemplateLoader', $this->instance );
 	}
 
 	/**
 	 * It is shareable, so the container hands out a single instance.
 	 */
 	public function test_is_shareable(): void {
-		$this->assertInstanceOf( 'rtCamp\WPFramework\Contracts\Interfaces\Shareable', $this->instance );
+		$this->assertInstanceOf( 'rtCamp\WPPrimitives\Contracts\Interfaces\Shareable', $this->instance );
 	}
 
 	/**

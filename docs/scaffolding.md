@@ -92,7 +92,7 @@ Consistency is a primary requirement: code should read the same no matter who, o
 
 - **The same standards, enforced every run.** Generated code is checked against the project's actual gates — the same ones you'd run by hand: PHP style ([`phpcs.xml.dist`](../phpcs.xml.dist), the WordPress Theme Coding Standards), PHP static analysis ([`phpstan.neon.dist`](../phpstan.neon.dist)), JS ([`eslint.config.mjs`](../eslint.config.mjs)), and CSS ([`.stylelintrc.json`](../.stylelintrc.json)). Run the PHP linters inside `wp-env` when the host PHP is newer than the pinned WPCS.
 - **Verified, not just formatted.** `/scaffold` writes the test first and runs it, then `composer phpcs:fix` → `composer phpcs` → `composer phpstan`, fixing what it can. A feature ships passing the gates, not merely looking right.
-- **No drift between developers.** Registration, wiring, and lifecycle come from the shared [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework) abstracts, so the structure is identical no matter who generates it.
+- **No drift between developers.** Registration, wiring, and lifecycle come from the shared [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives) abstracts, so the structure is identical no matter who generates it.
 
 The conventions these gates enforce are documented in [AGENTS.md](../AGENTS.md).
 
@@ -100,7 +100,7 @@ The conventions these gates enforce are documented in [AGENTS.md](../AGENTS.md).
 
 Add `[acme_blog_site_name]` in a Shortcode block and view the frontend. It should show the WordPress site title, with no raw HTML interpreted from the title. Review the source, registration, and passing checks before committing the feature.
 
-For another scaffold, use the installed `list`/help output and the [upstream scaffold catalogue](https://github.com/rtCamp/wp-tooling/tree/main/node-packages/wp-tooling/scaffolds). See the [engine reference](https://github.com/rtCamp/wp-tooling/blob/main/node-packages/wp-tooling/docs/ai-orchestration.md#2-the-engine-surface) for invocation options and each catalogue entry's `scaffold.json` for its inputs and defaults. Use `npx wp-tooling add --help` for your installed version's flags. Full framework behavior belongs in the [shortcode reference](https://github.com/rtCamp/wp-framework/blob/main/docs/abstracts.md#abstractshortcode). For a manual feature, read [Development](../DEVELOPMENT.md).
+For another scaffold, use the installed `list`/help output and the [upstream scaffold catalogue](https://github.com/rtCamp/wp-tooling/tree/main/node-packages/wp-tooling/scaffolds). See the [engine reference](https://github.com/rtCamp/wp-tooling/blob/main/node-packages/wp-tooling/docs/ai-orchestration.md#2-the-engine-surface) for invocation options and each catalogue entry's `scaffold.json` for its inputs and defaults. Use `npx wp-tooling add --help` for your installed version's flags. Full framework behavior belongs in the [shortcode reference](https://github.com/rtCamp/wp-primitives/blob/main/docs/abstracts.md#abstractshortcode). For a manual feature, read [Development](../DEVELOPMENT.md).
 
 ## Troubleshooting
 

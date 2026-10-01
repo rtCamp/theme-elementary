@@ -54,10 +54,10 @@ Clone the dependency you need anywhere outside the theme, or reuse an existing c
 
 ```bash
 git clone https://github.com/rtCamp/wp-tooling.git '/absolute/path/to/wp-tooling'
-git clone https://github.com/rtCamp/wp-framework.git '/absolute/path/to/wp-framework'
+git clone https://github.com/rtCamp/wp-primitives.git '/absolute/path/to/wp-primitives'
 ```
 
-In the dependency checkout, select and record the revision under test. The tooling override below needs the source monorepo's `node-packages/wp-tooling/` directory; the `npm/wp-tooling` distribution branch has a different layout. Follow the [tooling](https://github.com/rtCamp/wp-tooling/blob/main/CONTRIBUTING.md#development-setup) or [framework](https://github.com/rtCamp/wp-framework/blob/main/CONTRIBUTING.md#development-setup) maintainer guide for that package's setup and checks.
+In the dependency checkout, select and record the revision under test. The tooling override below needs the source monorepo's `node-packages/wp-tooling/` directory; the `npm/wp-tooling` distribution branch has a different layout. Follow the [tooling](https://github.com/rtCamp/wp-tooling/blob/main/CONTRIBUTING.md#development-setup) or [framework](https://github.com/rtCamp/wp-primitives/blob/main/CONTRIBUTING.md#development-setup) maintainer guide for that package's setup and checks.
 
 From the disposable theme directory, point only the tooling declaration at your checkout:
 
@@ -66,7 +66,7 @@ npm pkg set 'devDependencies.@rtcamp/wp-tooling=file:/absolute/path/to/wp-toolin
 npm install --install-links
 ```
 
-For framework work, add a local Composer `path` repository pointing to `/absolute/path/to/wp-framework` and run a targeted `composer update rtcamp/wp-framework -W`. Ensure the local package version satisfies this theme's `^1.0` constraint.
+For framework work, add a local Composer `path` repository pointing to `/absolute/path/to/wp-primitives` and run a targeted `composer update rtcamp/wp-primitives -W`. Ensure the local package version satisfies this theme's `^2.0` constraint.
 
 When done, restore only the dependency source/constraint and local repository entry, then regenerate the affected lockfile. Preserve identity changes made by init. Do not blanket-checkout `package.json` or `composer.json`, and do not commit absolute paths or local overrides. Recheck the declared-dependency install.
 

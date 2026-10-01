@@ -11,7 +11,7 @@ use rtCamp\Theme\Elementary\Core\Encryption;
 use rtCamp\Theme\Elementary\Helpers\Util;
 use rtCamp\Theme\Elementary\Main;
 use rtCamp\Theme\Elementary\Tests\TestCase;
-use rtCamp\WPFramework\Utils\Encryptor;
+use rtCamp\WPPrimitives\Utils\Encryptor;
 
 /**
  * Class EncryptionTest
