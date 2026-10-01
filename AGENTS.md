@@ -6,7 +6,7 @@ Tool-agnostic brief for AI coding agents (Claude Code, Copilot coding agent, Cod
 
 The review rules ARE the coding rules: the same files Copilot reviews against. Follow them when writing code; they hold the full detail:
 
-- `.github/instructions/primitives-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. Shipped from `rtcamp/wp-primitives`, generated locally by `npm run sync-ai` (absent until then).
+- `.github/instructions/primitives-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. Shipped from `rtcamp/wp-primitives`; the committed copy is refreshed by `npm run sync-ai`, which also runs on `npm install`. Commit it when it changes after a framework upgrade.
 - `.github/instructions/structure.instructions.md`: theme layout and wiring.
 - `.github/copilot-instructions.md`: overview + conventions.
 
