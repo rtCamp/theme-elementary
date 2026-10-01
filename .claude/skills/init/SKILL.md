@@ -52,7 +52,7 @@ This theme's Composer `post-install-cmd` runs `npm i`; do not immediately repeat
 - Setup only: confirm this is a clone meant to become a new theme, not the maintained starter theme. Manage mode operates on an already-personalized project.
 
 ### 4. Gather inputs
-**Setup:** theme name (required, e.g. `Acme Blog` → namespace `rtCamp\Theme\Acme_Blog`, package `rtcamp/acme-blog`, text domain, constant/function/CSS prefixes, the `style.css` + `functions.php` headers; show these back); version (default `1.0.0`); which example sets to remove and which features to enable (defaults: keep all sets, hmr on, tailwind and dev-tools off). The engine derives the tokens itself; do not read the engine source to work them out - the mapping above is the contract, and the graph answers any deeper question (see the graphify policy in `AGENTS.md`).
+**Setup:** theme name (required, e.g. `Acme Blog` → namespace `rtCamp\Theme\Acme_Blog`, package `rtcamp/acme-blog`, text domain, constant/function/CSS prefixes, the `style.css` + `functions.php` headers; show these back); version (default `1.0.0`); which example sets to remove and which features to enable (defaults: keep all sets, hmr on, tailwind off). The engine derives the tokens itself; do not read the engine source to work them out - the mapping above is the contract, and the graph answers any deeper question (see the graphify policy in `AGENTS.md`).
 **Manage:** which of identity / features to change.
 
 ### 5. Confirm
@@ -67,7 +67,6 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes \
 # Manage:
 npm run init -- --list
 npm run init -- --enable=tailwind --yes
-npm run init -- --enable=dev-tools --yes
 npm run init -- --features=hmr --yes        # exact enabled set (empty = none)
 ```
 - `--keep-examples` keeps all; `--remove-examples` (no value) removes all; `--remove-examples=a,b` removes listed keys.
@@ -78,8 +77,6 @@ npm run init -- --features=hmr --yes        # exact enabled set (empty = none)
 
 ### 7. After init
 - Tailwind enabled → it added `src/css/frontend/tailwind.css` + `postcss.config.js` and pinned `@rtcamp/tailwind-config`; developer runs `npm install` (the feature changes declarations; it does not install packages).
-- Dev Tools enabled → developer runs `composer update rtcamp/wp-dev-tools -W`, starts/restarts wp-env, activates the theme using the exact mounted directory name printed by the engine (`npm run wp-env run cli -- wp theme activate <directory-name>`), then runs `npm run dev:connect`. This optional package is private and requires repository access; WordPress 6.9+ and PHP 8.2+ are required. The feature writes a gitignored `.wp-env.override.json` with Query Monitor, MCP Adapter, local gates, and host/theme-container paths; it does not modify committed `.wp-env.json` or the tests environment.
-- Dev Tools disable → disconnect first (`npm run dev:disconnect`), then disable and follow the engine’s Composer update instruction.
 - `composer dump-autoload` runs during setup when `composer.json` is present.
 - Trust the engine's own output to verify (it reports the removed sets, drops their `Main::CLASSES` lines and tests, and regenerates the autoloader). To confirm a symbol or reference, run a single `graphify query`/`affected` against the graph - never grep `Main.php`/`inc/` to check removal.
 - If you hand-edited PHP and are NOT handing off to scaffold (e.g. a manage-mode dangling `Main::CLASSES` cleanup), run `composer phpcs` on the change and fix it. When a brief follows (step 8), leave the phpcs/PHPStan/test gates to the scaffold skill - init does not run them.
@@ -102,7 +99,7 @@ ONE "Select the example sets to include" prompt. Each is keep-or-remove; removin
 |---|---|
 | Editor & Frontend | `block-extension`, `shortcode`, `components`, `patterns`, `tailwind` (feature) |
 | Admin | `settings` |
-| Dev | `hmr`, `dev-tools` (features) |
+| Dev | `hmr` (feature) |
 
 - `block-extension` - Media-text block render-filter extension.
 - `shortcode` - Author-bio shortcode.
@@ -110,7 +107,7 @@ ONE "Select the example sets to include" prompt. Each is keep-or-remove; removin
 - `patterns` - Page-creation block pattern.
 - `settings` - Theme options settings page.
 
-Sets are kept by default; pass keys to `--remove-examples` to drop. Features: `hmr` on, `tailwind` and `dev-tools` off; toggle via `--features`/`--enable`/`--disable`.
+Sets are kept by default; pass keys to `--remove-examples` to drop. Features: `hmr` on, `tailwind` off; toggle via `--features`/`--enable`/`--disable`.
 
 ### Changing capabilities after setup
 Add later → scaffold skill / `npx wp-tooling add <category>/<slug>` (writes the class, wires it into `Main::CLASSES`). Remove later → delete its class file(s) under `inc/Modules/<Kind>/` plus its `Main::CLASSES` line and `use` import by hand. Do not re-run init to change the set.

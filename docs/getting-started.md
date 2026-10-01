@@ -48,7 +48,7 @@ Review `git status` and resolve unrelated changes before running:
 npm run init
 ```
 
-Use **Acme Blog** as the theme name. For this first walkthrough, keep the examples and the default feature selection: HMR on, Tailwind and Dev Tools off. The [initialization guide](initialization.md) explains each decision, including cleanup and optional Git initialization.
+Use **Acme Blog** as the theme name. For this first walkthrough, keep the examples and the default feature selection: HMR on, Tailwind off. The [initialization guide](initialization.md) explains each decision, including cleanup and optional Git initialization.
 
 Alternatively, open the clone in your AI assistant and ask:
 

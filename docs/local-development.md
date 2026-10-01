@@ -47,7 +47,7 @@ ENABLE_HMR=true
 BS_PORT=3001
 ```
 
-The wp-env development environment already sets `WP_ENVIRONMENT_TYPE=local`, `WP_DEBUG=true`, and `SCRIPT_DEBUG=true`. For another local WordPress installation, set those values in its `wp-config.php` before using live reload. Preserve any existing override entries, especially if Dev Tools created them. Restart wp-env after configuration changes, then start the watcher.
+The wp-env development environment already sets `WP_ENVIRONMENT_TYPE=local`, `WP_DEBUG=true`, and `SCRIPT_DEBUG=true`. For another local WordPress installation, set those values in its `wp-config.php` before using live reload. Restart wp-env after configuration changes, then start the watcher.
 
 For HTTPS, custom ports, or block refresh, read [Live reload](hmr.md). Leave `WP_SSL_KEY` and `WP_SSL_CERT` unset in `.env.local` for an HTTP setup.
 
