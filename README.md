@@ -22,7 +22,7 @@ Start with the [Getting Started guide](docs/getting-started.md) — a short, con
 
 ## What is included
 
-Initialization personalizes the theme and lets you keep or remove the supplied examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR, Tailwind, and Dev Tools are optional. Linting, static analysis, tests, and AI-assisted setup and scaffolding are included for project development.
+Initialization personalizes the theme and lets you keep or remove the supplied examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR and Tailwind are optional. Linting, static analysis, tests, and AI-assisted setup and scaffolding are included for project development.
 
 See [Included features](docs/features.md) for the available examples and options.
 

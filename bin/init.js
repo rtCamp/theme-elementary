@@ -35,7 +35,7 @@ Options:
   --yes                     Non-interactive; setup requires --name.
   --keep-examples           Keep every example set.
   --remove-examples[=a,b]   Remove all (no value) or the listed example keys.
-  --features=a,b            Set the exact enabled feature set (e.g. hmr,tailwind,dev-tools).
+  --features=a,b            Set the exact enabled feature set (e.g. hmr,tailwind).
   --enable=a / --disable=b  Toggle a single feature.
   --list [--json]           Show example set / feature status, then exit.
   --reinit / --clean        Re-run / reset helpers.

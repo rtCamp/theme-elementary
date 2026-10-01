@@ -9,7 +9,7 @@ Record `git rev-parse HEAD`, Node/PHP versions, the framework revision in `compo
 1. Follow [Getting Started](../getting-started.md) for both the standalone and existing-WordPress routes, with a fresh dependency install from declared sources. Do not substitute a development engine for this check.
 2. Run interactive init and a separate non-interactive setup. Check identity, retained examples, generated state, and optional Git decisions.
 3. Exercise each example-removal group in a fresh fixture. Check both deleted files and the remaining registration array, then run `composer dump-autoload` and `php -l` for a fast syntax/autoload check before loading WordPress.
-4. Enable/disable optional features. Install the changed declarations before checking Tailwind output or Dev Tools runtime integration. For Dev Tools, verify the development override does not change test configuration.
+4. Enable/disable optional features. Install the changed declarations before checking Tailwind output.
 5. Start WordPress, activate the mounted theme directory, build, and check a source edit in the frontend and editor.
 6. Follow the [CLI/AI scaffold example](../scaffolding.md) and the [manual integration examples](../../DEVELOPMENT.md). Verify paths, registration, behavior, and focused tests.
 7. Build the documentation and check links before and after init cleanup.
