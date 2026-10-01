@@ -18,7 +18,7 @@
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
 	"dependencies": {
-		"@wordpress/interactivity": "6.47.0"
+		"@wordpress/interactivity": "6.56.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.29.7",
@@ -27,9 +27,9 @@
 		"@rtcamp/stylelint-config": "^1.1.0",
 		"@rtcamp/wp-tooling": "^2.0.0",
 		"@wordpress/babel-preset-default": "8.56.0",
-		"@wordpress/browserslist-config": "6.47.0",
+		"@wordpress/browserslist-config": "6.56.0",
 		"@wordpress/env": "11.16.0",
-		"@wordpress/eslint-plugin": "25.3.0",
+		"@wordpress/eslint-plugin": "27.0.0",
 		"@wordpress/scripts": "36.0.0",
 		"browser-sync": "3.0.4",
 		"browser-sync-webpack-plugin": "2.4.0",
