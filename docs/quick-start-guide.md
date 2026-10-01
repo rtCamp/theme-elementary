@@ -33,7 +33,7 @@ block, a `[reading_time]` shortcode, and a theme options settings page.
 ## Local setup (pilot)
 
 The one rtCamp npm package this theme needs, `@rtcamp/wp-tooling`, is **private**
-during the pilot (served from GitHub Packages); `rtcamp/wp-framework` resolves
+during the pilot (served from GitHub Packages); `rtcamp/wp-primitives` resolves
 from the VCS repository already declared in [`composer.json`](../composer.json).
 
 - **AI track:** do step 1 only. `/init` ([Track A](#track-a-ai-skills-recommended)) runs the rest for you.
@@ -55,9 +55,9 @@ git clone git@github.com:rtCamp/wp-tooling.git ../wp-tooling
 ( cd ../wp-tooling && git checkout release/v1.0.0 )
 npm pkg set "devDependencies.@rtcamp/wp-tooling=file:../wp-tooling/node-packages/wp-tooling"
 
-# 3. Install. wp-framework comes from its VCS repo; --install-links copies the
+# 3. Install. wp-primitives comes from its VCS repo; --install-links copies the
 #    file: package (option b) so its peer deps resolve.
-composer update rtcamp/wp-framework
+composer update rtcamp/wp-primitives
 npm install --install-links                     # add --legacy-peer-deps on ERESOLVE
 ```
 
@@ -189,7 +189,7 @@ what, writes it. The AI track is built around that.
   then `composer phpcs:fix` -> `composer phpcs` -> `composer phpstan`, fixing what
   it can. A feature ships passing the gates, not merely looking right.
 - **No drift between developers.** Registration, wiring, and lifecycle come from
-  the shared [`rtcamp/wp-framework`](https://github.com/rtCamp/wp-framework)
+  the shared [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives)
   abstracts, so the structure is identical whoever generates it.
 
 The conventions these gates enforce are documented in [AGENTS.md](../AGENTS.md).

@@ -1,7 +1,7 @@
 # Contributing to Theme Elementary
 
 Thanks for your interest in improving Theme Elementary — a WordPress block
-starter theme built on the `rtcamp/wp-framework` package.
+starter theme built on the `rtcamp/wp-primitives` package.
 
 ## Development setup
 

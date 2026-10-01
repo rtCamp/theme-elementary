@@ -65,7 +65,7 @@ class AssetsTest extends TestCase {
 	 * Test class implements Registrable.
 	 */
 	public function test_implements_registrable(): void {
-		$this->assertInstanceOf( 'rtCamp\WPFramework\Contracts\Interfaces\Registrable', $this->instance );
+		$this->assertInstanceOf( 'rtCamp\WPPrimitives\Contracts\Interfaces\Registrable', $this->instance );
 	}
 
 	/**

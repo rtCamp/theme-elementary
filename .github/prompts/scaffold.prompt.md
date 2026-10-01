@@ -43,7 +43,7 @@ npx wp-tooling add wp/<kind> --non-interactive --json \
 Always pass this theme's conventions (the engine defaults target a different layout). Apply project-sampled details (class suffix, sub-namespace, vendor prefix, build dir). `--dry-run` to preview. There is no `wp/module` step (no per-kind module file); each artifact wires into `Main::CLASSES`. Multi-kind: run in dependency order; re-read `ai.wiring` after each call. Result: `{ scaffold, engine, developer, ai, warnings }`.
 
 ### 6. Process the result
-- `engine.wrote/skipped` → report. `developer.install.*` → print as copy-paste; **never run** `composer require`/`npm install` (the framework already ships - ignore a `composer require rtcamp/wp-framework` suggestion). `developer.secrets` → print as `gh secret set` checklist; **never read/write values**.
+- `engine.wrote/skipped` → report. `developer.install.*` → print as copy-paste; **never run** `composer require`/`npm install` (the framework already ships - ignore a `composer require rtcamp/wp-primitives` suggestion). `developer.secrets` → print as `gh secret set` checklist; **never read/write values**.
 - `ai.wiring`: the engine miscomputes `targetFile` as a module file; the real target is `inc/Main.php`. Translate the snippet to a `<Class>::class,` line in `Main::CLASSES` plus the matching `use` import, mirroring the sampled entries. Show file + line + rendered snippet, get consent, insert idempotently.
 
 ### 7. TDD loop (mandatory)

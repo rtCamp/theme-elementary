@@ -1,6 +1,6 @@
 ---
 applyTo: "inc/**"
-description: "Theme structure. Merges with framework-php.instructions.md and copilot-instructions.md."
+description: "Theme structure. Merges with primitives-php.instructions.md and copilot-instructions.md."
 ---
 
 # Theme structure

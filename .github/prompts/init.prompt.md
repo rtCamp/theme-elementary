@@ -33,17 +33,17 @@ Copilot must gather inputs BEFORE acting. Do not assume any value.
 Run: `test -f .wp-scaffold.json && echo manage || echo setup`. No file → **setup**. Present → **manage** (`npm run init -- --list` shows feature status).
 
 ### 2. Setup: offer the pilot bootstrap
-The rtCamp tooling packages are private/unpublished during the pilot. If `npm install` resolves `@rtcamp/wp-tooling` and `composer install` resolves `rtcamp/wp-framework` from its VCS repo, skip this. Otherwise ask: "Bootstrap local dependencies now? (clones the tooling engine, points npm at it, installs). y/n". On **yes**, with consent, run in order (explain each step in <=30 words):
+The rtCamp tooling packages are private/unpublished during the pilot. If `npm install` resolves `@rtcamp/wp-tooling` and `composer install` resolves `rtcamp/wp-primitives` from its VCS repo, skip this. Otherwise ask: "Bootstrap local dependencies now? (clones the tooling engine, points npm at it, installs). y/n". On **yes**, with consent, run in order (explain each step in <=30 words):
 
 ```bash
 nvm use
 git clone git@github.com:rtCamp/wp-tooling.git ../wp-tooling
 ( cd ../wp-tooling && git checkout release/v1.0.0 )
 npm pkg set "devDependencies.@rtcamp/wp-tooling=file:../wp-tooling/node-packages/wp-tooling"
-# wp-framework resolves from the VCS "repositories" entry already in composer.json.
+# wp-primitives resolves from the VCS "repositories" entry already in composer.json.
 # For local framework dev, optionally swap it for a path repo:
-#   { "type": "path", "url": "../wp-framework", "options": { "symlink": false } }
-composer update rtcamp/wp-framework
+#   { "type": "path", "url": "../wp-primitives", "options": { "symlink": false } }
+composer update rtcamp/wp-primitives
 npm install --install-links                                     # fallback: add --legacy-peer-deps
 ```
 Add the `@rtcamp/tailwind-config` `file:` ref too only if Tailwind will be enabled. The `file:`/`path` edits are local-only: tell the developer to revert ONLY those dependency-source lines before committing (keep the identity changes init wrote). On **no**, skip to step 3 and surface installs as developer actions.

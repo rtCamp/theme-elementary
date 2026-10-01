@@ -1,6 +1,6 @@
 /**
  * Scaffold config for theme-elementary, consumed by bin/init.js and handed to
- * the shared scaffold engine in rtcamp/wp-framework.
+ * the shared scaffold engine in rtcamp/wp-primitives.
  *
  * Search tokens are embedded verbatim; safe because the engine never
  * search-replaces files under bin/.
