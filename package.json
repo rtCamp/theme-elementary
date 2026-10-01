@@ -39,7 +39,7 @@
 		"dotenv": "17.4.2",
 		"eslint": "10.4.0",
 		"eslint-import-resolver-typescript": "4.4.4",
-		"eslint-plugin-jest": "29.15.2",
+		"eslint-plugin-jest": "29.16.6",
 		"eslint-plugin-react-hooks": "7.1.1",
 		"globals": "17.6.0",
 		"jest": "30.5.0",
