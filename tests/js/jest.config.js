@@ -1,11 +1,18 @@
 module.exports = {
 	rootDir: '../../',
-	...require('@wordpress/scripts/config/jest-unit.config'),
-	transform: {
-		'^.+\\.[jt]sx?$':
-			'<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
+	// Mirrors what @wordpress/jest-preset-default provided before
+	// @wordpress/scripts 36 dropped it: a DOM, the same test discovery,
+	// and style imports mapped to a mock. babel-jest is Jest's default
+	// transform and reads babel.config.js.
+	testEnvironment: 'jsdom',
+	testMatch: [
+		'**/__tests__/**/*.[jt]s?(x)',
+		'**/test/*.[jt]s?(x)',
+		'**/?(*.)test.[jt]s?(x)',
+	],
+	moduleNameMapper: {
+		'\\.(scss|css)$': '<rootDir>/tests/js/mocks/style-mock.js',
 	},
-	preset: '@wordpress/jest-preset-default',
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
@@ -23,8 +30,5 @@ module.exports = {
 	],
 	coverageReporters: ['lcov'],
 	coverageDirectory: '<rootDir>/tests/logs',
-	reporters: [
-		['jest-silent-reporter', { useDots: true }],
-		'<rootDir>/node_modules/@wordpress/scripts/config/jest-github-actions-reporter',
-	],
+	reporters: [['jest-silent-reporter', { useDots: true }], 'github-actions'],
 };

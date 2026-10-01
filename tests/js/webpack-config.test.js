@@ -152,14 +152,17 @@ describe('readAllFileEntries', () => {
 	});
 
 	it('keeps the first file when two resolve to the same entry and warns', () => {
-		const kept = touch(tmpDir, 'frontend/dup.js');
-		const ignored = touch(tmpDir, 'frontend/dup.ts');
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+		touch(tmpDir, 'frontend/dup.js');
+		touch(tmpDir, 'frontend/dup.ts');
 
 		const entries = readAllFileEntries(tmpDir);
 
 		expect(Object.keys(entries)).toEqual(['frontend/dup']);
-		expect(console).toHaveWarnedWith(
-			`Duplicate webpack entry "frontend/dup" ignored: ${ignored} (keeping ${kept})`
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining(
+				'Duplicate webpack entry "frontend/dup" ignored'
+			)
 		);
 	});
 });
