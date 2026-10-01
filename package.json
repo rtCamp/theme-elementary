@@ -1,6 +1,6 @@
 {
 	"name": "elementary-theme",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
 	"author": "rtCamp",
 	"license": "GPL-2.0-or-later",
@@ -60,6 +60,8 @@
 		"build:blocks:dev": "wp-scripts start --no-watch --experimental-modules --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./src/blocks/ --output-path=./assets/build/blocks/",
 		"build:assets:dev": "wp-scripts start --no-watch --experimental-modules",
 		"init": "./bin/init.js",
+		"release:bump": "wp-tooling release:bump",
+		"release:changelog": "wp-tooling release:changelog",
 		"sync-ai": "node bin/sync-ai.js",
 		"lint:all": "npm-run-all --parallel lint:css lint:js lint:php lint:package-json",
 		"lint:css": "wp-scripts lint-style ./src",
