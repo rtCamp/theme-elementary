@@ -78,7 +78,7 @@ describe('init wrapper', () => {
 		(flag) => {
 			const result = run("throw new Error('must not execute');", [flag]);
 			expect(result.status).toBe(0);
-			expect(result.stdout).toContain('dev-tools');
+			expect(result.stdout).toContain('--features');
 			expect(fs.existsSync(path.join(root, 'synced'))).toBe(false);
 		}
 	);

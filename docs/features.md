@@ -39,7 +39,7 @@ For an Acme Blog project that retained the button example, call this from a PHP 
 );
 ```
 
-The [development guide](../DEVELOPMENT.md#adding-a-new-class) shows the manual extension pattern. To generate a new feature, follow [Scaffolding](scaffolding.md). Original examples remain browsable in the [starter theme source](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/inc/Modules) after you remove them from your project.
+The [development guide](../DEVELOPMENT.md#adding-a-new-class) shows the manual extension pattern. To generate a new feature, follow [Scaffolding](scaffolding.md). Original examples remain browsable in the [starter theme source](https://github.com/rtCamp/theme-elementary/tree/main/inc/Modules) after you remove them from your project.
 
 ## Optional development features
 

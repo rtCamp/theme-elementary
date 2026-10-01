@@ -6,8 +6,6 @@
  * search-replaces files under bin/.
  */
 
-const devTools = require('./features/dev-tools');
-
 // functions.php and the theme's Tailwind enable constant (derived from the
 // resolved identity). functions.php defines it false by default; the feature
 // flips it, and Assets.php enqueues off it.
@@ -56,7 +54,6 @@ module.exports = {
 	// gates the theme.json token plugin on the entry file at build time.
 	featuresDir: 'bin/features',
 	features: [
-		devTools,
 		{
 			key: 'tailwind',
 			label: 'Tailwind CSS',

@@ -22,7 +22,7 @@ The command should produce no output. Init rewrites and removes starter files; u
 | `/scaffold` | Implement a new feature after personalization. |
 | `/setup` | Generic tooling bootstrap; it is not an acquisition or personalization path for this starter. |
 
-Claude skills remain after cleanup. Copilot's `/init` and `/scaffold` prompts ship in `.github/prompts`, which cleanup removes. Use the retained skill with an assistant that supports it, or the CLI, for subsequent work. The maintained [AI entry points](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/.claude/skills) describe assistant-specific instructions.
+Claude skills remain after cleanup. Copilot's `/init` and `/scaffold` prompts ship in `.github/prompts`, which cleanup removes. Use the retained skill with an assistant that supports it, or the CLI, for subsequent work. The maintained [AI entry points](https://github.com/rtCamp/theme-elementary/tree/main/.claude/skills) describe assistant-specific instructions.
 
 Each stage hands off a concrete result to the next:
 
@@ -41,7 +41,7 @@ The [Getting Started](getting-started.md) guide verifies the clone route. If a p
 4. **Persist, regenerate, and clean up.** After selection, init writes `.wp-scaffold.json`, regenerates the Composer autoloader, and removes the configured starter-only targets. There is no separate cleanup prompt. The wrapper then runs `sync-ai` after a successful change.
 5. **Git and hooks.** A new project may start a new Git repository. The Git confirmation defaults to No. Accepting it deletes the existing `.git` and its starter history; decline it when keeping that history or working inside another repository. Hook installation defaults to Yes after a new repository is initialized, and the initial commit is then created automatically. Non-interactive `--yes` skips optional Git setup.
 
-Examples are kept by default. HMR is on; Tailwind and Dev Tools are off. See [Included features](features.md) for their purpose and source locations.
+Examples are kept by default. HMR is on; Tailwind is off. See [Included features](features.md) for their purpose and source locations.
 
 For a scripted, non-interactive first run — for example a feature-focused brief that doesn't need any supplied example set:
 
@@ -57,14 +57,14 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
 | Affected files | `style.css`, `functions.php`, `composer.json`, `package.json`, and text or file basenames containing starter identity tokens are personalized. |
 | Version | Written to `style.css` and `package.json`. |
 | Examples | Kept groups remain. Removed groups delete their configured paths and registration regions; markers are removed in either case. See [Included features](features.md). |
-| Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations; Dev Tools adds Composer/scripts and a gitignored `.wp-env.override.json`. |
+| Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations. |
 | State | `.wp-scaffold.json` records identity and feature choices; do not hand-edit it. |
 | Autoload | Setup regenerates Composer's autoloader. |
 | Cleanup | Before the wrapper's final sync, the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` (including the starter POT file) are removed. Workflows, issue templates, the PR template, `dependabot.yml`, and `release.yml` stay untouched. |
 | AI instructions | After a successful change, the wrapper runs `sync-ai`; in a standalone project with the framework installed, it refreshes the generated framework PHP instructions. It does not restore the removed prompts or theme-specific rules. |
 | Retained files | Theme source, `bin/`, Claude skills, documentation, and test infrastructure remain; files belonging to removed example sets do not. |
 
-Init does **not** generate a POT file. Run `npm run pot` separately when preparing translations; it recreates the language output. Review cleanup before treating the initialized project as your baseline.
+Init does **not** generate a POT file. Run `npm run pot` separately when preparing translations (it runs WP-CLI inside wp-env, so start wp-env first); it recreates the language output. Review cleanup before treating the initialized project as your baseline.
 
 ## Review the result
 
@@ -98,7 +98,6 @@ Example removal belongs to initial setup: `--remove-examples=shortcode,patterns`
 ### Optional dependencies
 
 - **Tailwind:** `npm run init -- --enable=tailwind --yes` changes declarations and creates the entry/config files; npm installation is separate. See [Tailwind](tailwind.md) for the theme integration and installation checks.
-- **Dev Tools:** with repository access and WordPress 6.9+, run `npm run init -- --enable=dev-tools --yes`, then follow init's printed Composer update, wp-env startup, theme activation, and `npm run dev:connect` steps. The gitignored override contains this machine's paths, so each developer enables it locally. Disconnect with `npm run dev:disconnect` before disabling it, then follow the Composer update instruction. Package configuration and usage belong in the [Dev Tools guide](https://github.com/rtCamp/wp-devtools/blob/release/v1.0.0/README.md#install-consumer-project).
 
 ## Troubleshooting
 

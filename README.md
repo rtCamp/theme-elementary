@@ -18,11 +18,9 @@ This theme uses [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives
 
 Start with the [Getting Started guide](docs/getting-started.md) — a short, concrete walkthrough covering prerequisites, acquiring the starter, installing dependencies, personalizing the theme, and seeing it running in local WordPress.
 
-> **Current v2 path:** The verified guide follows the `theme-elementary-v2` branch.
-
 ## What is included
 
-Initialization personalizes the theme and lets you keep or remove the supplied examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR, Tailwind, and Dev Tools are optional. Linting, static analysis, tests, and AI-assisted setup and scaffolding are included for project development.
+Initialization personalizes the theme and lets you keep or remove the supplied examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR and Tailwind are optional. Linting, static analysis, tests, and AI-assisted setup and scaffolding are included for project development.
 
 See [Included features](docs/features.md) for the available examples and options.
 
