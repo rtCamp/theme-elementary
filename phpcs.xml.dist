@@ -8,7 +8,6 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for WordPress themes.</description>
 
-
 	<!--
 	#############################################################################
 	COMMAND LINE ARGUMENTS
@@ -31,17 +30,24 @@
 	<!-- Check up to 20 files simultaneously. -->
 	<arg name="parallel" value="20" />
 
+	<rule ref="Squiz.Classes.ClassFileName">
+		<exclude-pattern>tests/**</exclude-pattern>
+	</rule>
+
+	<rule ref="PSR1.Classes.ClassDeclaration">
+		<exclude-pattern>tests/**</exclude-pattern>
+	</rule>
+
 	<!--
 	#############################################################################
 	USE THE WordPress RULESET
 	#############################################################################
 	-->
 
-	<rule ref="WordPress">
+	<rule ref="rtCampWP">
 		<!-- Excluding sniff to allow shorthand array syntax usage. -->
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
-
 
 	<!--
 	#############################################################################
@@ -50,10 +56,12 @@
 	-->
 
 	<!-- Verify that the text_domain is set to the desired text-domain.
-		Multiple valid text domains can be provided as a comma-delimited list. -->
+		Add one <element> per additional valid text domain. -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="elementary-theme"/>
+			<property name="text_domain" type="array">
+				<element value="elementary-theme"/>
+			</property>
 		</properties>
 	</rule>
 
@@ -63,12 +71,14 @@
 		<properties>
 			<property name="is_theme" value="true"/>
 		</properties>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 	</rule>
 
 	<!-- Set the minimum supported WP version. This is used by several sniffs.
 		The minimum version set here should be in line with the minimum WP version
 		as set in the "Requires at least" tag in the readme.txt file. -->
-	<config name="minimum_supported_wp_version" value="4.5"/>
+	<config name="minimum_supported_wp_version" value="6.6"/>
 
 	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
 		<properties>
@@ -85,30 +95,51 @@
 		Multiple valid prefixes can be provided as a comma-delimited list. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="elementary_theme, ELEMENTARY_THEME" />
+			<property name="prefixes" type="array">
+				<element value="elementary_theme"/>
+				<element value="ELEMENTARY_THEME"/>
+				<element value="rtCamp\Theme\Elementary"/>
+			</property>
 		</properties>
 		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
-	</rule>
-
-	<!-- Ignore following files from tests. -->
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>tests/php/TestCase.php</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>tests/*</exclude-pattern>
+		<!-- Component partials are always require'd inside ComponentLoader::render(), so variables are method-scoped at runtime. -->
+		<exclude-pattern>src/components/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress-Docs">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
+	<!-- The wp:example:* region markers in inc/Main.php are intentional scaffold tags
+	     (stripped by `npm run init`), not prose comments, so exempt just those lines
+	     from the inline-comment end-char rule. -->
+	<rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+		<exclude-pattern>inc/Main.php</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress-VIP-Go">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!--
+		rtCampWP bundles the VIP sniffs itself, so the exclusion above (which only
+		applies to this ruleset's own WordPress-VIP-Go reference) no longer reaches
+		them. Tests legitimately write temp fixtures; the VIP filesystem restrictions
+		target production runtime code.
+	-->
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!-- Tests read local fixture files; the caching advice is about remote URLs. -->
+	<rule ref="WordPressVIPMinimum.Performance.FetchingRemoteData">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.WP.GlobalVariablesOverride.Prohibited">
 		<exclude-pattern>tests/*</exclude-pattern>
+		<!-- Component partials are always require'd inside ComponentLoader::render(), so variables are method-scoped at runtime. -->
+			<exclude-pattern>src/components/*</exclude-pattern>
 	</rule>
 
 	<!--
@@ -117,8 +148,8 @@
 	#############################################################################
 	-->
 
-
-	<config name="testVersion" value="5.6-"/>
+	<!-- PHP compatibility range: 8.2 minimum -->
+	<config name="testVersion" value="8.2-"/>
 	<rule ref="PHPCompatibilityWP">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 	</rule>

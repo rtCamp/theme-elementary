@@ -1,49 +1,61 @@
 {
-	"name": "rtcamp/elementary",
+	"name": "rtcamp/theme-elementary",
 	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
 	"license": "GPL-2.0-or-later",
 	"require": {
-		"php": ">=8.2"
+		"php": ">=8.2",
+		"rtcamp/wp-primitives": "^2.0"
 	},
 	"require-dev": {
-		"wp-coding-standards/wpcs": "^2.3",
-		"phpcompatibility/phpcompatibility-wp": "^2.1",
-		"automattic/vipwpcs": "^2.3",
 		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
-		"sirbrillig/phpcs-variable-analysis": "^2.11.3",
+		"php-stubs/wp-cli-stubs": "^2.12",
+		"phpstan/extension-installer": "^1.4",
+		"phpstan/phpstan": "^2.1",
+		"phpstan/phpstan-phpunit": "^2.0",
 		"phpunit/phpunit": "^9.5",
+		"rtcamp/wp-phpcs": "^1.0",
+		"rtcamp/wp-phpstan": "^1.0",
+		"wp-cli/i18n-command": "^2.4",
 		"wp-phpunit/wp-phpunit": "^6.0",
-		"yoast/phpunit-polyfills": "^3.0",
-		"wp-cli/i18n-command": "^2.4"
+		"yoast/phpunit-polyfills": "^3.0"
 	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"config": {
+		"platform": {
+			"php": "8.2"
+		},
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"phpstan/extension-installer": true
 		}
 	},
 	"autoload": {
-		"classmap": [
-			"inc/"
-		],
-		"files": [
-			"inc/helpers/custom-functions.php"
-		]
+		"psr-4": {
+			"rtCamp\\Theme\\Elementary\\": "inc/"
+		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Elementary_Theme\\Tests\\": "tests/php/"
+			"rtCamp\\Theme\\Elementary\\Tests\\": "tests/php/"
 		}
 	},
 	"scripts": {
 		"phpcs": "@php ./vendor/bin/phpcs",
 		"phpcs:fix": "@php ./vendor/bin/phpcbf",
+		"phpstan": "phpstan analyse --memory-limit=1G",
 		"post-install-cmd": [
 			"npm i"
 		],
 		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
+	},
+	"extra": {
+		"phpstan/extension-installer": {
+			"ignore": [
+				"szepeviktor/phpstan-wordpress"
+			]
+		}
 	}
 }

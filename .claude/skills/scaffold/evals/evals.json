@@ -1,0 +1,50 @@
+{
+  "skill_name": "scaffold",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add a dynamic Gutenberg block called pricing-table to my theme. The theme uses rtCamp\\Theme\\Elementary\\ -> inc/ PSR-4 autoload and wires classes directly into inc/Main.php Main::CLASSES (e.g. MediaTextInteractive::class). Blocks live at src/blocks/ and existing block.json names use the vendor prefix 'elementary' (elementary/hero, elementary/cta). Scaffold the pricing-table block following these conventions.",
+      "expected_output": "src/blocks/pricing-table/ created with block.json (name: elementary/pricing-table), edit.js, index.js, render.php, plus a Blocks PHP class under inc/Modules/Blocks/ (namespace rtCamp\\Theme\\Elementary\\Modules\\Blocks) and a PHPUnit test stub. The block class is wired into inc/Main.php Main::CLASSES with a matching use import (NOT into a per-kind module get_classes()). The vendor prefix 'elementary' is detected from an existing block.json. No npm install or wp-scripts build executed.",
+      "files": [],
+      "expectations": [
+        "The skill picks the wp/block-dynamic scaffold (not a guess across multiple candidates).",
+        "The skill introspects the theme before invoking the engine and reports: namespace rtCamp\\Theme\\Elementary, base path inc, the src/blocks/ source dir, and that classes wire directly into Main::CLASSES (no AbstractModule / get_classes).",
+        "The skill introspects an existing src/blocks/*/block.json to confirm the 'elementary' vendor prefix and the src/blocks/ source directory.",
+        "The engine invocation passes this theme's conventions (--namespace=rtCamp\\Theme\\Elementary\\Modules\\Blocks, --base_path=inc/Modules/Blocks, --tests_namespace=rtCamp\\Theme\\Elementary\\Tests, --tests_path=tests/php), not the engine defaults.",
+        "The generated block.json name is 'elementary/pricing-table' (not 'wp-tooling/pricing-table' or unprefixed 'pricing-table').",
+        "The engine writes block.json, edit.js, index.js, render.php, the Blocks PHP class, and a PHPUnit test stub.",
+        "The wiring inserts the block class ::class line into inc/Main.php Main::CLASSES plus its use import, NOT into a per-kind module file or get_classes() array.",
+        "Wiring is shown with an explicit consent prompt before applying.",
+        "The skill does NOT run npm install or wp-scripts build."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a shortcode in my theme that renders a formatted reading-time estimate for the current post. The theme uses rtCamp\\Theme\\Elementary\\ -> inc/ PSR-4. Existing shortcodes live in inc/Modules/Shortcodes/ (e.g. AuthorBio) and are wired into inc/Main.php Main::CLASSES. Scaffold the reading_time shortcode following these conventions.",
+      "expected_output": "A new PHP class under inc/Modules/Shortcodes/ (namespace rtCamp\\Theme\\Elementary\\Modules\\Shortcodes) registering the [reading_time] shortcode, plus a PHPUnit test stub under tests/php/. The class is wired into inc/Main.php Main::CLASSES with a matching use import. No composer require executed.",
+      "files": [],
+      "expectations": [
+        "The skill picks the wp/shortcode scaffold (not a guess across multiple candidates).",
+        "The skill introspects the theme and samples an existing shortcode (e.g. AuthorBio) for the registration pattern, class-name style, and sub-namespace.",
+        "The engine invocation passes the theme conventions (--namespace=rtCamp\\Theme\\Elementary\\Modules\\Shortcodes, --base_path=inc/Modules/Shortcodes, --tests_namespace=rtCamp\\Theme\\Elementary\\Tests, --tests_path=tests/php, --text_domain=elementary-theme).",
+        "The engine writes the shortcode PHP class and a PHPUnit test stub.",
+        "The wiring inserts the class ::class line into inc/Main.php Main::CLASSES (with its use import), NOT into a per-kind module file or a get_classes() array.",
+        "Wiring is shown with an explicit consent prompt before applying.",
+        "The skill expands the test stub into a real suite and drives implementation TDD-first, leaving no markTestIncomplete.",
+        "The skill does NOT run composer require, composer install, or npm install on the user's behalf."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add a testimonial custom post type to my theme so editors can manage testimonials.",
+      "expected_output": "The skill recognises that a custom post type belongs in a companion plugin, not a theme (WordPress guidelines: switching themes must not drop a site's content), flags the placement to the developer, and asks for a decision before scaffolding. It does NOT silently scaffold a CPT into the theme. If the developer confirms a deliberate exception, it scaffolds with the theme conventions (inc/Modules/PostTypes/, namespace rtCamp\\Theme\\Elementary\\Modules\\PostTypes, wiring into Main::CLASSES).",
+      "files": [],
+      "expectations": [
+        "The skill identifies wp/cpt as the relevant scaffold but flags that a CPT belongs in a companion plugin, not a theme, per WordPress guidelines.",
+        "The skill stops and asks the developer before scaffolding the CPT into the theme (does not silently proceed).",
+        "If the developer confirms a deliberate exception, the engine invocation uses the theme conventions (--namespace=rtCamp\\Theme\\Elementary\\Modules\\PostTypes, --base_path=inc/Modules/PostTypes, --tests_namespace=rtCamp\\Theme\\Elementary\\Tests, --tests_path=tests/php), wiring the class into Main::CLASSES.",
+        "The skill does NOT run composer require, composer install, or npm install on the user's behalf."
+      ]
+    }
+  ]
+}

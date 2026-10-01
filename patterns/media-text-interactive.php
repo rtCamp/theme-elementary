@@ -10,6 +10,10 @@
  * Post Types:
  * Inserter: true
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <!-- wp:columns {"align":"wide","className":"elementary-media-text-interactive"} -->

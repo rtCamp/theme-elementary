@@ -1,123 +1,82 @@
-# Theme Elementary
+<h1 align="center">Theme Elementary</h1>
 
-![image](https://user-images.githubusercontent.com/59014930/187202051-df015d4a-f885-40cb-9fc9-c13991d3216d.png)
+<p align="center"> <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg" alt="License: GPL-2.0-or-later"></a> <img src="https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg" alt="PHP 8.2+"> <img src="https://img.shields.io/badge/WordPress-block%20theme-21759b.svg" alt="WordPress block theme"> </p>
 
-A starter theme that facilitates a quick head start for developing new [block-based themes](https://developer.wordpress.org/block-editor/how-to-guides/themes/block-theme-overview/) along with a bunch of developer-friendly features.
+<p align="center"> A starter <a href="https://developer.wordpress.org/block-editor/how-to-guides/themes/block-theme-overview/">block theme</a> that gives you a quick head start on new block-based themes, with a bunch of developer-friendly features built in. </p>
 
-- [Understand the Folder Structure](https://github.com/rtCamp/theme-elementary#understand-the-folder-structure-open_file_folder)
-- [Get Started](https://github.com/rtCamp/theme-elementary#get-started-rocket)
-- [Development](https://github.com/rtCamp/theme-elementary#development-computer)
+<p align="center"> <img src="https://user-images.githubusercontent.com/59014930/187202051-df015d4a-f885-40cb-9fc9-c13991d3216d.png" alt="Theme Elementary preview" width="100%"> </p>
 
-## Understand the Folder Structure :open_file_folder:
+---
+
+This is a starter WordPress block theme. It provides the structure, examples, asset pipeline, checks, and optional development features needed for building a new block theme.
+
+This theme uses [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives) as a runtime dependency and ships with [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling) for streamlined project initialization and feature scaffolding.
+
+> **Working on this theme?** See [DEVELOPMENT.md](DEVELOPMENT.md) for the architecture overview, the module pattern, and how to add new classes. [CONTRIBUTING.md](CONTRIBUTING.md) covers the dev setup and PR flow.
+
+## Get started
+
+Start with the [Getting Started guide](docs/getting-started.md) — a short, concrete walkthrough covering prerequisites, acquiring the starter, installing dependencies, personalizing the theme, and seeing it running in local WordPress.
+
+> **Current v2 path:** The verified guide follows the `theme-elementary-v2` branch.
+
+## What is included
+
+Initialization personalizes the theme and lets you keep or remove the supplied examples. The asset pipeline builds CSS, JavaScript, and blocks; HMR, Tailwind, and Dev Tools are optional. Linting, static analysis, tests, and AI-assisted setup and scaffolding are included for project development.
+
+See [Included features](docs/features.md) for the available examples and options.
+
+## Choose your next task
+
+Once the theme is running, here's where to go next:
+
+| I want to…                                          | Read                                              |
+| --------------------------------------------------- | ------------------------------------------------- |
+| Initialize or manage a theme                        | [Initialization](docs/initialization.md)          |
+| Run WordPress locally, build, or check a change     | [Local development](docs/local-development.md)    |
+| Explore the supplied examples and optional features | [Included features](docs/features.md)             |
+| Generate a feature                                  | [Scaffolding](docs/scaffolding.md)                |
+| Extend the theme by hand                            | [Development guide](DEVELOPMENT.md)               |
+
+## AI tooling
+
+This theme ships AI-assisted setup and feature scaffolding, kept in step across assistants:
+
+- **Claude Code:** retained skills in [`.claude/skills/`](.claude/skills/) — `/init`, `/scaffold`, and `/setup`.
+- **GitHub Copilot:** `/init` and `/scaffold` prompts are available while setting up this source repository.
+  - Initialization removes the Copilot-specific files under `.github` (`copilot-instructions.md`, `prompts/`, `instructions/`); issue templates, the PR template, and workflows stay.
+- A committed knowledge graph in [`graphify-out/`](graphify-out/) lets AI assistants query the codebase's structure instead of reading it all; see [docs/internal/knowledge-graph.md](docs/internal/knowledge-graph.md) for how it's built and kept current.
+
+Shared conventions for all assistants live in [AGENTS.md](AGENTS.md).
+
+## Folder structure
+
 ```
- .
-├── assets (Holds theme's assets)
-│   └── src
-│       └── js
-│       └── css
-├── bin (Holds scripts)
-├── functions.php (PHP entry point)
-├── inc
-│   ├── classes (Holds all classes)
-│   │   └── class-elementary-theme.php (Instantiates all of the classes)
-│   ├── helpers (PHP Helpers)
-│   │   └── custom-functions.php
-│   └── traits (PHP Traits)
-│       └── trait-singleton.php
-├── index.php
-├── parts (Block Template Parts)
-├── patterns (Block Patterns)
-│   ├── *.html
-├── style.css
-├── templates (Block Templates)
-│   ├── *.html
-├── tests (Holds JS & PHP tests)
-│   ├── bootstrap.php
-│   ├── js
-│   └── php
-└── theme.json
-
-```
-
-## Get Started :rocket:
-
-### Method 1 (Recommended)
-```
-composer create-project rtcamp/elementary [folder_name]
-```
-This command is equivalent to cloning the repository and running `composer install && npm install`
-
-### Method 2
-Manually clone this repository using
-```
-git clone [URL to Git repo]
-```
-Having cloned this repository, install node packages and PHP dependencies using
-```
-composer install
-```
-
-In both the methods, you will be prompted with a theme setup wizard which will help you with the search-replace. That was all! You're good to go with building your block theme. :sparkles:
-
-**Note**: Refer to the `.nvmrc` file to check the supported Node.js version for running this project. If your current Node.js version does not run the project successfully on localhost, please use [Node Version Manager](https://github.com/nvm-sh/nvm) on your terminal to configure the right Node.js version.
-
-## Development :computer:
-
-
-**Production**
-
-```bash
-npm run build:prod
-```
-
-**Watch changes**
-
-```bash
-npm start
+functions.php               # PHP entry point
+inc/                        # project PHP (PSR-4 root)
+├── Autoloader.php          # wraps vendor/autoload.php with graceful failure
+├── Main.php                # theme bootstrap — loads services
+├── Abstracts/              # base classes for theme features
+├── Helpers/                # stateless static utilities
+├── Core/                   # theme-wide infra — assets, components, menus, templates, theme setup
+└── Modules/                # feature areas
+    ├── BlockExtensions/    # block render filters and integrations
+    ├── Settings/           # admin settings pages (extend AbstractSettingsPage)
+    └── Shortcodes/         # shortcodes
+src/{components,css,js,fonts,images}/ # frontend sources → assets/build/
+parts/ patterns/ templates/ # block parts, patterns, templates
+template-parts/             # PHP template partials
+styles/                     # theme.json style variations
+theme.json  style.css       # theme config
+bin/                        # init and scaffold scripts
+tests/{js,php}/             # JS & PHP tests
+vendor/rtcamp/wp-primitives/ # framework (Composer-managed; do not modify)
 ```
 
-**Linting & Formatting**
+Some of these directories hold supplied examples that initialization can remove; see [Included features](docs/features.md).
 
-Lint JS, CSS & PHP.
-```bash
-npm run lint:js
-npm run lint:css
-npm run lint:php #phpcs
-```
+## License
 
-Auto fix fixable linting errors for JS, CSS & PHP.
+[GPL-2.0-or-later](LICENSE)
 
-```bash
-npm run lint:js:fix
-npm run lint:css:fix
-npm run lint:php:fix #phpcbf
-```
-
-**Testing**
-
-Run all tests.
-
-```bash
-npm run test
-```
-
-Run JS tests.
-
-```bash
-npm run test:js
-```
-
-Watch JS tests.
-
-```bash
-npm run test:js:watch
-```
-
-Run PHP tests.
-
-```bash
-npm run test:php
-```
-
-## Does this interest you?
-<a href="https://rtcamp.com/"><img src="https://rtcamp.com/wp-content/uploads/sites/2/2019/04/github-banner@2x.png" alt="Join us at rtCamp, we specialize in providing high performance enterprise WordPress solutions"></a>
+<p align="center"> <a href="https://rtcamp.com"><img src="https://n8e0ka87m9.gdcdn.us/kfnbt046p8/GitHub_Banner.webp" alt="rtCamp — high-performance enterprise WordPress" width="100%"></a> </p>

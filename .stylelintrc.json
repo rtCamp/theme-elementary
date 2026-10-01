@@ -1,7 +1,28 @@
 {
-	"extends": "@wordpress/stylelint-config/scss",
+	"extends": "@rtcamp/stylelint-config",
 	"ignoreFiles": [
-		"**/*.js"
+		"**/*.js",
+		"**/*.json",
+		"**/*.php"
 	],
-	"rules": {}
+	"rules": {
+		"scss/at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": [
+					"tailwind",
+					"apply",
+					"layer",
+					"config",
+					"plugin",
+					"source",
+					"theme",
+					"utility",
+					"variant",
+					"custom-variant",
+					"reference"
+				]
+			}
+		]
+	}
 }

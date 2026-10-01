@@ -6,42 +6,47 @@ on:
     types:
       - completed
 
-permissions:
-  pull-requests: write
-  contents: write
+# Merging uses GH_BOT_TOKEN, so the workflow GITHUB_TOKEN needs no scopes.
+permissions: {}
 
-# Cancel previous workflow run groups that have not completed.
+# workflow_run events carry no head_ref, so group on the triggering run's branch.
+# One group per PR branch keeps a newer run from cancelling another PR's merge.
 concurrency:
-  # Group workflow runs by workflow name and branch name of pull request.
-  group: ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
   dependabot:
     name: Dependabot PR auto-merge
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    # Only a green Test and Measure run, on a same-repository pull request,
+    # started by Dependabot itself. workflow_run fires on every completion,
+    # including failures, so the conclusion check is what keeps red bumps out.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Approve and merge the PR
         if: |
           contains( github.event.workflow_run.head_commit.message, 'version-update:semver-minor' ) ||
           contains( github.event.workflow_run.head_commit.message, 'version-update:semver-patch' )
         run: gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
-          PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.GH_BOT_TOKEN}}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
 
   gutenberg-packages:
     name: Gutenberg packages update PR auto-merge
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'rtBot' }}
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.actor.login == 'rtBot'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Approve and merge the PR
         if: |
           startsWith(github.event.workflow_run.head_commit.message, 'Update WordPress NPM packages based on Gutenberg release') &&
@@ -50,5 +55,6 @@ jobs:
           github.event.workflow_run.head_commit.author.email == '43742164+rtBot@users.noreply.github.com'
         run: gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
         env:
-          PR_NUMBER: ${{github.event.workflow_run.pull_requests[0].number}}
-          GITHUB_TOKEN: ${{secrets.GH_BOT_TOKEN}}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}

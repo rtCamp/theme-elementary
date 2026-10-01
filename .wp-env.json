@@ -3,9 +3,5 @@
 	"phpVersion": "8.2",
 	"themes": [ "." ],
 	"port": 5890,
-	"env": {
-		"tests": {
-			"port": 5891
-		}
-	}
+	"testsEnvironment": false
 }
