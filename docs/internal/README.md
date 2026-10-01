@@ -15,6 +15,6 @@ Documentation and smoke results must identify the theme commit and installed dep
 
 ## Temporary procedure status
 
-The registry-bypass pilot from the former `docs/internal-testing.md` is retired: the current [npm declaration](../../package.json) uses GitHub's `npm/wp-tooling` branch, and [Composer](../../composer.json) resolves the framework through VCS. Local source overrides are only for deliberate dependency development.
+The registry-bypass pilot from the former `docs/internal-testing.md` is retired: the [npm declaration](../../package.json) installs `@rtcamp/wp-tooling` from the npm registry, and [Composer](../../composer.json) resolves the framework through VCS. Local source overrides are only for deliberate dependency development.
 
 The remaining [validation workarounds](maintenance.md#temporary-validation-procedures) have an applicable revision and a retirement condition. Recheck their status when the theme or its dependencies change.
