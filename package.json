@@ -17,6 +17,9 @@
 	"bugs": {
 		"url": "https://github.com/rtCamp/theme-elementary/issues"
 	},
+	"engines": {
+		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+	},
 	"dependencies": {
 		"@wordpress/interactivity": "6.56.0"
 	},

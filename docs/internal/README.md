@@ -11,7 +11,7 @@ The [maintenance guide](maintenance.md) covers:
 
 [Knowledge graph](knowledge-graph.md) covers optional code-navigation setup and refreshes.
 
-Documentation and smoke results must identify the theme commit and installed dependency revisions. The guides target `theme-elementary-v2` and changes built on it; do not assume `main` or a separately installed dependency checkout has the same behavior.
+Documentation and smoke results must identify the theme commit and installed dependency revisions. The guides target `main` and changes built on it; do not assume a separately installed dependency checkout has the same behavior.
 
 ## Temporary procedure status
 

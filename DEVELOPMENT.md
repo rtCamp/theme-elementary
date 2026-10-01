@@ -61,12 +61,12 @@ The `Loader` calls `can_register()` first and skips `register_hooks()` when it r
 This example requires the retained author-bio shortcode. First add an assertion for `By Ada Lovelace` to its existing render test in `tests/php/inc/Modules/Shortcodes/AuthorBioTest.php`. Run `AuthorBioTest` using the focused PHP command in [Local development](docs/local-development.md#check-a-change) and confirm that assertion fails. Then edit `template-parts/author-bio.php` and change the name line to:
 
 ```php
-<p class="acme-blog-author-bio__name">
+<p class="elementary-author-bio__name">
 	<?php echo esc_html( sprintf( __( 'By %s', 'acme-blog' ), $name ) ); ?>
 </p>
 ```
 
-Keep the generated CSS prefix and text domain from your project. The existing `AuthorBio::class` entry in `inc/Main.php` activates the shortcode, and the `author-bio` flag is enabled by default under Settings → Features. Use the generated shortcode tag (for Acme Blog, `[acme_blog_author_bio]`) in a Shortcode block and confirm that the frontend displays **By** followed by the author's name. Rerun `AuthorBioTest` and confirm it passes.
+Keep your project's text domain. Init renames the theme's namespace, text domain and constants, but not the `elementary` prefixes inside the examples: the shortcode tag, CSS classes, option names and the settings page slug stay as they are. The existing `AuthorBio::class` entry in `inc/Main.php` activates the shortcode, and the `author-bio` flag is enabled by default under Settings → Features. Use the `[elementary_author_bio]` shortcode in a Shortcode block and confirm that the frontend displays **By** followed by the author's name. Rerun `AuthorBioTest` and confirm it passes.
 
 ## Adding a new class
 

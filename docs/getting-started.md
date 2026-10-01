@@ -1,6 +1,6 @@
 # Getting started
 
-This guide walks you through turning this starter into a working theme: you'll create a personalized **Acme Blog** theme, activate it on a local WordPress site, and confirm a source-code edit shows up on the frontend. By the end, you'll have the theme running locally and a repeatable checklist for the workflows that follow. Run commands from the theme directory unless a step says otherwise, and follow along on the `theme-elementary-v2` branch.
+This guide walks you through turning this starter into a working theme: you'll create a personalized **Acme Blog** theme, activate it on a local WordPress site, and confirm a source-code edit shows up on the frontend. By the end, you'll have the theme running locally and a repeatable checklist for the workflows that follow. Run commands from the theme directory unless a step says otherwise.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ An existing local WordPress installation can replace `wp-env`; Docker is still n
 For a standalone project, run this from the directory that will contain it:
 
 ```bash
-git clone --branch theme-elementary-v2 https://github.com/rtCamp/theme-elementary.git acme-blog
+git clone https://github.com/rtCamp/theme-elementary.git acme-blog
 cd acme-blog
 ```
 
@@ -68,7 +68,7 @@ For a standalone project, use the bundled `wp-env` route below. If the theme is 
 
 ### Standalone `wp-env` route
 
-The committed `.wp-env.json` mounts the theme, uses PHP 8.2, and configures the development and test ports.
+The committed `.wp-env.json` mounts the theme, uses PHP 8.2, and sets the development port. The PHP tests run in a separate environment configured by `.wp-env.tests.json`.
 
 From the theme directory, run:
 

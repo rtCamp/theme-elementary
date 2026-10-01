@@ -75,7 +75,7 @@ Markdown under `docs/` is rendered by the [shared documentation workflow](https:
 
 The caller supplies the main sidebar order; Markdown needs no sidebar metadata. Advanced guides remain linked from the relevant task pages. Internal pages are reached through Contributing and are omitted from the main sidebar.
 
-The caller workflow builds documentation pull requests against any base. Pushes and manual runs on `theme-elementary-v2` can publish; other runs build only. Maintainers configure Settings → Pages → Source as **GitHub Actions** and allow `theme-elementary-v2` in the `github-pages` environment. No custom token is needed.
+The caller workflow builds documentation pull requests against any base. Pushes and manual runs on the default branch (`main`) can publish; other runs build only. Maintainers configure Settings → Pages → Source as **GitHub Actions** and allow `main` in the `github-pages` environment. No custom token is needed.
 
 Keep the workflow ref pinned to a reviewed revision. When changing it, test the site with that revision, including its internally pinned builder. Update the publishing branch and trigger together when the release branch changes.
 
