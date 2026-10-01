@@ -202,9 +202,9 @@ Then report:
 **Test env + linters (`wp-env`):**
 - Always use `npx wp-env` (or `node_modules/.bin/wp-env`), never bare `wp-env`.
 - **Run PHP linters inside wp-env (PHP 8.2).** The host PHP may be newer than the pinned `wp-coding-standards/wpcs` supports, which makes the sniffs throw deprecation errors and abort. Run e.g. `npx wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename "$PWD") -- vendor/bin/phpcs <files>` (PHPStan tolerates newer PHP, so `composer phpstan` is fine on the host).
-- If `wp-env start` reports a port already allocated, start on free alternates: `WP_ENV_PORT=8890 WP_ENV_TESTS_PORT=8891 npm run wp-env start` (find a free pair with `lsof -nP -iTCP:<port> -sTCP:LISTEN`). The theme's default ports are 5890 (dev) / 5891 (tests).
+- If `wp-env start` reports a port already allocated, start on a free alternate: `WP_ENV_PORT=8890 npm run wp-env start`, or `WP_ENV_PORT=8891 npm run test:php` for the test environment (find a free port with `lsof -nP -iTCP:<port> -sTCP:LISTEN`). The theme's default ports are 5890 (dev, `.wp-env.json`) and 5891 (tests, `.wp-env.tests.json`).
 - `wp-env start` can flake on a transient image pull (TLS timeout); one retry is allowed, and exit 0 does not mean "up" - confirm the start output reports success.
-- `pretest:php` runs `composer install --no-interaction --no-scripts` in `tests-cli`. Resolve installation errors before testing; see [Local development](../../../docs/local-development.md#check-a-change) for the tested commands.
+- `pretest:php` starts the test environment and runs `composer install --no-interaction --no-scripts` in its `cli` container. Resolve installation errors before testing; see [Local development](../../../docs/local-development.md#check-a-change) for the tested commands.
 
 **Generated-code quirks (write the code right up front; these survive `composer phpcs:fix`):**
 - **Fully-qualify WP global classes** (`\WP_Error`, `\WP_REST_Request`, `\WP_REST_Response`) everywhere they appear - in code AND docblocks - with NO `use` statement for them. Reason: `composer phpcs:fix` force-qualifies `WP_Error` (Slevomat `FullyQualifiedExceptions` treats `*Error` as an exception) and then strips the now-unused imports, including docblock-only ones; PHPStan (scanning `inc/`) then reports `class.notFound`. Writing them fully-qualified avoids the fix -> phpstan round-trip.

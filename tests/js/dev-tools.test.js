@@ -39,7 +39,7 @@ const setup = (basePlugins, kind = 'theme') => {
 	const root = fs.mkdtempSync(path.join(fixtures, 'dev-tools-'));
 	const base = basePlugins
 		? { env: { development: { plugins: basePlugins } } }
-		: { core: null, themes: ['.'], env: { tests: { port: 5891 } } };
+		: { core: null, themes: ['.'], port: 5890, testsEnvironment: false };
 	write(root, WP_ENV, `${JSON.stringify(base, null, '\t')}\n`);
 	write(root, 'composer.json', '{\n\t"name": "acme/demo"\n}\n');
 	write(root, 'package.json', '{\n\t"name": "demo"\n}\n');

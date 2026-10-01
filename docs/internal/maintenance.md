@@ -35,7 +35,6 @@ Status recorded on **2026-09-15** for theme baseline `27860f1`, framework `v1.0.
 | Active procedure | Why it is needed | Retire when |
 | --- | --- | --- |
 | Run the explicit commands under [Checks](#checks). | The aggregate scripts include watch, fix, or recursive commands. | Both aggregates terminate and run only their intended checks without modifying files. |
-| Apply the [test-only `WP_DEBUG` override](../local-development.md#check-a-change). | Logger tests require debug mode, which wp-env disables in its test environment. | The maintained test setup passes the logger tests without a per-project override. |
 | Log diagnostics instead of displaying them when checking login. | Early feature-description translation notices can interrupt login headers. | Translation timing is fixed and login succeeds with diagnostics displayed. |
 
 ### Record validation results
