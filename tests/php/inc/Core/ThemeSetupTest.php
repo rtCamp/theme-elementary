@@ -81,4 +81,20 @@ class ThemeSetupTest extends TestCase {
 		$this->assertSame( 630, $sizes['elementary-featured']['height'] );
 		$this->assertTrue( $sizes['elementary-featured']['crop'] );
 	}
+
+	/**
+	 * The text domain is pointed at the theme's languages directory.
+	 */
+	public function test_load_textdomain_registers_languages_path(): void {
+		global $wp_textdomain_registry;
+
+		$this->instance->load_textdomain();
+
+		// WP_Textdomain_Registry has no public getter for custom paths, so read the
+		// protected property that load_theme_textdomain() fills via set_custom_path().
+		$custom_paths = ( new \ReflectionProperty( $wp_textdomain_registry, 'custom_paths' ) )->getValue( $wp_textdomain_registry );
+
+		$this->assertIsArray( $custom_paths );
+		$this->assertSame( get_template_directory() . '/languages', $custom_paths['elementary-theme'] ?? null );
+	}
 }

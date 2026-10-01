@@ -22,12 +22,12 @@
  * `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
  * noisy on every rebuild in watch mode.
  */
-require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
+require('dotenv').config({ path: '.env.local', quiet: true });
 
 /**
  * WordPress dependencies
  */
-const config = require( '@wordpress/scripts/config/webpack.config' );
+const config = require('@wordpress/scripts/config/webpack.config');
 
 const DEFAULT_DEV_SERVER_PORT = 8887;
 
@@ -39,9 +39,10 @@ const DEFAULT_DEV_SERVER_PORT = 8887;
  * @param {number}           fallback Port to use when `value` is invalid.
  * @return {number} A valid port.
  */
-const toPort = ( value, fallback ) => {
-	const port = parseInt( value, 10 );
-	return Number.isInteger( port ) && port >= 1 && port <= 65535
+const toPort = (value, fallback) => {
+	// Digits only: parseInt would read '8888foo' as 8888, and Number would accept hex.
+	const port = /^\d+$/.test(String(value ?? '')) ? Number(value) : NaN;
+	return Number.isInteger(port) && port >= 1 && port <= 65535
 		? port
 		: fallback;
 };
@@ -57,12 +58,12 @@ const devServerPort = toPort(
  * @param {Object} singleConfig A webpack configuration object.
  * @return {Object} The same config, dev-server v5 compatible.
  */
-const fixDevServer = ( singleConfig ) => {
+const fixDevServer = (singleConfig) => {
 	/*
 	 * Only the script config carries a devServer; the module config sets it to
 	 * `false` (or omits it) and needs no changes.
 	 */
-	if ( ! singleConfig || ! singleConfig.devServer ) {
+	if (!singleConfig || !singleConfig.devServer) {
 		return singleConfig;
 	}
 
@@ -85,7 +86,7 @@ const fixDevServer = ( singleConfig ) => {
 	 */
 	singleConfig.devServer.allowedHosts = [
 		'localhost',
-		...( process.env.WP_HOST ? [ process.env.WP_HOST ] : [] ),
+		...(process.env.WP_HOST ? [process.env.WP_HOST] : []),
 	];
 
 	return singleConfig;
@@ -95,6 +96,6 @@ const fixDevServer = ( singleConfig ) => {
  * `--experimental-modules` makes the stock config export an array of configs
  * ([ scriptConfig, moduleConfig ]); otherwise it's a single object.
  */
-module.exports = Array.isArray( config )
-	? config.map( fixDevServer )
-	: fixDevServer( config );
+module.exports = Array.isArray(config)
+	? config.map(fixDevServer)
+	: fixDevServer(config);

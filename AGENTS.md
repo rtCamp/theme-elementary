@@ -6,7 +6,7 @@ Tool-agnostic brief for AI coding agents (Claude Code, Copilot coding agent, Cod
 
 The review rules ARE the coding rules: the same files Copilot reviews against. Follow them when writing code; they hold the full detail:
 
-- `.github/instructions/primitives-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. Shipped from `rtcamp/wp-primitives`, generated locally by `npm run sync-ai` (absent until then).
+- `.github/instructions/primitives-php.instructions.md`: framework architecture, security, testing, and the do/don't flags. Shipped from `rtcamp/wp-primitives`; the committed copy is refreshed by `npm run sync-ai`, which also runs on `npm install`. Commit it when it changes after a framework upgrade.
 - `.github/instructions/structure.instructions.md`: theme layout and wiring.
 - `.github/copilot-instructions.md`: overview + conventions.
 
@@ -36,7 +36,7 @@ feature, TDD-first), exist for both assistants and must stay in step:
 
 ## Knowledge graph (graphify)
 
-The repo keeps a queryable code graph in `graphify-out/` (`graph.json` + `GRAPH_REPORT.md`) covering this theme (and, optionally, the `wp-primitives`/`wp-tooling` it builds on). Use it to understand the codebase, and keep it current. Tell the user each graphify step in <=30 words (50 max). Only the `init`/`scaffold` agentic tools run these commands; Copilot review does not. Setup detail: `docs/knowledge-graph.md`.
+The repo keeps a queryable code graph in `graphify-out/` (`graph.json` + `GRAPH_REPORT.md`) covering this theme (and, optionally, the `wp-primitives`/`wp-tooling` it builds on). Use it to understand the codebase, and keep it current. Tell the user each graphify step in <=30 words (50 max). Only the `init`/`scaffold` agentic tools run these commands; Copilot review does not. Setup detail: `docs/internal/knowledge-graph.md`.
 
 **Graph-first: do not read source files to understand them when the graph can answer.** Before opening a file to learn what a symbol does, how a subsystem works, or how the theme wires together - including `wp-tooling` engine internals (token derivation, capability removal, etc.) - query the graph (`/graphify query "<q>"`, `explain "<symbol>"`, `path "A" "B"`). You almost never need to read engine source: the engine is a black box these skills invoke, and the skill already documents the outcome (how a theme name becomes namespace/package/prefixes). Read a file only when the graph does not answer, or when you need exact code to edit.
 
@@ -50,8 +50,8 @@ The repo keeps a queryable code graph in `graphify-out/` (`graph.json` + `GRAPH_
 
 ## Guardrails (all AI tools) - BASE, non-negotiable
 
-- **Never run history- or remote-affecting `git`/`gh`.** No `commit`, `push`, `branch -D`, `reset --hard`, `rebase`, `tag`, `git add` for a commit, PR create/merge, issue/PR comment, `gh secret set`, or any write to a remote or to git history. Surface every one of those as a developer action: print the exact command for the developer to run. Read/setup git is allowed: `git clone`, `git checkout`, `git status`, `git diff` (e.g. the pilot bootstrap's sibling clone) may run with consent.
+- **Never run history- or remote-affecting `git`/`gh`.** No `commit`, `push`, `branch -D`, `reset --hard`, `rebase`, `tag`, `git add` for a commit, PR create/merge, issue/PR comment, `gh secret set`, or any write to a remote or to git history. Surface every one of those as a developer action: print the exact command for the developer to run. Read/setup git is allowed: `git clone`, `git checkout`, `git status`, `git diff` may run with consent.
 - **Never do a destructive operation outside this theme directory.** Do not delete or overwrite existing files in sibling repos (`../wp-tooling`, `../wp-primitives`, ...) or anywhere else on disk. Cloning a NEW sibling that does not already exist is additive and allowed; modifying or removing existing out-of-repo content is not.
-- Never run a package manager (`npm install`, `composer require/update`) or `npm run build` without explicit consent; print the command instead. The one consented exception is `npm run init` (the theme's own setup script, on a clean tree). In-repo install steps and the pilot bootstrap (sibling clone + `file:`/`path` ref edits + installs) may run with consent.
+- Never run a package manager (`npm install`, `composer require/update`) or `npm run build` without explicit consent; print the command instead. The one consented exception is `npm run init` (the theme's own setup script, on a clean tree). In-repo install steps may run with consent.
 - Never read, log, or transmit secret values.
 - Never apply cross-file wiring without showing the diff and getting consent.

@@ -1,49 +1,55 @@
 /**
  * External dependencies
  */
-const fs = require( 'fs' );
-const path = require( 'path' );
-const CssMinimizerPlugin = require( 'css-minimizer-webpack-plugin' );
-const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
-const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
-const webpack = require( 'webpack' );
-const rtlcss = require( 'rtlcss' );
-const { optimize: svgoOptimize } = require( 'svgo' );
+const fs = require('fs');
+const path = require('path');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+const webpack = require('webpack');
+const rtlcss = require('rtlcss');
+const { optimize: svgoOptimize } = require('svgo');
 
 /**
  * Tailwind (opt-in). The theme.json token plugin is wired only when the entry
  * file exists; the build skips it otherwise. Runtime enqueue is gated separately
  * on ELEMENTARY_THEME_ENABLE_TAILWIND (see functions.php / Assets.php).
  */
-const tailwindEntry = path.resolve( process.cwd(), 'src', 'css', 'frontend', 'tailwind.css' );
+const tailwindEntry = path.resolve(
+	process.cwd(),
+	'src',
+	'css',
+	'frontend',
+	'tailwind.css'
+);
 let GenerateTailwindThemePlugin = null;
-if ( fs.existsSync( tailwindEntry ) ) {
+if (fs.existsSync(tailwindEntry)) {
 	try {
-		( { GenerateTailwindThemePlugin } = require( '@rtcamp/tailwind-config' ) );
-	} catch ( err ) {
+		({ GenerateTailwindThemePlugin } = require('@rtcamp/tailwind-config'));
+	} catch {
 		// @rtcamp/tailwind-config not installed; skip the theme.json token plugin
 		// (Tailwind utilities still compile via PostCSS).
 	}
 }
 
-const isHot = process.argv.includes( '--hot' );
+const isHot = process.argv.includes('--hot');
 const isWatch =
-	process.argv.includes( '--watch' ) || process.argv.includes( 'watch' ) || isHot;
+	process.argv.includes('--watch') || process.argv.includes('watch') || isHot;
 
-if ( isWatch ) {
+if (isWatch) {
 	/*
 	 * `quiet: true` suppresses dotenv's per-run "injecting env" banner, which is
 	 * noisy on every rebuild in watch mode.
 	 */
-	require( 'dotenv' ).config( { path: '.env.local', quiet: true } );
+	require('dotenv').config({ path: '.env.local', quiet: true });
 }
 
 // HMR (BrowserSync) master switch read from .env.local (ENABLE_HMR), defaulting
 // on; only an explicit off value disables it. Mirrors is_hmr_enabled() in
 // inc/Core/Assets.php so one flag controls both the BrowserSync server (here)
 // and its client enqueue (PHP).
-const hmrFlag = String( process.env.ENABLE_HMR || '' ).toLowerCase();
-const isHmrEnabled = ! [ 'false', '0', 'no', 'off' ].includes( hmrFlag );
+const hmrFlag = String(process.env.ENABLE_HMR || '').toLowerCase();
+const isHmrEnabled = !['false', '0', 'no', 'off'].includes(hmrFlag);
 
 const DEFAULT_BS_PORT = 3001;
 
@@ -55,14 +61,15 @@ const DEFAULT_BS_PORT = 3001;
  * @param {number}           fallback Port to use when `value` is invalid.
  * @return {number} A valid port.
  */
-const toPort = ( value, fallback ) => {
-	const port = parseInt( value, 10 );
-	return Number.isInteger( port ) && port >= 1 && port <= 65535
+const toPort = (value, fallback) => {
+	// Digits only: parseInt would read '8888foo' as 8888, and Number would accept hex.
+	const port = /^\d+$/.test(String(value ?? '')) ? Number(value) : NaN;
+	return Number.isInteger(port) && port >= 1 && port <= 65535
 		? port
 		: fallback;
 };
 
-const bsPort = toPort( process.env.BS_PORT, DEFAULT_BS_PORT );
+const bsPort = toPort(process.env.BS_PORT, DEFAULT_BS_PORT);
 
 /**
  * WordPress dependencies
@@ -70,7 +77,7 @@ const bsPort = toPort( process.env.BS_PORT, DEFAULT_BS_PORT );
 const [
 	scriptConfig,
 	moduleConfig,
-] = require( '@wordpress/scripts/config/webpack.config' );
+] = require('@wordpress/scripts/config/webpack.config');
 
 /**
  * Resolve a project-relative path from the current working directory.
@@ -78,7 +85,7 @@ const [
  * @param {...string} parts Path segments.
  * @return {string} Absolute path.
  */
-const rootPath = ( ...parts ) => path.resolve( process.cwd(), ...parts );
+const rootPath = (...parts) => path.resolve(process.cwd(), ...parts);
 
 /**
  * Get a webpack plugin constructor name.
@@ -89,7 +96,7 @@ const rootPath = ( ...parts ) => path.resolve( process.cwd(), ...parts );
  * @param {Object} plugin Webpack plugin instance.
  * @return {string} Plugin constructor name.
  */
-const getPluginName = ( plugin ) => plugin.constructor.name;
+const getPluginName = (plugin) => plugin.constructor.name;
 
 /**
  * Create a predicate that matches one webpack plugin constructor name.
@@ -97,8 +104,8 @@ const getPluginName = ( plugin ) => plugin.constructor.name;
  * @param {string} pluginName Plugin constructor name to match.
  * @return {Function} Predicate for `Array.prototype.filter`.
  */
-const isPlugin = ( pluginName ) => ( plugin ) =>
-	getPluginName( plugin ) === pluginName;
+const isPlugin = (pluginName) => (plugin) =>
+	getPluginName(plugin) === pluginName;
 
 /**
  * Create a predicate that excludes one webpack plugin constructor name.
@@ -106,8 +113,8 @@ const isPlugin = ( pluginName ) => ( plugin ) =>
  * @param {string} pluginName Plugin constructor name to exclude.
  * @return {Function} Predicate for `Array.prototype.filter`.
  */
-const isNotPlugin = ( pluginName ) => ( plugin ) =>
-	getPluginName( plugin ) !== pluginName;
+const isNotPlugin = (pluginName) => (plugin) =>
+	getPluginName(plugin) !== pluginName;
 
 /**
  * Create a predicate that excludes multiple webpack plugin constructor names.
@@ -115,22 +122,22 @@ const isNotPlugin = ( pluginName ) => ( plugin ) =>
  * @param {string[]} pluginNames Plugin constructor names to exclude.
  * @return {Function} Predicate for `Array.prototype.filter`.
  */
-const isNotOneOfPlugins = ( pluginNames ) => ( plugin ) =>
-	! pluginNames.includes( getPluginName( plugin ) );
+const isNotOneOfPlugins = (pluginNames) => (plugin) =>
+	!pluginNames.includes(getPluginName(plugin));
 
 /**
  * Context subdirectories scanned for entry points.
  *
  * @type {string[]}
  */
-const CONTEXT_DIRS = [ 'frontend', 'admin', 'editor' ];
-const ASSETS_BUILD_DIR = rootPath( 'assets', 'build' );
-const JS_BUILD_DIR = rootPath( 'assets', 'build', 'js' );
+const CONTEXT_DIRS = ['frontend', 'admin', 'editor'];
+const ASSETS_BUILD_DIR = rootPath('assets', 'build');
+const JS_BUILD_DIR = rootPath('assets', 'build', 'js');
 const CSS_FILENAME = '../css/[name].css';
-const FRONTEND_AND_ADMIN_DIRS = [ 'frontend', 'admin' ];
-const EDITOR_DIRS = [ 'editor' ];
+const FRONTEND_AND_ADMIN_DIRS = ['frontend', 'admin'];
+const EDITOR_DIRS = ['editor'];
 const MODULES_DIR = 'modules';
-const COMPONENTS_DIR = rootPath( 'src', 'components' );
+const COMPONENTS_DIR = rootPath('src', 'components');
 const STYLE_ONLY_IGNORED_PLUGINS = [
 	'DependencyExtractionWebpackPlugin',
 	'RtlCssPlugin',
@@ -171,65 +178,67 @@ const BROWSER_SYNC_FILES = [
  */
 const readAllFileEntries = (
 	dir,
-	{ contextDirs = CONTEXT_DIRS, excludeDirs = [] } = {},
+	{ contextDirs = CONTEXT_DIRS, excludeDirs = [] } = {}
 ) => {
 	const entries = {};
 
-	if ( ! fs.existsSync( dir ) ) {
+	if (!fs.existsSync(dir)) {
 		return entries;
 	}
 
-	const resolvedDir = path.resolve( dir );
+	const resolvedDir = path.resolve(dir);
 
 	const contextPaths = contextDirs
-		.map( ( ctx ) => path.join( resolvedDir, ctx ) )
-		.filter( ( ctxPath ) => fs.existsSync( ctxPath ) );
+		.map((ctx) => path.join(resolvedDir, ctx))
+		.filter((ctxPath) => fs.existsSync(ctxPath));
 
-	const dirsToScan = contextPaths.length > 0 ? contextPaths : [ resolvedDir ];
+	const dirsToScan = contextPaths.length > 0 ? contextPaths : [resolvedDir];
 
 	const useNamespace = contextPaths.length > 0;
 
-	const addEntry = ( entryName, fullPath ) => {
-		if ( entries[ entryName ] ) {
+	const addEntry = (entryName, fullPath) => {
+		if (entries[entryName]) {
 			// Keep first discovery stable, but surface collisions for debugging.
+			// eslint-disable-next-line no-console
 			console.warn(
-				`Duplicate webpack entry "${ entryName }" ignored: ${ fullPath } (keeping ${ entries[ entryName ] })`,
+				`Duplicate webpack entry "${entryName}" ignored: ${fullPath} (keeping ${entries[entryName]})`
 			);
 			return;
 		}
 
-		entries[ entryName ] = fullPath;
+		entries[entryName] = fullPath;
 	};
 
-	const scanDirectory = ( scanRoot, currentDir, entryPrefix = '' ) => {
-		fs.readdirSync( currentDir, { withFileTypes: true } ).forEach( ( entry ) => {
-			if ( entry.name.startsWith( '_' ) || entry.name.startsWith( '.' ) ) {
+	const scanDirectory = (scanRoot, currentDir, entryPrefix = '') => {
+		fs.readdirSync(currentDir, { withFileTypes: true }).forEach((entry) => {
+			if (entry.name.startsWith('_') || entry.name.startsWith('.')) {
 				return;
 			}
 
-			const fullPath = path.join( currentDir, entry.name );
+			if (entry.isDirectory() && excludeDirs.includes(entry.name)) {
+				return;
+			}
 
-			if ( entry.isDirectory() ) {
-				if ( excludeDirs.includes( entry.name ) ) {
-					return;
-				}
-				scanDirectory( scanRoot, fullPath, entryPrefix );
+			const fullPath = path.join(currentDir, entry.name);
+
+			if (entry.isDirectory()) {
+				scanDirectory(scanRoot, fullPath, entryPrefix);
 				return;
 			}
 
 			const relativePath = path
-				.relative( scanRoot, fullPath )
-				.replace( /\.[^/.]+$/, '' )
-				.split( path.sep )
-				.join( '/' );
+				.relative(scanRoot, fullPath)
+				.replace(/\.[^/.]+$/, '')
+				.split(path.sep)
+				.join('/');
 
-			addEntry( `${ entryPrefix }${ relativePath }`, fullPath );
-		} );
+			addEntry(`${entryPrefix}${relativePath}`, fullPath);
+		});
 	};
 
-	for ( const scanDir of dirsToScan ) {
-		const prefix = useNamespace ? `${ path.basename( scanDir ) }/` : '';
-		scanDirectory( scanDir, scanDir, prefix );
+	for (const scanDir of dirsToScan) {
+		const prefix = useNamespace ? `${path.basename(scanDir)}/` : '';
+		scanDirectory(scanDir, scanDir, prefix);
 	}
 
 	return entries;
@@ -248,33 +257,48 @@ const readAllFileEntries = (
  * @param {RegExp} pattern File extension pattern to match.
  * @return {Object} Object mapping component entry names to file paths.
  */
-const getComponentEntries = ( dir = COMPONENTS_DIR, pattern = /\.(js|s[ac]ss)$/ ) => {
+const getComponentEntries = (
+	dir = COMPONENTS_DIR,
+	pattern = /\.(js|s[ac]ss)$/
+) => {
 	const entries = {};
 
-	if ( ! fs.existsSync( dir ) ) {
+	if (!fs.existsSync(dir)) {
 		return entries;
 	}
 
-	fs.readdirSync( dir, { withFileTypes: true } ).forEach( ( entry ) => {
-		if ( ! entry.isDirectory() || entry.name.startsWith( '_' ) || entry.name.startsWith( '.' ) ) {
+	fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
+		if (
+			!entry.isDirectory() ||
+			entry.name.startsWith('_') ||
+			entry.name.startsWith('.')
+		) {
 			return;
 		}
 
-		const componentFile = path.join( dir, entry.name, entry.name );
-		const matchedFile   = fs
-			.readdirSync( path.join( dir, entry.name ), { withFileTypes: true } )
-			.find( ( file ) => {
-				if ( ! file.isFile() || ! pattern.test( file.name ) ) {
+		const componentFile = path.join(dir, entry.name, entry.name);
+		const matchedFile = fs
+			.readdirSync(path.join(dir, entry.name), { withFileTypes: true })
+			.find((file) => {
+				if (!file.isFile() || !pattern.test(file.name)) {
 					return false;
 				}
 
-				return path.join( dir, entry.name, file.name ).replace( /\.[^/.]+$/, '' ) === componentFile;
-			} );
+				return (
+					path
+						.join(dir, entry.name, file.name)
+						.replace(/\.[^/.]+$/, '') === componentFile
+				);
+			});
 
-		if ( matchedFile ) {
-			entries[ `components/${ entry.name }` ] = path.join( dir, entry.name, matchedFile.name );
+		if (matchedFile) {
+			entries[`components/${entry.name}`] = path.join(
+				dir,
+				entry.name,
+				matchedFile.name
+			);
 		}
-	} );
+	});
 
 	return entries;
 };
@@ -291,21 +315,21 @@ class CleanBuildPlugin {
 	 *
 	 * @param {import('webpack').Compiler} compiler Webpack compiler.
 	 */
-	apply( compiler ) {
+	apply(compiler) {
 		const clean = () => {
-			if ( CleanBuildPlugin.cleaned ) {
+			if (CleanBuildPlugin.cleaned) {
 				return;
 			}
 
 			CleanBuildPlugin.cleaned = true;
-			fs.rmSync( ASSETS_BUILD_DIR, {
+			fs.rmSync(ASSETS_BUILD_DIR, {
 				force: true,
 				recursive: true,
-			} );
+			});
 		};
 
-		compiler.hooks.beforeRun.tap( 'CleanBuildPlugin', clean );
-		compiler.hooks.watchRun.tap( 'CleanBuildPlugin', clean );
+		compiler.hooks.beforeRun.tap('CleanBuildPlugin', clean);
+		compiler.hooks.watchRun.tap('CleanBuildPlugin', clean);
 	}
 }
 
@@ -319,35 +343,41 @@ class CssAssetRtlPlugin {
 	 *
 	 * @param {import('webpack').Compiler} compiler Webpack compiler.
 	 */
-	apply( compiler ) {
-		compiler.hooks.compilation.tap( 'CssAssetRtlPlugin', ( compilation ) => {
+	apply(compiler) {
+		compiler.hooks.compilation.tap('CssAssetRtlPlugin', (compilation) => {
 			compilation.hooks.processAssets.tap(
 				{
 					name: 'CssAssetRtlPlugin',
 					stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
 				},
 				() => {
-					for ( const filename of Object.keys( compilation.assets ) ) {
+					for (const filename of Object.keys(compilation.assets)) {
 						if (
-							path.extname( filename ) !== '.css' ||
-							filename.endsWith( '-rtl.css' )
+							path.extname(filename) !== '.css' ||
+							filename.endsWith('-rtl.css')
 						) {
 							continue;
 						}
 
-						const rtlFilename = filename.replace( /\.css$/, '-rtl.css' );
+						const rtlFilename = filename.replace(
+							/\.css$/,
+							'-rtl.css'
+						);
 
-						if ( compilation.assets[ rtlFilename ] ) {
+						if (compilation.assets[rtlFilename]) {
 							continue;
 						}
 
-						compilation.assets[ rtlFilename ] = new webpack.sources.RawSource(
-							rtlcss.process( compilation.assets[ filename ].source() ),
-						);
+						compilation.assets[rtlFilename] =
+							new webpack.sources.RawSource(
+								rtlcss.process(
+									compilation.assets[filename].source()
+								)
+							);
 					}
-				},
+				}
 			);
-		} );
+		});
 	}
 }
 
@@ -357,32 +387,41 @@ class CssAssetMetadataPlugin {
 	 *
 	 * @param {import('webpack').Compiler} compiler Webpack compiler.
 	 */
-	apply( compiler ) {
-		compiler.hooks.compilation.tap( 'CssAssetMetadataPlugin', ( compilation ) => {
-			compilation.hooks.processAssets.tap(
-				{
-					name: 'CssAssetMetadataPlugin',
-					stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
-				},
-				() => {
-					for ( const filename of Object.keys( compilation.assets ) ) {
-						if (
-							path.extname( filename ) !== '.css' ||
-							filename.endsWith( '-rtl.css' ) ||
-							! filename.includes( '/components/' )
-						) {
-							continue;
+	apply(compiler) {
+		compiler.hooks.compilation.tap(
+			'CssAssetMetadataPlugin',
+			(compilation) => {
+				compilation.hooks.processAssets.tap(
+					{
+						name: 'CssAssetMetadataPlugin',
+						stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+					},
+					() => {
+						for (const filename of Object.keys(
+							compilation.assets
+						)) {
+							if (
+								path.extname(filename) !== '.css' ||
+								filename.endsWith('-rtl.css') ||
+								!filename.includes('/components/')
+							) {
+								continue;
+							}
+
+							const assetFilename = filename.replace(
+								/\.css$/,
+								'.asset.php'
+							);
+
+							compilation.assets[assetFilename] =
+								new webpack.sources.RawSource(
+									`<?php return array('dependencies' => array(), 'version' => '${compilation.hash}');\n`
+								);
 						}
-
-						const assetFilename = filename.replace( /\.css$/, '.asset.php' );
-
-						compilation.assets[ assetFilename ] = new webpack.sources.RawSource(
-							`<?php return array('dependencies' => array(), 'version' => '${ compilation.hash }');\n`,
-						);
 					}
-				},
-			);
-		} );
+				);
+			}
+		);
 	}
 }
 
@@ -392,8 +431,8 @@ class CssAssetMetadataPlugin {
  * @param {Object} plugin Webpack plugin instance.
  * @return {Object} The same plugin instance.
  */
-const setCssOutputPath = ( plugin ) => {
-	if ( isPlugin( 'MiniCssExtractPlugin' )( plugin ) ) {
+const setCssOutputPath = (plugin) => {
+	if (isPlugin('MiniCssExtractPlugin')(plugin)) {
 		plugin.options.filename = CSS_FILENAME;
 	}
 
@@ -410,15 +449,15 @@ const setCssOutputPath = ( plugin ) => {
  * @param {Object} config Webpack config.
  * @return {Object} Webpack config without Fast Refresh/WDS behavior.
  */
-const withoutFastRefresh = ( config ) => ( {
+const withoutFastRefresh = (config) => ({
 	...config,
 	devServer: false,
 	optimization: {
 		...config.optimization,
 		runtimeChunk: false,
 	},
-	plugins: config.plugins.filter( isNotPlugin( 'ReactRefreshPlugin' ) ),
-} );
+	plugins: config.plugins.filter(isNotPlugin('ReactRefreshPlugin')),
+});
 
 /**
  * Copy static theme assets into the build directory.
@@ -429,36 +468,41 @@ const withoutFastRefresh = ( config ) => ( {
  * @return {CopyWebpackPlugin} Copy plugin instance.
  */
 const getCopyPlugin = () =>
-	new CopyWebpackPlugin( {
+	new CopyWebpackPlugin({
 		patterns: [
 			{
-				from: rootPath( 'src', 'fonts' ),
-				to: rootPath( 'assets', 'build', 'fonts' ),
+				from: rootPath('src', 'fonts'),
+				to: rootPath('assets', 'build', 'fonts'),
 				noErrorOnMissing: true,
-				globOptions: { ignore: [ '**/.*' ] },
+				globOptions: { ignore: ['**/.*'] },
 			},
 			{
-				from: rootPath( 'src', 'images', 'svg' ),
-				to: rootPath( 'assets', 'build', 'images', 'svg' ),
+				from: rootPath('src', 'images', 'svg'),
+				to: rootPath('assets', 'build', 'images', 'svg'),
 				noErrorOnMissing: true,
-				filter: ( resourcePath ) =>
-					path.extname( resourcePath ).toLowerCase() === '.svg',
+				filter: (resourcePath) =>
+					path.extname(resourcePath).toLowerCase() === '.svg',
 				transform: {
-					transformer( content, absoluteFrom ) {
+					transformer(content, absoluteFrom) {
 						try {
-							const result = svgoOptimize( content.toString() );
+							const result = svgoOptimize(content.toString());
 
-							if ( typeof result?.data === 'string' && result.data.length > 0 ) {
+							if (
+								typeof result?.data === 'string' &&
+								result.data.length > 0
+							) {
 								return result.data;
 							}
 
+							// eslint-disable-next-line no-console
 							console.warn(
-								`SVGO produced no optimized output for ${ absoluteFrom }. Copying original content instead.`,
+								`SVGO produced no optimized output for ${absoluteFrom}. Copying original content instead.`
 							);
 							return content;
-						} catch ( error ) {
+						} catch (error) {
+							// eslint-disable-next-line no-console
 							console.warn(
-								`SVGO failed for ${ absoluteFrom }: ${ error.message }. Copying original content instead.`,
+								`SVGO failed for ${absoluteFrom}: ${error.message}. Copying original content instead.`
 							);
 							return content;
 						}
@@ -466,7 +510,7 @@ const getCopyPlugin = () =>
 				},
 			},
 		],
-	} );
+	});
 
 /**
  * Create BrowserSync only for watch mode.
@@ -478,25 +522,25 @@ const getCopyPlugin = () =>
  * @return {Array} BrowserSync plugin instances.
  */
 const getBrowserSyncPlugins = () => {
-	if ( ! isWatch || ! isHmrEnabled ) {
+	if (!isWatch || !isHmrEnabled) {
 		return [];
 	}
 
-	const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
+	const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 	return [
 		new BrowserSyncPlugin(
 			{
 				port: bsPort,
-				...( process.env.WP_HOST ? { host: process.env.WP_HOST } : {} ),
-				...( process.env.WP_SSL_KEY && process.env.WP_SSL_CERT
+				...(process.env.WP_HOST ? { host: process.env.WP_HOST } : {}),
+				...(process.env.WP_SSL_KEY && process.env.WP_SSL_CERT
 					? {
-						https: {
-							key: process.env.WP_SSL_KEY,
-							cert: process.env.WP_SSL_CERT,
-						},
-					}
-					: {} ),
+							https: {
+								key: process.env.WP_SSL_KEY,
+								cert: process.env.WP_SSL_CERT,
+							},
+						}
+					: {}),
 				files: BROWSER_SYNC_FILES,
 				notify: false,
 				open: false,
@@ -505,7 +549,7 @@ const getBrowserSyncPlugins = () => {
 			},
 			{
 				injectCss: true,
-			},
+			}
 		),
 	];
 };
@@ -514,7 +558,7 @@ const getBrowserSyncPlugins = () => {
 const sharedConfig = {
 	...scriptConfig,
 	watchOptions: {
-		...( scriptConfig.watchOptions || {} ),
+		...(scriptConfig.watchOptions || {}),
 		/*
 		 * assets/build/** must be ignored to prevent an infinite rebuild loop:
 		 * Tailwind v4's content detection treats build output as potential template
@@ -522,7 +566,7 @@ const sharedConfig = {
 		 */
 		ignored: [
 			'**/node_modules/**',
-			path.resolve( process.cwd(), 'assets', 'build', '**' ),
+			path.resolve(process.cwd(), 'assets', 'build', '**'),
 		],
 	},
 	output: {
@@ -541,8 +585,8 @@ const sharedConfig = {
 		 * assets/build/blocks/. Keep all other inherited plugins.
 		 */
 		...scriptConfig.plugins
-			.filter( isNotPlugin( 'CopyPlugin' ) )
-			.map( setCssOutputPath ),
+			.filter(isNotPlugin('CopyPlugin'))
+			.map(setCssOutputPath),
 		new RemoveEmptyScriptsPlugin(),
 	],
 	optimization: {
@@ -550,26 +594,28 @@ const sharedConfig = {
 		splitChunks: {
 			...scriptConfig.optimization.splitChunks,
 		},
-		minimizer: scriptConfig.optimization.minimizer.concat( [
+		minimizer: scriptConfig.optimization.minimizer.concat([
 			new CssMinimizerPlugin(),
-		] ),
+		]),
 	},
 };
 
-const sharedNonHotConfig = withoutFastRefresh( sharedConfig );
+const sharedNonHotConfig = withoutFastRefresh(sharedConfig);
 
 // CSS / SCSS entry points from src/css/{frontend,admin,editor}/.
 const styles = {
 	...sharedNonHotConfig,
-	entry: () => readAllFileEntries( './src/css' ),
+	entry: () => readAllFileEntries('./src/css'),
 	module: {
 		...sharedNonHotConfig.module,
 	},
 	plugins: [
 		...sharedNonHotConfig.plugins.filter(
-			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
+			isNotOneOfPlugins(STYLE_ONLY_IGNORED_PLUGINS)
 		),
-		...( GenerateTailwindThemePlugin ? [ new GenerateTailwindThemePlugin() ] : [] ),
+		...(GenerateTailwindThemePlugin
+			? [new GenerateTailwindThemePlugin()]
+			: []),
 		new CssAssetRtlPlugin(),
 	],
 };
@@ -578,12 +624,12 @@ const styles = {
 const scripts = {
 	...sharedNonHotConfig,
 	entry: () =>
-		readAllFileEntries( './src/js', {
+		readAllFileEntries('./src/js', {
 			contextDirs: FRONTEND_AND_ADMIN_DIRS,
-			excludeDirs: [ MODULES_DIR ],
-		} ),
+			excludeDirs: [MODULES_DIR],
+		}),
 	plugins: [
-		...sharedNonHotConfig.plugins.filter( isNotPlugin( 'RtlCssPlugin' ) ),
+		...sharedNonHotConfig.plugins.filter(isNotPlugin('RtlCssPlugin')),
 		getCopyPlugin(),
 		new CssAssetRtlPlugin(),
 		...getBrowserSyncPlugins(),
@@ -593,22 +639,22 @@ const scripts = {
 // Component JS entry points from src/components/{component}/{component}.js.
 const componentScripts = {
 	...sharedNonHotConfig,
-	entry: () => getComponentEntries( COMPONENTS_DIR, /\.js$/ ),
+	entry: () => getComponentEntries(COMPONENTS_DIR, /\.js$/),
 	plugins: [
-		...sharedNonHotConfig.plugins.filter( isNotPlugin( 'RtlCssPlugin' ) ),
+		...sharedNonHotConfig.plugins.filter(isNotPlugin('RtlCssPlugin')),
 	],
 };
 
 // Component SCSS entry points from src/components/{component}/{component}.scss.
 const componentStyles = {
 	...sharedNonHotConfig,
-	entry: () => getComponentEntries( COMPONENTS_DIR, /\.s[ac]ss$/ ),
+	entry: () => getComponentEntries(COMPONENTS_DIR, /\.s[ac]ss$/),
 	module: {
 		...sharedNonHotConfig.module,
 	},
 	plugins: [
 		...sharedNonHotConfig.plugins.filter(
-			isNotOneOfPlugins( STYLE_ONLY_IGNORED_PLUGINS ),
+			isNotOneOfPlugins(STYLE_ONLY_IGNORED_PLUGINS)
 		),
 		new CssAssetMetadataPlugin(),
 		new CssAssetRtlPlugin(),
@@ -619,12 +665,12 @@ const componentStyles = {
 const editorScripts = {
 	...sharedConfig,
 	entry: () =>
-		readAllFileEntries( './src/js', {
+		readAllFileEntries('./src/js', {
 			contextDirs: EDITOR_DIRS,
-			excludeDirs: [ MODULES_DIR ],
-		} ),
+			excludeDirs: [MODULES_DIR],
+		}),
 	plugins: [
-		...sharedConfig.plugins.filter( isNotPlugin( 'RtlCssPlugin' ) ),
+		...sharedConfig.plugins.filter(isNotPlugin('RtlCssPlugin')),
 		new CssAssetRtlPlugin(),
 	],
 };
@@ -633,16 +679,26 @@ const editorScripts = {
 const moduleScripts = {
 	...moduleConfig,
 	devServer: false,
-	entry: () => readAllFileEntries( './src/js/frontend/modules' ),
+	entry: () => readAllFileEntries('./src/js/frontend/modules'),
 	output: {
 		...moduleConfig.output,
-		path: rootPath( 'assets', 'build', 'js', 'modules' ),
+		path: rootPath('assets', 'build', 'js', 'modules'),
 		filename: '[name].js',
 		chunkFilename: '[name].js',
 	},
 };
 
-const configs = [ scripts, componentScripts, editorScripts, styles, componentStyles, moduleScripts ];
+const configs = [
+	scripts,
+	componentScripts,
+	editorScripts,
+	styles,
+	componentStyles,
+	moduleScripts,
+];
 
 module.exports = configs;
+// Exposed for tests/js/webpack-config.test.js; webpack itself only reads `configs`.
 module.exports.getComponentEntries = getComponentEntries;
+module.exports.readAllFileEntries = readAllFileEntries;
+module.exports.toPort = toPort;

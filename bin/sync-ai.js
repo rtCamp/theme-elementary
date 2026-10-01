@@ -10,14 +10,19 @@
  * has fetched it). Forwards any arguments, so `npm run sync-ai -- --check` works.
  */
 
-const fs = require( 'fs' );
-const { spawnSync } = require( 'child_process' );
+const fs = require('fs');
+const { spawnSync } = require('child_process');
 
 const script = 'vendor/rtcamp/wp-primitives/bin/sync-ai-instructions.js';
 
-if ( ! fs.existsSync( script ) ) {
-	console.log( 'sync-ai: rtcamp/wp-primitives is not installed yet; run `composer install` first. Skipping.' );
-	process.exit( 0 );
+if (!fs.existsSync(script)) {
+	console.log(
+		'sync-ai: rtcamp/wp-primitives is not installed yet; run `composer install` first. Skipping.'
+	);
+	process.exit(0);
 }
 
-process.exit( spawnSync( 'node', [ script, ...process.argv.slice( 2 ) ], { stdio: 'inherit' } ).status ?? 0 );
+process.exit(
+	spawnSync('node', [script, ...process.argv.slice(2)], { stdio: 'inherit' })
+		.status ?? 0
+);

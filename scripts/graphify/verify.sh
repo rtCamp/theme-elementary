@@ -30,8 +30,12 @@ PYTHON=""
 
 # 2a. uv-managed tool environment.
 if [ -z "$PYTHON" ] && have uv; then
-  _UV_PY="$(uv tool run graphifyy python -c 'import sys; print(sys.executable)' 2>/dev/null || true)"
-  if [ -n "$_UV_PY" ]; then PYTHON="$_UV_PY"; fi
+  # Look for an installed tool environment only: `uv tool run` would install one on
+  # demand and report success for a machine that does not have graphify.
+  _UV_TOOL_DIR="$(uv tool dir 2>/dev/null || true)"
+  for _UV_PY in "$_UV_TOOL_DIR/graphifyy/bin/python" "$_UV_TOOL_DIR/graphify/bin/python"; do
+    if [ -x "$_UV_PY" ] && "$_UV_PY" -c "import $MODULE" 2>/dev/null; then PYTHON="$_UV_PY"; break; fi
+  done
 fi
 
 # 2b. Shebang of the installed console script (pipx / direct pip).

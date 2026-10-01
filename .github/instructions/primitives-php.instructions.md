@@ -16,7 +16,7 @@ Decision order for a new class, **do NOT default to Singleton**:
 2. **`Registrable` + `Shareable`**: only if another class must retrieve it via `get_shared()`.
 3. **`Singleton`**: only the `Main` bootstrap.
 
-Extend the framework abstracts; never hand-roll their job: `AbstractModule` and `Abstract{PostType,Taxonomy,Block,Shortcode,RESTController,SettingsPage,AdminPage,UserRole}`.
+Extend the framework abstracts; never hand-roll their job: `AbstractModule`, `AbstractFeature`, and `Abstract{PostType,Taxonomy,Block,Shortcode,RESTController,SettingsPage,AdminPage,UserRole,Ability,AbilityRegistrar}`.
 
 Flag genuine contract/security violations, not style. Allow any correct implementation.
 
@@ -48,7 +48,7 @@ Flag genuine contract/security violations, not style. Allow any correct implemen
 2. 🚩 `Singleton`/`::get_instance()` outside `Main` → `Loader`+`Registrable` (or `Shareable`+`get_shared()` if retrieval is genuinely needed). Never a service locator.
 3. 🚩 `Shareable` with no real later-retrieval need → plain `Registrable`.
 4. 🚩 WP-hooking class not implementing `Registrable` / not loaded via the `Loader`.
-5. 🚩 A class calling `register_post_type`/`register_taxonomy`/`register_rest_route`/`add_menu_page`/`add_shortcode`/`register_block_type` directly instead of extending the matching `Abstract*` (`AbstractPostType`, `AbstractRESTController`, `AbstractAdminPage`, …). Name the abstract to extend.
+5. 🚩 A class calling `register_post_type`/`register_taxonomy`/`register_rest_route`/`add_menu_page`/`add_shortcode`/`register_block_type`/`wp_register_ability` directly instead of extending the matching `Abstract*` (`AbstractPostType`, `AbstractRESTController`, `AbstractAdminPage`, …). Name the abstract to extend.
 6. 🚩 Missing `strict_types`/types/docblocks; PSR-4 mismatch; `self::` for LSB.
 7. 🚩 Missing escape/sanitize/nonce/capability; raw `$wpdb` without `prepare()`; REST without a real `permission_callback`; inline assets; wrong/absent text domain.
 8. 🚩 Edit under `vendor/rtcamp/wp-primitives` or WordPress core.
