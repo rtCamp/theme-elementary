@@ -12,7 +12,7 @@ v2 rebuilds the starter on rtCamp's shared WordPress stack: runtime code from [`
 
 - `npm run init` turns the starter into your theme: name, namespace, text domain and prefixes, which example sets to keep, and which optional features to enable. Run it again later to manage features.
 - Feature scaffolding with `npx wp-tooling add` (custom post types, blocks, REST controllers, WP-CLI commands, settings pages and more), with tests for what it generates.
-- Optional development features: HMR (BrowserSync live reload for the frontend and React Fast Refresh for blocks), Tailwind CSS v4 with theme tokens generated from `theme.json`, and Dev Tools (Query Monitor, the MCP Adapter and `rtcamp/wp-dev-tools` telemetry in the local wp-env site).
+- Optional development features: HMR (BrowserSync live reload for the frontend and React Fast Refresh for blocks) and Tailwind CSS v4 with theme tokens generated from `theme.json`.
 - Theme services on `rtcamp/wp-primitives` ^2.0: asset loading, components, template parts, runtime feature flags under Settings → Features, logging and encryption.
 - Example sets that init can keep or remove: button and card components, an interactive media-text block extension, a theme options settings page, an author bio shortcode and a page-creation pattern.
 - PHPUnit and Jest suites, PHPCS with `rtcamp/wp-phpcs`, PHPStan with `rtcamp/wp-phpstan`, and ESLint and Stylelint with `@rtcamp/eslint-config` and `@rtcamp/stylelint-config`.
