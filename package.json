@@ -71,7 +71,7 @@
 		"lint:php": "php vendor/bin/phpcs",
 		"lint:php:fix": "node ./bin/phpcbf.js",
 		"lint:staged": "lint-staged",
-		"pot": "composer run pot",
+		"pot": "wp-env run cli --env-cwd=/var/www/html/wp-content/themes/${PWD##*/} composer run pot",
 		"prepare": "npm run sync-ai",
 		"pretest:php": "wp-env start --config=.wp-env.tests.json && wp-env run --config=.wp-env.tests.json cli --env-cwd=/var/www/html/wp-content/themes/${PWD##*/} composer install --no-interaction --no-scripts",
 		"start": "npm-run-all --parallel start:assets start:blocks",

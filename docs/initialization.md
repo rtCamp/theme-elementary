@@ -64,7 +64,7 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
 | AI instructions | After a successful change, the wrapper runs `sync-ai`; in a standalone project with the framework installed, it refreshes the generated framework PHP instructions. It does not restore the removed prompts or theme-specific rules. |
 | Retained files | Theme source, `bin/`, Claude skills, documentation, and test infrastructure remain; files belonging to removed example sets do not. |
 
-Init does **not** generate a POT file. Run `npm run pot` separately when preparing translations; it recreates the language output. Review cleanup before treating the initialized project as your baseline.
+Init does **not** generate a POT file. Run `npm run pot` separately when preparing translations (it runs WP-CLI inside wp-env, so start wp-env first); it recreates the language output. Review cleanup before treating the initialized project as your baseline.
 
 ## Review the result
 
