@@ -22,7 +22,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "7.29.7",
-		"@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
+		"@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
 		"@rtcamp/eslint-config": "^1.1.0",
 		"@rtcamp/stylelint-config": "^1.1.0",
 		"@rtcamp/wp-tooling": "^2.0.0",
