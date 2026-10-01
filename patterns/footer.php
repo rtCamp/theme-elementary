@@ -10,6 +10,10 @@
  * Post Types: wp_template
  * Inserter: false
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <!-- wp:group {"layout":{"inherit":"true"}} -->
