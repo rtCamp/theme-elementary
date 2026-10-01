@@ -16,6 +16,12 @@ This theme uses [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives
 
 ## Get started
 
+Create a new theme with Composer, or clone this repository:
+
+```bash
+composer create-project --no-install rtcamp/theme-elementary acme-blog
+```
+
 Start with the [Getting Started guide](docs/getting-started.md) — a short, concrete walkthrough covering prerequisites, acquiring the starter, installing dependencies, personalizing the theme, and seeing it running in local WordPress.
 
 ## What is included
