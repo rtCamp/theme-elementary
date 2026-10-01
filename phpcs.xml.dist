@@ -56,10 +56,12 @@
 	-->
 
 	<!-- Verify that the text_domain is set to the desired text-domain.
-		Multiple valid text domains can be provided as a comma-delimited list. -->
+		Add one <element> per additional valid text domain. -->
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="elementary-theme"/>
+			<property name="text_domain" type="array">
+				<element value="elementary-theme"/>
+			</property>
 		</properties>
 	</rule>
 
