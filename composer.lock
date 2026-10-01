@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15fc088e8f68ad6f81312546e67cdfbe",
+    "content-hash": "3cb15141c1588adc39299cb7e20fe01a",
     "packages": [
         {
-            "name": "rtcamp/wp-framework",
-            "version": "v1.0.1",
+            "name": "rtcamp/wp-primitives",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/rtCamp/wp-framework.git",
-                "reference": "87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d"
+                "url": "https://github.com/rtCamp/wp-primitives.git",
+                "reference": "cfa5b99c263d285b6a89e1f1e954cc0a819f4c72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rtCamp/wp-framework/zipball/87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d",
-                "reference": "87774ee10d2e10f5b8bd2561a5d8e4a92f431b8d",
+                "url": "https://api.github.com/repos/rtCamp/wp-primitives/zipball/cfa5b99c263d285b6a89e1f1e954cc0a819f4c72",
+                "reference": "cfa5b99c263d285b6a89e1f1e954cc0a819f4c72",
                 "shasum": ""
             },
             "require": {
@@ -36,14 +36,19 @@
                 "yoast/phpunit-polyfills": "^4.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "rtCamp\\WPFramework\\": "inc/"
+                    "rtCamp\\WPPrimitives\\": "inc/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "rtCamp\\WPFramework\\Tests\\": "tests/"
+                    "rtCamp\\WPPrimitives\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -68,13 +73,29 @@
             "license": [
                 "GPL-2.0-or-later"
             ],
-            "description": "Shared PHP utilities for rtCamp WordPress projects",
-            "homepage": "https://github.com/rtCamp/wp-framework",
+            "authors": [
+                {
+                    "name": "rtCamp",
+                    "email": "support@rtcamp.com",
+                    "homepage": "https://rtcamp.com"
+                }
+            ],
+            "description": "Contracts, loaders and utilities for building WordPress plugins and themes on a shared, tested base.",
+            "homepage": "https://github.com/rtCamp/wp-primitives",
+            "keywords": [
+                "framework",
+                "library",
+                "rtcamp",
+                "wordpress",
+                "wordpress-plugin",
+                "wordpress-theme"
+            ],
             "support": {
-                "issues": "https://github.com/rtCamp/wp-framework/issues",
-                "source": "https://github.com/rtCamp/wp-framework"
+                "issues": "https://github.com/rtCamp/wp-primitives/issues",
+                "source": "https://github.com/rtCamp/wp-primitives",
+                "docs": "https://opensource.rtcamp.com/wp-primitives/"
             },
-            "time": "2026-07-29T11:38:56+00:00"
+            "time": "2026-10-01T16:46:31+00:00"
         }
     ],
     "packages-dev": [
@@ -3846,5 +3867,5 @@
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
