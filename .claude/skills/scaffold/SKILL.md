@@ -7,7 +7,7 @@ description: Add a scaffold (PHP class, dynamic block, shortcode, settings page,
 
 Drive `@rtcamp/wp-tooling`. Map the developer's request to a scaffold, derive test cases first, invoke the engine, expand tests, implement to green, report.
 
-This skill is the canonical wp-tooling scaffold skill, tailored to this theme's structure (`inc/Modules/<Kind>`, namespace `<Root>\Modules\<Kind>`, tests in `tests/php/`) and the private-package pilot. **Wiring difference from a plugin:** this theme lists every class directly in `inc/Main.php` `Main::CLASSES` (no per-kind `AbstractModule` with a `get_classes()` array), so a new artifact's `::class` line is inserted into `Main::CLASSES` (and a `use` import added), not into a module file.
+This skill is the canonical wp-tooling scaffold skill, tailored to this theme's structure (`inc/Modules/<Kind>`, namespace `<Root>\Modules\<Kind>`, tests in `tests/php/`). **Wiring difference from a plugin:** this theme lists every class directly in `inc/Main.php` `Main::CLASSES` (no per-kind `AbstractModule` with a `get_classes()` array), so a new artifact's `::class` line is inserted into `Main::CLASSES` (and a `use` import added), not into a module file.
 
 ## Use for
 
@@ -132,7 +132,7 @@ Result shape: `{ scaffold, engine, developer, ai, warnings }`.
 | Block | Action |
 |---|---|
 | `engine.wrote` / `engine.skipped` | Already on disk. Report. |
-| `developer.install.composer` / `developer.install.npm` | Print as copy-paste command. **Never run `composer require` / `npm install`.** Pilot notes: npm installs need `npm install --install-links`; the framework (`rtcamp/wp-framework`) already ships, so ignore a `composer require rtcamp/wp-framework` suggestion. |
+| `developer.install.composer` / `developer.install.npm` | Print as copy-paste command. **Never run `composer require` / `npm install`.** The framework (`rtcamp/wp-framework`) already ships; do not repeat its installation. Use the theme's documented dependency setup. |
 | `developer.secrets` | Print as `gh secret set` checklist. **Never read/write/log/transmit values.** |
 | `ai.wiring` | Adaptive wiring with consent (see 6a). |
 | `ai.tests` | Mandatory expansion under TDD loop (see 7). |
@@ -195,16 +195,16 @@ Then report:
 - Wiring applied: `inc/Main.php` line, the `Main::CLASSES` entry + `use` import added.
 - Tests authored and pass count per file.
 - Lint + PHPStan result.
-- Outstanding developer actions: composer / npm installs (pilot: `--install-links`), `npm run build` (blocks), secrets to set, branch-protection note (CI).
+- Outstanding developer actions: composer / npm installs, `npm run build:prod` (blocks), secrets to set, branch-protection note (CI).
 
-## Pilot environment + engine quirks (this theme)
+## Theme environment and generated-code checks
 
 **Test env + linters (`wp-env`):**
 - Always use `npx wp-env` (or `node_modules/.bin/wp-env`), never bare `wp-env`.
 - **Run PHP linters inside wp-env (PHP 8.2).** The host PHP may be newer than the pinned `wp-coding-standards/wpcs` supports, which makes the sniffs throw deprecation errors and abort. Run e.g. `npx wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename "$PWD") -- vendor/bin/phpcs <files>` (PHPStan tolerates newer PHP, so `composer phpstan` is fine on the host).
 - If `wp-env start` reports a port already allocated, start on free alternates: `WP_ENV_PORT=8890 WP_ENV_TESTS_PORT=8891 npm run wp-env start` (find a free pair with `lsof -nP -iTCP:<port> -sTCP:LISTEN`). The theme's default ports are 5890 (dev) / 5891 (tests).
 - `wp-env start` can flake on a transient image pull (TLS timeout); one retry is allowed, and exit 0 does not mean "up" - confirm the start output reports success.
-- `pretest:php` runs `composer install` in the `cli` container; if `npm run test:php` fails on it, run PHPUnit directly: `npx wp-env run cli --env-cwd=/var/www/html/wp-content/themes/$(basename "$PWD") -- vendor/bin/phpunit -c phpunit.xml.dist`.
+- `pretest:php` runs `composer install --no-interaction --no-scripts` in `tests-cli`. Resolve installation errors before testing; see [Local development](../../../docs/local-development.md#check-a-change) for the tested commands.
 
 **Generated-code quirks (write the code right up front; these survive `composer phpcs:fix`):**
 - **Fully-qualify WP global classes** (`\WP_Error`, `\WP_REST_Request`, `\WP_REST_Response`) everywhere they appear - in code AND docblocks - with NO `use` statement for them. Reason: `composer phpcs:fix` force-qualifies `WP_Error` (Slevomat `FullyQualifiedExceptions` treats `*Error` as an exception) and then strips the now-unused imports, including docblock-only ones; PHPStan (scanning `inc/`) then reports `class.notFound`. Writing them fully-qualified avoids the fix -> phpstan round-trip.

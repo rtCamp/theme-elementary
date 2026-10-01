@@ -1,6 +1,6 @@
 ---
 name: init
-description: Set up this cloned theme-elementary into a named theme, or manage its identity and capabilities later. Installs the declared public dependencies, accounting for the Composer npm hook. Drives `npm run init`. Always confirms before destructive or install steps; expects a clean working tree.
+description: Set up this cloned theme-elementary into a named theme, or manage its identity and capabilities later. Installs the declared dependencies, accounting for the Composer npm hook. Drives `npm run init`. Always confirms before destructive or install steps; expects a clean working tree.
 ---
 
 # init
@@ -49,7 +49,7 @@ This theme's Composer `post-install-cmd` runs `npm i`; do not immediately repeat
 ### 3. Preconditions (verify; do not silently fix)
 - `node_modules/@rtcamp/wp-tooling` exists (the engine needs it). If missing, surface the required installation command and stop.
 - Clean working tree (`git status`). Init rewrites files irreversibly; a clean tree is the only undo. If dirty, ask to commit/stash.
-- Setup only: confirm this is a clone meant to become a new theme, not the maintained skeleton. Manage mode operates on an already-personalized project.
+- Setup only: confirm this is a clone meant to become a new theme, not the maintained starter theme. Manage mode operates on an already-personalized project.
 
 ### 4. Gather inputs
 **Setup:** theme name (required, e.g. `Acme Blog` → namespace `rtCamp\Theme\Acme_Blog`, package `rtcamp/acme-blog`, text domain, constant/function/CSS prefixes, the `style.css` + `functions.php` headers; show these back); version (default `1.0.0`); which example sets to remove and which features to enable (defaults: keep all sets, hmr on, tailwind and dev-tools off). The engine derives the tokens itself; do not read the engine source to work them out - the mapping above is the contract, and the graph answers any deeper question (see the graphify policy in `AGENTS.md`).

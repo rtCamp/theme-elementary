@@ -9,7 +9,7 @@ Follow the theme-specific [init skill](../../.claude/skills/init/SKILL.md) as th
 
 Gather missing setup or manage inputs in one message, show derived values and the resolved command, and wait for consent before installation or rewriting. Do not assume a theme name. Use Copilot's task surface to track the workflow where available.
 
-- Fresh setup: `composer install` already invokes npm installation. The declared wp-tooling and wp-framework sources are public; no pilot sibling clone or registry token is required.
+- Fresh setup: `composer install` invokes npm installation. If Composer runs with `--no-scripts`, run `npm install` separately.
 - Defaults: retain examples, HMR on, Tailwind and Dev Tools off. Dev Tools is an optional private dependency with its own access requirement.
 - `--list` (optionally `--json`) and help are read-only and do not run `sync-ai`.
 - `--yes` needs `--name` only in setup mode. Manage-mode feature toggles need no name.

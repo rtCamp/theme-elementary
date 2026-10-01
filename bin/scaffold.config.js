@@ -74,7 +74,8 @@ module.exports = {
 					},
 				],
 				devDependencies: {
-					'@rtcamp/tailwind-config': '^0.1.0',
+					'@rtcamp/tailwind-config':
+						'github:rtCamp/wp-tooling#npm/tailwind-config',
 					tailwindcss: '^4.3.0',
 					'@tailwindcss/postcss': '^4.3.0',
 				},
@@ -155,7 +156,14 @@ module.exports = {
 		],
 	},
 
-	cleanup: { targets: ['.github', 'languages'] },
+	cleanup: {
+		targets: [
+			'.github/copilot-instructions.md',
+			'.github/prompts',
+			'.github/instructions',
+			'languages',
+		],
+	},
 
 	docsUrl: 'https://github.com/rtCamp/theme-elementary/blob/main/README.md',
 	repoUrl: 'https://github.com/rtCamp/theme-elementary',
