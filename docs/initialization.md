@@ -22,7 +22,7 @@ The command should produce no output. Init rewrites and removes starter files; u
 | `/scaffold` | Implement a new feature after personalization. |
 | `/setup` | Generic tooling bootstrap; it is not an acquisition or personalization path for this starter. |
 
-Claude skills remain after cleanup. Copilot's `/init` and `/scaffold` prompts ship in `.github/prompts`, which cleanup removes. Use the retained skill with an assistant that supports it, or the CLI, for subsequent work. The maintained [AI entry points](https://github.com/rtCamp/theme-elementary/tree/theme-elementary-v2/.claude/skills) describe assistant-specific instructions.
+Claude skills remain after cleanup. Copilot's `/init` and `/scaffold` prompts ship in `.github/prompts`, which cleanup removes. Use the retained skill with an assistant that supports it, or the CLI, for subsequent work. The maintained [AI entry points](https://github.com/rtCamp/theme-elementary/tree/main/.claude/skills) describe assistant-specific instructions.
 
 Each stage hands off a concrete result to the next:
 

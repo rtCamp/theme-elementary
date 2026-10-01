@@ -2,7 +2,7 @@ name: Documentation
 
 on:
   push:
-    branches: [main, theme-elementary-v2]
+    branches: [main]
     paths:
       - 'docs/**'
       - 'README.md'
@@ -10,7 +10,7 @@ on:
       - 'CONTRIBUTING.md'
       - '.github/workflows/documentation.yml'
   pull_request:
-    branches: [main, theme-elementary-v2]
+    branches: [main]
     paths:
       - 'docs/**'
       - 'README.md'
