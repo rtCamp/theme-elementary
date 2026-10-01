@@ -124,6 +124,8 @@ module.exports = {
 					'inc/Modules/BlockExtensions',
 					'patterns/media-text-interactive.php',
 					'src/js/frontend/modules/media-text.js',
+					'tests/php/inc/Modules/BlockExtensions',
+					'tests/js/media-text.test.js',
 				],
 			},
 			{
@@ -131,7 +133,12 @@ module.exports = {
 				label: 'Theme options settings page',
 				marker: 'wp:example:settings',
 				strip: ['inc/Main.php'],
-				remove: ['inc/Modules/Settings'],
+				// Only the example page: FeaturesSettingsPage in the same directory is
+				// core (Settings -> Features) and stays registered in Main::CLASSES.
+				remove: [
+					'inc/Modules/Settings/ThemeOptions.php',
+					'tests/php/inc/Modules/Settings/ThemeOptionsTest.php',
+				],
 			},
 			{
 				key: 'shortcode',
@@ -140,6 +147,7 @@ module.exports = {
 				strip: ['inc/Main.php'],
 				remove: [
 					'inc/Modules/Shortcodes',
+					'template-parts/author-bio.php',
 					'tests/php/inc/Modules/Shortcodes',
 				],
 			},
