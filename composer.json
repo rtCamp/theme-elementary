@@ -9,7 +9,7 @@
 		"rtcamp/wp-primitives": "^2.0"
 	},
 	"require-dev": {
-		"dealerdirect/phpcodesniffer-composer-installer": "1.2.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "1.2.1",
 		"php-stubs/wp-cli-stubs": "^2.12",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^2.1",
