@@ -1,6 +1,6 @@
 ---
 name: init
-description: Set up this cloned theme-elementary into a named theme, or manage its identity and capabilities later. During the pilot it can also run the local bootstrap (sibling clone of the tooling engine, local package ref, composer + npm install). Drives `npm run init`. Always confirms before destructive or install steps; expects a clean working tree.
+description: Set up this cloned theme-elementary into a named theme, or manage its identity and capabilities later. Installs the declared public dependencies, accounting for the Composer npm hook. Drives `npm run init`. Always confirms before destructive or install steps; expects a clean working tree.
 ---
 
 # init
@@ -8,9 +8,9 @@ description: Set up this cloned theme-elementary into a named theme, or manage i
 Two jobs: **bootstrap + setup** a fresh clone into a real theme, or **manage** an already-set-up project. Always interactive: gather inputs first, confirm the resolved plan, then act.
 
 ## Use for
-- First run: optional pilot bootstrap (deps), rename starter tokens, pick which example sets to keep.
+- First run: install declared dependencies, rename starter tokens, pick which example sets to keep.
 - First run WITH a feature brief: after rename + capabilities, implement the described features by chaining to the **scaffold** skill (TDD), replacing the matching `Example*`/demo placeholders (step 8).
-- Later: rename / re-prefix, toggle features (Tailwind, HMR).
+- Later: rename / re-prefix, toggle features (Tailwind, HMR, Dev Tools).
 
 ## Do not use for
 - Adding a feature class → the **scaffold** skill (`npx wp-tooling add`).
@@ -23,7 +23,7 @@ Ask the developer for every input the chosen path needs, in ONE batched message,
 ## Plan and announce (required) - developer experience first
 Keep the developer oriented at every moment; great DX is the goal even through an AI skill.
 
-1. **State the plan up front** in one short message: the mode (setup / manage) and the ordered steps you will run for THIS request. For a setup-with-brief, that is: detect mode -> (offer) bootstrap deps -> gather + confirm identity and capabilities -> run init (which also removes the example sets the brief does not need) -> hand each feature to the scaffold skill.
+1. **State the plan up front** in one short message: the mode (setup / manage) and the ordered steps you will run for THIS request. For a setup-with-brief, that is: detect mode -> install deps -> gather + confirm identity and capabilities -> run init (which also removes the example sets the brief does not need) -> hand each feature to the scaffold skill.
 2. **Maintain a live TODO list** on the host's task surface (`TodoWrite` in Claude Code): one entry per planned step, exactly one `in_progress` at a time, marked `completed` the moment it is done. Add entries as the work reveals them (a missing dep, each feature to scaffold).
 3. **Announce each step with a short title** as you start it (e.g. "Running init", "Removing the shortcode example", "Handing the Testimonial block to scaffold") and report its outcome in one line. Never go silent during a long step.
 4. **Confirm before anything destructive or installing** (the init rewrite, dependency installs), showing the exact resolved values.
@@ -36,43 +36,30 @@ test -f .wp-scaffold.json && echo manage || echo setup
 ```
 No `.wp-scaffold.json` → **setup**. Present → **manage** (read it for current identity; `npm run init -- --list` shows feature status).
 
-### 2. Setup: offer the pilot bootstrap
-The rtCamp tooling packages are private/unpublished during the pilot. If `npm install` can resolve `@rtcamp/wp-tooling` from the registry and `composer install` resolves `rtcamp/wp-framework` from its VCS repo, no bootstrap is needed - skip to step 3. Otherwise ask: "Bootstrap local dependencies now? (clones the tooling engine, points npm at it, installs). y/n". On **yes**, with consent, run in order (tell the developer each step in <=30 words):
+### 2. Install dependencies
+Skip installation when both dependency trees are already current. Otherwise, with installation consent, run from the theme directory:
 
 ```bash
-nvm use                                                          # Node from .nvmrc
-
-# Sibling clone for the npm engine (skip if it already exists):
-git clone git@github.com:rtCamp/wp-tooling.git ../wp-tooling
-( cd ../wp-tooling && git checkout release/v1.0.0 )              # init/scaffold engine landed here
-
-# Local-only npm ref: this theme's only @rtcamp/* dependency is @rtcamp/wp-tooling.
-npm pkg set devDependencies.@rtcamp/wp-tooling=file:../wp-tooling/node-packages/wp-tooling
-
-# wp-framework already resolves from the VCS "repositories" entry in composer.json (dev-main);
-# composer update pulls it. For local framework development, optionally add a path repo instead:
-#   { "type": "path", "url": "../wp-framework", "options": { "symlink": false } }
-composer update rtcamp/wp-framework
-# --install-links is REQUIRED: it copies the file: @rtcamp package into node_modules instead of
-# symlinking, so its peer deps resolve from this theme. Add --legacy-peer-deps on ERESOLVE.
-npm install --install-links
+nvm use
+composer install
 ```
-The `file:` edit is local-only. Note: init ALSO writes identity changes (name, namespace, pot path) into `package.json`/`composer.json`, so a blanket `git checkout package.json composer.json` would discard the rename. Before committing, revert ONLY the dependency-source line (the `@rtcamp/wp-tooling` `file:` ref, plus any path `repositories` entry and `composer.lock` you added) - keep every identity change. On **no**, skip to step 3 and surface installs as developer actions instead.
+
+This theme's Composer `post-install-cmd` runs `npm i`; do not immediately repeat `npm install`. If Composer dependencies are already current but npm dependencies are missing or stale, run `npm install` with consent. If Composer was installed with `--no-scripts`, npm installation is still required. Check both dependencies before continuing. If consent is declined, print the missing installation command and stop.
 
 ### 3. Preconditions (verify; do not silently fix)
-- `node_modules/@rtcamp/wp-tooling` exists (the engine needs it). If missing and bootstrap was declined, surface `npm install` as a developer action.
+- `node_modules/@rtcamp/wp-tooling` exists (the engine needs it). If missing, surface the required installation command and stop.
 - Clean working tree (`git status`). Init rewrites files irreversibly; a clean tree is the only undo. If dirty, ask to commit/stash.
-- Confirm this is a fresh clone meant to become a new theme, not the skeleton repo itself.
+- Setup only: confirm this is a clone meant to become a new theme, not the maintained skeleton. Manage mode operates on an already-personalized project.
 
 ### 4. Gather inputs
-**Setup:** theme name (required, e.g. `Acme Blog` → namespace `rtCamp\Theme\Acme_Blog`, package `rtcamp/acme-blog`, text domain, constant/function/CSS prefixes, the `style.css` + `functions.php` headers; show these back); version (default `1.0.0`); which example sets to remove and which features to enable (defaults: keep all sets, hmr on, tailwind off). The engine derives the tokens itself; do not read the engine source to work them out - the mapping above is the contract, and the graph answers any deeper question (see the graphify policy in `AGENTS.md`).
+**Setup:** theme name (required, e.g. `Acme Blog` → namespace `rtCamp\Theme\Acme_Blog`, package `rtcamp/acme-blog`, text domain, constant/function/CSS prefixes, the `style.css` + `functions.php` headers; show these back); version (default `1.0.0`); which example sets to remove and which features to enable (defaults: keep all sets, hmr on, tailwind and dev-tools off). The engine derives the tokens itself; do not read the engine source to work them out - the mapping above is the contract, and the graph answers any deeper question (see the graphify policy in `AGENTS.md`).
 **Manage:** which of identity / features to change.
 
 ### 5. Confirm
 Show the exact resolved values and the exact command. Get explicit consent; init is destructive.
 
 ### 6. Run init (with consent)
-`npm run init` also runs `npm run sync-ai`; that is expected.
+Successful init changes also run `npm run sync-ai`; `--list`, help, failed runs, and interrupted runs do not.
 ```bash
 # Setup:
 npm run init -- --name="Acme Blog" --version=1.0.0 --yes \
@@ -80,17 +67,20 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes \
 # Manage:
 npm run init -- --list
 npm run init -- --enable=tailwind --yes
+npm run init -- --enable=dev-tools --yes
 npm run init -- --features=hmr --yes        # exact enabled set (empty = none)
 ```
 - `--keep-examples` keeps all; `--remove-examples` (no value) removes all; `--remove-examples=a,b` removes listed keys.
-- `--features=a,b` sets the exact enabled set; `--enable`/`--disable` are deltas.
-- `--yes` requires `--name`. For the guided wizard, run bare `npm run init` (space toggles, enter confirms).
+- `--features=a,b` sets the exact enabled set; `--enable`/`--disable` are deltas. Do not combine an exact set with delta flags.
+- `--yes` requires `--name` in setup mode; feature toggles in manage mode do not require a name. For the guided wizard, run bare `npm run init` (space toggles, enter confirms).
 
 **Setup WITH a feature brief - remove the example sets in THIS step (do not make it a separate round-trip):** remove every example set (`--remove-examples` with all keys, or the no-value form). Unlike a plugin's per-kind `AbstractModule` with a `get_classes()` array to keep-and-empty, this theme lists every class directly in `Main::CLASSES`, so there is nothing to keep-and-empty: the scaffold skill builds each briefed feature from scratch and wires its new `::class` line into `Main::CLASSES` itself (step 8). Example: brief = a custom Testimonial block + a footer credits shortcode -> `--remove-examples=block-extension,settings,shortcode,components,patterns`, then let scaffold build the two real features.
 
 ### 7. After init
-- Tailwind enabled → it added `src/css/frontend/tailwind.css` + `postcss.config.js` and pinned `@rtcamp/tailwind-config`; developer runs `npm install` (re-apply the `file:` ref first during the pilot).
-- `composer dump-autoload` (engine runs it when `composer.json` is present).
+- Tailwind enabled → it added `src/css/frontend/tailwind.css` + `postcss.config.js` and pinned `@rtcamp/tailwind-config`; developer runs `npm install` (the feature changes declarations; it does not install packages).
+- Dev Tools enabled → developer runs `composer update rtcamp/wp-dev-tools -W`, starts/restarts wp-env, activates the theme using the exact mounted directory name printed by the engine (`npm run wp-env run cli -- wp theme activate <directory-name>`), then runs `npm run dev:connect`. This optional package is private and requires repository access; WordPress 6.9+ and PHP 8.2+ are required. The feature writes a gitignored `.wp-env.override.json` with Query Monitor, MCP Adapter, local gates, and host/theme-container paths; it does not modify committed `.wp-env.json` or the tests environment.
+- Dev Tools disable → disconnect first (`npm run dev:disconnect`), then disable and follow the engine’s Composer update instruction.
+- `composer dump-autoload` runs during setup when `composer.json` is present.
 - Trust the engine's own output to verify (it reports the removed sets, drops their `Main::CLASSES` lines and tests, and regenerates the autoloader). To confirm a symbol or reference, run a single `graphify query`/`affected` against the graph - never grep `Main.php`/`inc/` to check removal.
 - If you hand-edited PHP and are NOT handing off to scaffold (e.g. a manage-mode dangling `Main::CLASSES` cleanup), run `composer phpcs` on the change and fix it. When a brief follows (step 8), leave the phpcs/PHPStan/test gates to the scaffold skill - init does not run them.
 - **Refresh the LOCAL graph** with `graphify update .` (theme slice, tree-sitter, no API, seconds). The committed `graphify-out/graph.json` is a maintained baseline; your local refresh keeps queries accurate after a rename. If graphify is not installed, say so in one line; do not block.
@@ -112,7 +102,7 @@ ONE "Select the example sets to include" prompt. Each is keep-or-remove; removin
 |---|---|
 | Editor & Frontend | `block-extension`, `shortcode`, `components`, `patterns`, `tailwind` (feature) |
 | Admin | `settings` |
-| Dev | `hmr` (feature) |
+| Dev | `hmr`, `dev-tools` (features) |
 
 - `block-extension` - Media-text block render-filter extension.
 - `shortcode` - Author-bio shortcode.
@@ -120,18 +110,17 @@ ONE "Select the example sets to include" prompt. Each is keep-or-remove; removin
 - `patterns` - Page-creation block pattern.
 - `settings` - Theme options settings page.
 
-Sets are kept by default; pass keys to `--remove-examples` to drop. Features: `hmr` on, `tailwind` off; toggle via `--features`/`--enable`/`--disable`.
+Sets are kept by default; pass keys to `--remove-examples` to drop. Features: `hmr` on, `tailwind` and `dev-tools` off; toggle via `--features`/`--enable`/`--disable`.
 
 ### Changing capabilities after setup
 Add later → scaffold skill / `npx wp-tooling add <category>/<slug>` (writes the class, wires it into `Main::CLASSES`). Remove later → delete its class file(s) under `inc/Modules/<Kind>/` plus its `Main::CLASSES` line and `use` import by hand. Do not re-run init to change the set.
 
 ## Hard rules
 - **BASE (see AGENTS.md guardrails):** never run history/remote `git`/`gh` (commit, push, `branch -D`, `reset --hard`, PR, issue comment, `gh secret set`) - print them as developer actions. `git clone`/`checkout` for setup are fine. Never do a destructive operation outside this theme directory; cloning a NEW sibling is additive and OK, deleting/overwriting existing out-of-repo files is not.
-- Package managers only with consent: `npm run init`, and the pilot bootstrap of step 2 (sibling clone + local ref + `composer update`/`npm install`). Outside those, surface install commands as developer actions.
-- Never run a destructive init without confirming resolved values, on a clean tree.
+- Package managers and init only with consent. Step 2 describes the normal dependency installation; feature dependency updates require consent too.
+- Never run a destructive init without confirming resolved values, on a clean tree. Non-interactive setup with `--yes` skips optional Git initialization.
 - Never commit, push, open PRs, or edit `.wp-scaffold.json` by hand.
-- Never leave local-only `file:`/`path` edits uncommunicated: tell the developer to revert ONLY the dependency-source lines before commit (the `@rtcamp/wp-tooling` `file:` ref, any path `repositories` entry, `composer.lock`), keeping all identity changes init wrote into those files.
-- Never invent flags. Supported: `--name`, `--version`, `--yes`, `--keep-examples`, `--remove-examples[=...]`, `--features`, `--enable`, `--disable`, `--reinit`, `--list`, `--clean`, `--help`. Run `npm run init -- --help` if unsure.
+- Never invent flags. Supported: `--name`, `--version`, `--yes`, `--keep-examples`, `--remove-examples[=...]`, `--features`, `--enable`, `--disable`, `--reinit`, `--list` (optionally `--json`), `--clean`, `--help`. Run `npm run init -- --help` if unsure.
 
 ## Reference
 - Engine: `@rtcamp/wp-tooling/init` (via `bin/init.js`). Capability map: `bin/scaffold.config.js`.
