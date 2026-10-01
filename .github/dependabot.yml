@@ -41,7 +41,3 @@ updates:
     labels:
       - Composer
       - Dependencies
-    ignore:
-      # i18n-command 3 needs WP-CLI 3, and the wp-env cli container ships WP-CLI 2.
-      - dependency-name: "wp-cli/i18n-command"
-        update-types: ["version-update:semver-major"]
