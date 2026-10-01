@@ -22,7 +22,7 @@ module.exports = {
 	source: {
 		name: 'Elementary Theme',
 		namespace: 'rtCamp\\Theme\\Elementary',
-		package: 'rtcamp/elementary',
+		package: 'rtcamp/theme-elementary',
 	},
 
 	// Derive the namespace and composer package from the chosen name.

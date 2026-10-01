@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cb15141c1588adc39299cb7e20fe01a",
+    "content-hash": "9cbc7cc2771fbb841747579c7086f717",
     "packages": [
         {
             "name": "rtcamp/wp-primitives",
