@@ -53,4 +53,25 @@ class FeaturesSettingsPageTest extends TestCase {
 		$this->assertArrayHasKey( 'elementary_features', $registered );
 		$this->assertSame( 'array', $registered['elementary_features']['type'] );
 	}
+
+	/**
+	 * The page is listed under Settings with the theme's titles.
+	 */
+	public function test_page_is_listed_under_settings_with_theme_titles(): void {
+		global $submenu;
+
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+
+		( new FeaturesSettingsPage() )->register_page();
+
+		$entries = $submenu['options-general.php'] ?? [];
+		$titles  = array_column( $entries, 0 );
+		$pages   = array_column( $entries, 3 );
+
+		unset( $submenu['options-general.php'] );
+
+		$this->assertContains( 'Features', $titles );
+		$this->assertContains( 'Elementary Features', $pages );
+	}
 }

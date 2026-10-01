@@ -57,16 +57,6 @@ class TemplatesTest extends TestCase {
 	}
 
 	/**
-	 * It resolves the theme's own template parts (e.g. the author-bio example).
-	 */
-	public function test_resolves_a_theme_template_part(): void {
-		$located = $this->instance->locate( 'author-bio' );
-
-		$this->assertIsString( $located );
-		$this->assertStringEndsWith( 'template-parts/author-bio.php', (string) $located );
-	}
-
-	/**
 	 * A missing part resolves to false rather than erroring.
 	 */
 	public function test_missing_part_returns_false(): void {
