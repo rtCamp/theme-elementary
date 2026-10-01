@@ -25,6 +25,11 @@ updates:
       wordpress-packages:
         patterns:
           - "@wordpress/*"
+    ignore:
+      # Babel 8 is a major; the WordPress build tooling (@wordpress/scripts,
+      # @wordpress/babel-preset-default) is still on Babel 7.
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: composer
     directory: '/'
@@ -36,3 +41,7 @@ updates:
     labels:
       - Composer
       - Dependencies
+    ignore:
+      # i18n-command 3 needs WP-CLI 3, and the wp-env cli container ships WP-CLI 2.
+      - dependency-name: "wp-cli/i18n-command"
+        update-types: ["version-update:semver-major"]
