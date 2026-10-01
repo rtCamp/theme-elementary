@@ -15,6 +15,9 @@ export default [
 			'**/node_modules/**',
 			'**/vendor/**',
 			'assets/build/**',
+			// Jest coverage output (coverageDirectory in tests/js/jest.config.js).
+			'coverage/**',
+			'tests/logs/**',
 		],
 	},
 ];
