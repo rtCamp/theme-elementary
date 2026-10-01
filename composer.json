@@ -4,23 +4,6 @@
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
 	"license": "GPL-2.0-or-later",
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/rtCamp/wp-primitives.git",
-			"no-api": true
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/rtCamp/wp-phpcs.git",
-			"no-api": true
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/rtCamp/wp-phpstan.git",
-			"no-api": true
-		}
-	],
 	"require": {
 		"php": ">=8.2",
 		"rtcamp/wp-primitives": "^2.0"
