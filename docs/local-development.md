@@ -9,10 +9,11 @@ npm run wp-env start
 npm run wp-env run cli -- wp theme activate acme-blog
 ```
 
-The development site is `http://localhost:5890`; the separate test site uses `http://localhost:5891`. Activation uses the mounted **folder name**, not the theme display name or text domain. When you finish, stop the environment with:
+The development site is `http://localhost:5890`. PHP tests use a separate environment, defined in `.wp-env.tests.json`, on `http://localhost:5891` with its own database; `npm run test:php` starts it when needed. Activation uses the mounted **folder name**, not the theme display name or text domain. When you finish, stop the environments with:
 
 ```bash
 npm run wp-env stop
+npm run wp-env -- stop --config=.wp-env.tests.json
 ```
 
 For an existing local WordPress installation, use its normal startup and activation process instead, then run the theme-local commands from this directory.
@@ -77,28 +78,16 @@ Use PHP compatible with the project's installed checks (PHP 8.2 is the wp-env ba
 npm run wp-env -- run cli --env-cwd=/var/www/html/wp-content/themes/acme-blog -- vendor/bin/phpcs
 ```
 
-With wp-env running, the theme's PHP test command runs inside `tests-cli`; its pretest hook installs Composer dependencies there without scripts.
-
-The wp-env test environment keeps `WP_DEBUG` disabled by default. The logger tests require it, so merge this test-only setting into `.wp-env.override.json` before running PHP tests:
-
-```json
-{
-  "env": {
-    "tests": {
-      "config": { "WP_DEBUG": true }
-    }
-  }
-}
-```
+The theme's PHP test command runs inside the test environment's `cli` container; its pretest hook starts that environment and installs Composer dependencies there without scripts. The test environment has `WP_DEBUG` on, which the logger tests need.
 
 ```bash
 npm run test:php
 ```
 
-For a focused PHP test after that setup:
+For a focused PHP test:
 
 ```bash
-npm run wp-env -- run tests-cli --env-cwd=/var/www/html/wp-content/themes/acme-blog -- vendor/bin/phpunit --filter AuthorBioTest
+npm run wp-env -- run --config=.wp-env.tests.json cli --env-cwd=/var/www/html/wp-content/themes/acme-blog -- vendor/bin/phpunit --filter AuthorBioTest
 ```
 
 Use the relevant test name if the example was removed. Keep smoke projects outside this repository so Jest does not discover another project's tests. Use the explicit commands above for a terminating review check; aggregate-script details belong in [maintenance](internal/maintenance.md#checks).
@@ -117,10 +106,10 @@ Review visible behavior and checks before feature integration; make a separate f
 
 | Symptom | Check → next action |
 | --- | --- |
-| wp-env cannot start | Run `docker info`; start Docker and retry if unavailable. For occupied ports, start with `WP_ENV_PORT=5892 WP_ENV_TESTS_PORT=5893 npm run wp-env start`. |
+| wp-env cannot start | Run `docker info`; start Docker and retry if unavailable. For an occupied port, set `WP_ENV_PORT`, for example `WP_ENV_PORT=5892 npm run wp-env start` or `WP_ENV_PORT=5893 npm run test:php`. |
 | Frontend assets return 404 | Check `assets/build/`; run `npm run build:dev` and confirm the theme is active. |
 | CSS rebuilds but no live reload | Confirm local environment type, watcher, and BrowserSync port; see [HMR](hmr.md). |
 | HTTPS reload is blocked | Check that `WP_SSL_KEY` and `WP_SSL_CERT` point to trusted certificates for the site hostname; see [HMR](hmr.md). |
 | Site Editor ignores a template file edit | Check for a customized template saved in WordPress; review/reset that customization before testing the file version. |
-| PHP tests cannot connect | Start wp-env and rerun `npm run test:php`; confirm the `tests-cli` environment is used. |
+| PHP tests cannot connect | Start wp-env and rerun `npm run test:php`. |
 | New PHP feature does not load | Check namespace/path and `Main::CLASSES`; see [Development](../DEVELOPMENT.md#adding-a-new-class). |
