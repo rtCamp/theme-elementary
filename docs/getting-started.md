@@ -31,7 +31,7 @@ git clone https://github.com/rtCamp/theme-elementary.git acme-blog
 cd acme-blog
 ```
 
-The theme's install hook runs `npm i` during `create-project`, so have Node 22.22.2 or later active first. The first commit gives the Composer copy a baseline, so `git status` shows what init changes in step 3.
+The theme's install hook runs `npm i` during `create-project`, so have Node 22.23.4 (or 24.22.1+ / 26.12.1+) active first. The first commit gives the Composer copy a baseline, so `git status` shows what init changes in step 3.
 
 With `nvm`, select the project's Node version:
 
