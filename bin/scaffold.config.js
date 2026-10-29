@@ -160,12 +160,24 @@ module.exports = {
 		],
 	},
 
+	// Starter-only files removed after setup. The repository files from
+	// `.gitattributes` down are theme-elementary's own; `.gitattributes`
+	// export-ignores them, so a `composer create-project` copy never has them
+	// and this only matters for a git clone. Keep both lists in step.
 	cleanup: {
 		targets: [
 			'.github/copilot-instructions.md',
 			'.github/prompts',
 			'.github/instructions',
 			'languages',
+			'.gitattributes',
+			'.github/CODEOWNERS',
+			'.github/ISSUE_TEMPLATE/bug.yml',
+			'.github/ISSUE_TEMPLATE/config.yml',
+			'.github/ISSUE_TEMPLATE/feature.yml',
+			'.github/labels.yml',
+			'.github/release.yml',
+			'SECURITY.md',
 			// The starter's own release workflow, config and manifest. Cleanup also runs
 			// on re-init and --clean, so both paths are named for the starter: a
 			// project's own release-please files never live there.
