@@ -15,6 +15,7 @@ changelog:
         - "BC: Breaking"
     - title: Features
       labels:
+        - "Type: Feature"
         - "BC: Additive"
     - title: Fixes
       labels:

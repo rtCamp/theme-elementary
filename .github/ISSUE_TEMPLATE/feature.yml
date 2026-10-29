@@ -1,6 +1,8 @@
 name: Feature request
 description: Suggest something the theme-elementary starter should include or do.
 type: Feature
+labels:
+  - "Type: Feature"
 body:
   - type: markdown
     attributes:
