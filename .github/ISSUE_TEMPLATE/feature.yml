@@ -1,0 +1,67 @@
+name: Feature request
+description: Suggest something the theme-elementary starter should include or do.
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thanks for the suggestion. Please search
+        [existing issues](https://github.com/rtCamp/theme-elementary/issues?q=is%3Aissue)
+        first.
+  - type: markdown
+    attributes:
+      value: >-
+        Every theme created from this starter copies it, so additions should be
+        general enough for most projects. Framework behaviour belongs in
+        [wp-primitives](https://github.com/rtCamp/wp-primitives), the init and
+        scaffold engine in [wp-tooling](https://github.com/rtCamp/wp-tooling),
+        and CI jobs in
+        [wp-shared-workflows](https://github.com/rtCamp/wp-shared-workflows).
+        [CONTRIBUTING.md](https://github.com/rtCamp/theme-elementary/blob/main/CONTRIBUTING.md)
+        explains how to build it yourself.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "Init and setup (npm run init, bin/scaffold.config.js)"
+        - "Templates, parts, patterns and theme.json"
+        - "Assets and build (src/, blocks, webpack, HMR, Tailwind)"
+        - "PHP (inc/ and its wp-primitives wiring)"
+        - "Tests and lint (PHPUnit, Jest, PHPCS, PHPStan, ESLint, Stylelint)"
+        - "CI workflows"
+        - "AI tooling (AGENTS.md, Claude skills, Copilot prompts)"
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What you are building on the starter, and what stops you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: >-
+        What the starter should ship, and whether it should be always on, an
+        example set that init can remove, or an optional feature.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you use now, or other designs you ruled out.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
