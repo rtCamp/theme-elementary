@@ -60,7 +60,7 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
 | Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations. |
 | State | `.wp-scaffold.json` records identity and feature choices; do not hand-edit it. |
 | Autoload | Setup regenerates Composer's autoloader. |
-| Cleanup | Before the wrapper's final sync, the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` (including the starter POT file) are removed. Workflows, issue templates, the PR template, `dependabot.yml`, and `release.yml` stay untouched. |
+| Cleanup | Before the wrapper's final sync, the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` (including the starter POT file) are removed, along with the starter's own release automation (`.github/workflows/release.yml`, `release-please-config.json`, `.release-please-manifest.json`). The other workflows, issue templates, the PR template, `dependabot.yml`, and `.github/release.yml` stay untouched. |
 | AI instructions | After a successful change, the wrapper runs `sync-ai`; in a standalone project with the framework installed, it refreshes the generated framework PHP instructions. It does not restore the removed prompts or theme-specific rules. |
 | Retained files | Theme source, `bin/`, Claude skills, documentation, and test infrastructure remain; files belonging to removed example sets do not. |
 

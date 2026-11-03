@@ -166,6 +166,9 @@ module.exports = {
 			'.github/prompts',
 			'.github/instructions',
 			'languages',
+			'release-please-config.json',
+			'.release-please-manifest.json',
+			'.github/workflows/release.yml',
 		],
 	},
 

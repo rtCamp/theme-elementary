@@ -2,6 +2,8 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- This starter's own releases are written below by release-please from the Conventional Commit pull request titles merged to main; don't add entries here. Projects made from the starter keep the `## Unreleased` heading below for `npm run release:changelog`. -->
+
 ## Unreleased
 
 ## 2.0.0 - 2026-10-01

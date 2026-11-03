@@ -1,0 +1,39 @@
+name: Release
+
+# release-please reads the Conventional Commit subjects squash-merged to main and keeps one
+# release pull request open that bumps the version and writes CHANGELOG.md. Merging that pull
+# request tags vX.Y.Z on main and publishes the GitHub release with the changelog entry as notes.
+#
+# The release pull request is opened with GITHUB_TOKEN, so GitHub starts no workflow runs on it
+# (no tests, no PR title check). That is why neither check is a required status check. Switching
+# the token below to a GitHub App token would give the release pull request its CI runs.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Serialise runs so two merges in quick succession can't race on the release pull request.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Open or update the release pull request, or publish the release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
