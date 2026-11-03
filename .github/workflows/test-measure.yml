@@ -23,6 +23,8 @@ jobs:
       wp-versions: '["6.5", "6.6", "6.7", "6.8", "6.9", "7.0"]'
       # WordPress added PHP 8.4 support in 6.7.
       test-php-exclude: '[{"php": "8.4", "wp": "6.5"}, {"php": "8.4", "wp": "6.6"}]'
+      lint-js-files-command: npm run lint:js:files
+      lint-css-files-command: npm run lint:css:files
 
       # Optional wp-ci inputs, upstream defaults — uncomment to change.
       # skip: ''                # lint-css,lint-js,lint-php,test-js,test-php,build,build-artifact,a11y
