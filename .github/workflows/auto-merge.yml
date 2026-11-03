@@ -32,7 +32,7 @@ jobs:
         if: |
           contains( github.event.workflow_run.head_commit.message, 'version-update:semver-minor' ) ||
           contains( github.event.workflow_run.head_commit.message, 'version-update:semver-patch' )
-        run: gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
+        run: gh pr merge "$PR_NUMBER" --auto --squash --delete-branch
         env:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
@@ -53,7 +53,7 @@ jobs:
           endsWith(github.event.workflow_run.head_commit.message, format('{0} {1}', 'rtBot', '<43742164+rtBot@users.noreply.github.com>')) &&
           github.event.workflow_run.head_commit.author.name == 'rtBot' &&
           github.event.workflow_run.head_commit.author.email == '43742164+rtBot@users.noreply.github.com'
-        run: gh pr merge "$PR_NUMBER" --auto --merge --delete-branch
+        run: gh pr merge "$PR_NUMBER" --auto --squash --delete-branch
         env:
           GH_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}

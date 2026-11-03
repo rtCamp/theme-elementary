@@ -7,6 +7,9 @@ updates:
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
     labels:
       - GHA
       - Dependencies
@@ -18,6 +21,9 @@ updates:
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
     labels:
       - NPM
       - Dependencies
@@ -38,6 +44,9 @@ updates:
       time: '00:00'
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
     labels:
       - Composer
       - Dependencies
