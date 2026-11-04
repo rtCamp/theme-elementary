@@ -112,7 +112,6 @@ Before the first release:
 
 A project that does not release versions (a site deployed from a branch, for example) can turn it off with `npm run init -- --disable=release --yes`; that removes the workflow and config and keeps the manifest. Then release by hand with `npm run release:bump` and `npm run release:changelog`, which need a `CHANGELOG.md` with an `## Unreleased` heading. If an existing project that already tags releases turns the feature on, set `.release-please-manifest.json` to its latest released version before the first run.
 
-rtCamp/wp-shared-workflows is adding a reusable `cd-release-please.yml`. Once it is released, the project workflow can shrink to a caller of it; the starter does not use it yet.
 
 ### Optional dependencies
 

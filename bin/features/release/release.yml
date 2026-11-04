@@ -22,9 +22,6 @@ name: Release
 # or switch the token below to a GitHub App token. The release pull request is opened with
 # GITHUB_TOKEN too, so it gets no CI runs; that is why neither check should be a required status
 # check unless you switch tokens.
-#
-# rtCamp/wp-shared-workflows is adding a reusable cd-release-please.yml. Once it is released,
-# this file can shrink to a caller of it.
 
 on:
   push:
