@@ -18,7 +18,7 @@ If an installation route or feature cannot be exercised, report the missing prer
 
 ### Cleanup checks
 
-Check that the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` are removed, along with the starter's release workflow, config and manifest (`.github/workflows/release-starter.yml`, `.github/release-please/`), while the other workflows, issue templates, and the PR template stay untouched. Also confirm the init wrapper script is not removed by cleanup, and that `sync-ai` (see [initialization.md](../initialization.md#what-changes)) restores only generated framework instructions. Claude skills and documentation remain; Copilot prompts and theme-specific GitHub rules do not. Run POT generation separately to verify the language output can be recreated.
+Check that the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` are removed, along with the starter's release workflow, config and manifest (`.github/workflows/release-starter.yml`, `.github/release-starter/`), while the other workflows, issue templates, and the PR template stay untouched. Also confirm the init wrapper script is not removed by cleanup, and that `sync-ai` (see [initialization.md](../initialization.md#what-changes)) restores only generated framework instructions. Claude skills and documentation remain; Copilot prompts and theme-specific GitHub rules do not. Run POT generation separately to verify the language output can be recreated.
 
 Check references in retained documentation and AI instructions. Use upstream source links for optional examples or starter-only files that cleanup may remove. Do not silently change the cleanup contract as part of a documentation correction.
 
@@ -92,13 +92,13 @@ Check the homepage, navigation order, root-guide links, anchors, and mobile layo
 
 ## Releasing the theme
 
-Releases of the theme itself are cut by [release-please](https://github.com/googleapis/release-please) (`.github/workflows/release-starter.yml`), from the config and manifest in `.github/release-please/`. Init cleanup removes the workflow and that folder, so projects made from the starter don't inherit them; projects release by hand with `npm run release:bump` and `npm run release:changelog`.
+Releases of the theme itself are cut by [release-please](https://github.com/googleapis/release-please) (`.github/workflows/release-starter.yml`), from the config and manifest in `.github/release-starter/`. Init cleanup removes the workflow and that folder, so projects made from the starter don't inherit them; projects release by hand with `npm run release:bump` and `npm run release:changelog`.
 
 1. Pull requests are squash-merged, so each PR title becomes one Conventional Commit on `main`. release-please reads those subjects and keeps a release pull request open that bumps the version in `package.json`, `package-lock.json` and `style.css` (between the `x-release-please-start-version` and `x-release-please-end` lines), and writes the next `CHANGELOG.md` section.
 2. The title's type decides the version: `fix:` is a patch, `feat:` a minor, and `feat!:` (or a `BREAKING CHANGE:` footer) a major. Anything that changes what init generates, renames a script or a file a project relies on, or raises a minimum version is a `feat!:`. `docs:`, `test:`, `ci:`, `chore:` and `refactor:` cut no release. Dependabot pull requests are prefixed `chore` (see `.github/dependabot.yml`), so they cut no release on their own. Keep it that way: release-please cuts a release for any type with a visible changelog section, `build` included.
 3. When you want to release, run the [release validation](#release-validation) against the release pull request's branch, reword its entries if a title reads badly, then squash-merge it. release-please tags `vX.Y.Z` and publishes the GitHub release with that section as the notes.
 
-The release pull request is opened with `GITHUB_TOKEN`, so GitHub starts no workflow runs on it, and the PR title check is not a required status check for that reason. A GitHub App token in the workflow would give the release pull request its own runs. Never push a `v*` tag or edit `.github/release-please/manifest.json` by hand.
+The release pull request is opened with `GITHUB_TOKEN`, so GitHub starts no workflow runs on it, and the PR title check is not a required status check for that reason. A GitHub App token in the workflow would give the release pull request its own runs. Never push a `v*` tag or edit `.github/release-starter/manifest.json` by hand.
 
 ## Knowledge graph
 
