@@ -28,10 +28,6 @@
           "section": "Changed"
         },
         {
-          "type": "security",
-          "section": "Security"
-        },
-        {
           "type": "docs",
           "section": "Documentation",
           "hidden": true

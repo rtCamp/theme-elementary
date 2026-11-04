@@ -55,9 +55,9 @@ npm run init -- --name="Acme Blog" --version=1.0.0 --yes --remove-examples
 | --- | --- |
 | Identity fields | Name, version, text domain, package, namespace, function prefix, constant prefix, and CSS prefix are derived and reviewed. |
 | Affected files | `style.css`, `functions.php`, `composer.json`, `package.json`, and text or file basenames containing starter identity tokens are personalized. |
-| Version | Written to `style.css` and `package.json`. With the release feature on, it also becomes `initial-version` in `release-please-config.json`, the version of the project's first release. |
+| Version | Written to `style.css` and `package.json`. |
 | Examples | Kept groups remain. Removed groups delete their configured paths and registration regions; markers are removed in either case. See [Included features](features.md). |
-| Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations; release automation (on by default) adds `.github/workflows/release.yml`, `release-please-config.json` and `.release-please-manifest.json`, and removes the starter's `CHANGELOG.md`. See [Releases](#releases). |
+| Optional features | HMR updates `.env.local`; Tailwind adds its entry/config and declarations. |
 | State | `.wp-scaffold.json` records identity and feature choices; do not hand-edit it. |
 | Autoload | Setup regenerates Composer's autoloader. |
 | Cleanup | Before the wrapper's final sync, the Copilot-specific `.github` files (`copilot-instructions.md`, `prompts/`, `instructions/`) and `languages` (including the starter POT file) are removed, along with the starter's own release workflow, config and manifest (`.github/workflows/release-starter.yml`, `.github/release-please/`). The other workflows, issue templates, the PR template, `dependabot.yml`, and `.github/release.yml` stay untouched. |
@@ -88,30 +88,12 @@ npm run init -- --list
 npm run init -- --list --json
 npm run init -- --enable=hmr --yes
 npm run init -- --disable=hmr --yes
-npm run init -- --features=hmr,release --yes
+npm run init -- --features=hmr --yes
 ```
 
 `--features` sets the entire enabled set; `--enable` and `--disable` change one feature without replacing the others. Do not combine these forms. Help and `--list` are read-only. For machine-readable JSON without npm's banner, use `node bin/init.js --list --json`.
 
 Example removal belongs to initial setup: `--remove-examples=shortcode,patterns` removes those groups, and `--keep-examples` keeps every group. Do not use `--reinit` to restore examples or remove more groups after their markers have been consumed. Review source and registration together when making a manual change.
-
-### Releases
-
-The `release` feature is on by default. It sets the project up for [release-please](https://github.com/googleapis/release-please):
-
-- `.github/workflows/release.yml` keeps one release pull request open on `main`, built from the Conventional Commit pull request titles merged since the last release. Merging it bumps `package.json`, `package-lock.json` and the `style.css` `Version:` line (between the `x-release-please-start-version` and `x-release-please-end` lines), writes the `CHANGELOG.md` section, tags `vX.Y.Z` and publishes the GitHub release. The `PR Title` workflow checks the title format.
-- `release-please-config.json` carries `initial-version`, the version init wrote, so the first release is exactly that version. It also carries `bootstrap-sha` when init ran in a git repository, so commits from before init stay out of the first changelog entry.
-- `.release-please-manifest.json` records the last released version. It starts at `0.0.0`, which release-please reads as "nothing released yet". Don't edit it, `CHANGELOG.md` or `v*` tags by hand once releases start.
-- The starter's `CHANGELOG.md` is removed during setup; release-please writes a fresh one on the first release.
-
-Before the first release:
-
-- Allow GitHub Actions to create pull requests (repository or organisation settings, Actions, General, Workflow permissions). Client organisations often switch this off.
-- Allow only squash merges, with the pull request title as the commit subject.
-- If you deploy on tags: the tag and release are created with `GITHUB_TOKEN`, and GitHub starts no workflow runs for events `GITHUB_TOKEN` causes, so a workflow triggered `on: push: tags` never runs for them. Deploy from `release.yml` in a job with `needs: release-please` and `if: needs.release-please.outputs.release-created == 'true'`, or switch the workflow to a GitHub App token. The same limit means the release pull request gets no CI runs, so don't make checks on it required unless you switch tokens.
-
-A project that does not release versions (a site deployed from a branch, for example) can turn it off with `npm run init -- --disable=release --yes`; that removes the workflow and config and keeps the manifest. Then release by hand with `npm run release:bump` and `npm run release:changelog`, which need a `CHANGELOG.md` with an `## Unreleased` heading. If an existing project that already tags releases turns the feature on, set `.release-please-manifest.json` to its latest released version before the first run.
-
 
 ### Optional dependencies
 

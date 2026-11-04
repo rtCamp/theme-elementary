@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- This starter's own releases are written below by release-please from the Conventional Commit pull request titles merged to main; don't add entries here. A project made from the starter with the "release" feature on (the default) starts without this file, and release-please writes a fresh one on its first release; with the feature off, the project keeps this file and the `## Unreleased` heading below for `npm run release:changelog`. -->
+<!-- In the starter, release-please writes each release below from the Conventional Commit pull request titles merged to main, so don't add entries under `## Unreleased` here. Projects made from the starter keep `## Unreleased` for `npm run release:changelog`. -->
 
 ## Unreleased
 
