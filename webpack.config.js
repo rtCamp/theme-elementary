@@ -25,8 +25,6 @@ const tailwindEntry = path.resolve(
 let GenerateTailwindThemePlugin = null;
 if (fs.existsSync(tailwindEntry)) {
 	try {
-		// Optional: the tailwind init feature installs it.
-		// eslint-disable-next-line import/no-extraneous-dependencies
 		({ GenerateTailwindThemePlugin } = require('@rtcamp/tailwind-config'));
 	} catch {
 		// @rtcamp/tailwind-config not installed; skip the theme.json token plugin
