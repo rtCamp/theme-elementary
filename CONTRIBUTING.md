@@ -25,7 +25,7 @@ Run the relevant focused tests and lint commands in [Local development](docs/loc
 
 - [ ] The relevant focused tests and lint commands pass.
 - [ ] New/changed behavior is covered by tests.
-- [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
+- [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/), and so does the PR title: pull requests are squash-merged, and the title becomes the commit on `main`.
 
 ## License
 

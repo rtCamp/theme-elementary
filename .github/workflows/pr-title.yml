@@ -1,0 +1,31 @@
+name: PR Title Validation
+
+# Pull requests are squash-merged and the PR title becomes the commit on main. release-please
+# reads those subjects to pick the next version and write CHANGELOG.md, so the title has to be a
+# Conventional Commit: feat -> minor, fix -> patch, a "!" after the type -> major.
+#
+# Not a required status check: the release pull request is opened with GITHUB_TOKEN, which
+# starts no workflow runs, so this check never reports on it.
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  run:
+    name: Validate PR title
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Validate pull request title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

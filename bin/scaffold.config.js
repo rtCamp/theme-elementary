@@ -166,6 +166,11 @@ module.exports = {
 			'.github/prompts',
 			'.github/instructions',
 			'languages',
+			// The starter's own release workflow, config and manifest. Cleanup also runs
+			// on re-init and --clean, so both paths are named for the starter: a
+			// project's own release-please files never live there.
+			'.github/release-starter',
+			'.github/workflows/release-starter.yml',
 		],
 	},
 
