@@ -176,7 +176,6 @@ module.exports = {
 			'.github/ISSUE_TEMPLATE/config.yml',
 			'.github/ISSUE_TEMPLATE/feature.yml',
 			'.github/labels.yml',
-			'.github/release.yml',
 			'SECURITY.md',
 			// The starter's own release workflow, config and manifest. Cleanup also runs
 			// on re-init and --clean, so both paths are named for the starter: a

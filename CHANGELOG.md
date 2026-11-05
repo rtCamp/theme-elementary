@@ -6,14 +6,6 @@ All notable changes to this project are documented in this file. The format is b
 
 ## Unreleased
 
-### Added
-
-- Repository files for outside contributors: bug report and feature request issue forms, which replace the Markdown bug template (blank issues are off, and security reports go to private vulnerability reporting), `SECURITY.md`, `.github/CODEOWNERS`, and `.github/labels.yml` with the label set shared across the rtCamp framework repositories. `.github/release.yml` now groups generated release notes by those labels.
-
-### Changed
-
-- Those repository files, including `.github/release.yml`, no longer reach a theme created from the starter: a new `.gitattributes` leaves them out of `composer create-project`, and `npm run init` removes them from a git clone. Workflows, the `task` and `epic` issue templates, the PR template and `dependabot.yml` still stay.
-
 ## 2.0.0 - 2026-10-01
 
 v2 rebuilds the starter on rtCamp's shared WordPress stack: runtime code from [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives), and setup, scaffolding, releases and lint configs from [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling) and the `@rtcamp` npm packages. It is a new starter, not an in-place upgrade: themes built on 1.x keep working as they are.

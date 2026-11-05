@@ -9,7 +9,6 @@
 /.github/ISSUE_TEMPLATE/config.yml  export-ignore
 /.github/ISSUE_TEMPLATE/feature.yml export-ignore
 /.github/labels.yml                 export-ignore
-/.github/release.yml                export-ignore
 /SECURITY.md                        export-ignore
 /.github/release-starter            export-ignore
 /.github/workflows/release-starter.yml export-ignore

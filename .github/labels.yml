@@ -10,7 +10,8 @@
 # (wp-shared-workflows, wp-primitives, wp-tooling, theme-elementary and
 # plugin-elementary), apart from the wording of the BC descriptions; change them
 # in all five together. The sections after them belong to this repository.
-# .github/release.yml groups release notes by these labels.
+# release-please writes the release notes from pull request titles, so these
+# labels are for triage only.
 
 # --- Shared: type ------------------------------------------------------------
 - name: "Type: Bug"
