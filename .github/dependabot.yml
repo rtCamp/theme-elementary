@@ -8,7 +8,7 @@ updates:
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
     commit-message:
-      prefix: chore
+      prefix: build
       include: scope
     labels:
       - GHA
@@ -22,7 +22,7 @@ updates:
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
     commit-message:
-      prefix: chore
+      prefix: build
       include: scope
     labels:
       - NPM
@@ -45,7 +45,7 @@ updates:
       timezone: 'Asia/Calcutta'
     open-pull-requests-limit: 10
     commit-message:
-      prefix: chore
+      prefix: build
       include: scope
     labels:
       - Composer
