@@ -6,6 +6,14 @@ All notable changes to this project are documented in this file. The format is b
 
 ## Unreleased
 
+## [2.0.1](https://github.com/rtCamp/theme-elementary/compare/v2.0.0...v2.0.1) (2026-11-05)
+
+
+### Fixed
+
+* **ci:** separate file and project lint commands ([#834](https://github.com/rtCamp/theme-elementary/issues/834)) ([0bb2118](https://github.com/rtCamp/theme-elementary/commit/0bb211824cb7cad5ba802cb4662fa86534f0fcf6))
+* **deps:** require patched Node for CVE-2026-111497 ([#820](https://github.com/rtCamp/theme-elementary/issues/820)) ([58aaf12](https://github.com/rtCamp/theme-elementary/commit/58aaf12c2795414c6d6e95fe75ffdaece910cfce))
+
 ## 2.0.0 - 2026-10-01
 
 v2 rebuilds the starter on rtCamp's shared WordPress stack: runtime code from [`rtcamp/wp-primitives`](https://github.com/rtCamp/wp-primitives), and setup, scaffolding, releases and lint configs from [`@rtcamp/wp-tooling`](https://github.com/rtCamp/wp-tooling) and the `@rtcamp` npm packages. It is a new starter, not an in-place upgrade: themes built on 1.x keep working as they are.
