@@ -270,3 +270,13 @@
 - name: "webpack"
   color: "5319e7"
   description: ""
+
+# release-please adds "autorelease: pending" to its release pull request and
+# finds the merged one to tag by it, then swaps it for "autorelease: tagged".
+# Never delete these two, or a merged release may not get tagged.
+- name: "autorelease: pending"
+  color: "ededed"
+  description: "release-please release PR, not tagged yet"
+- name: "autorelease: tagged"
+  color: "ededed"
+  description: "release-please release PR, tagged"

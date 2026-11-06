@@ -12,6 +12,29 @@
 const tailwindEntry = () => 'functions.php';
 const tailwindConst = (api) => `${api.identity.constantPrefix}_ENABLE_TAILWIND`;
 
+const fs = require('fs');
+const path = require('path');
+
+// theme-elementary's own repository files, kept out of new projects. Cleanup also runs on
+// --reinit, "Re-run full setup" and --clean, and a project's own CODEOWNERS,
+// SECURITY.md, .gitattributes or issue forms live at these same paths, so they
+// are removed on first setup only: before init writes .wp-scaffold.json.
+// .gitattributes export-ignores the same paths; tests/js/starter-files.test.js
+// keeps the two lists in step.
+const STARTER_REPO_FILES = [
+	'tests/js/starter-files.test.js',
+	'.gitattributes',
+	'.github/CODEOWNERS',
+	'.github/ISSUE_TEMPLATE/bug.yml',
+	'.github/ISSUE_TEMPLATE/config.yml',
+	'.github/ISSUE_TEMPLATE/feature.yml',
+	'.github/labels.yml',
+	'SECURITY.md',
+];
+const firstSetup = !fs.existsSync(
+	path.join(__dirname, '..', '.wp-scaffold.json')
+);
+
 module.exports = {
 	kind: 'theme',
 	vendor: 'rtcamp',
@@ -170,13 +193,7 @@ module.exports = {
 			'.github/prompts',
 			'.github/instructions',
 			'languages',
-			'.gitattributes',
-			'.github/CODEOWNERS',
-			'.github/ISSUE_TEMPLATE/bug.yml',
-			'.github/ISSUE_TEMPLATE/config.yml',
-			'.github/ISSUE_TEMPLATE/feature.yml',
-			'.github/labels.yml',
-			'SECURITY.md',
+			...(firstSetup ? STARTER_REPO_FILES : []),
 			// The starter's own release workflow, config and manifest. Cleanup also runs
 			// on re-init and --clean, so both paths are named for the starter: a
 			// project's own release-please files never live there.

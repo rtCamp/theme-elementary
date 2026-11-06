@@ -12,3 +12,4 @@
 /SECURITY.md                        export-ignore
 /.github/release-starter            export-ignore
 /.github/workflows/release-starter.yml export-ignore
+/tests/js/starter-files.test.js     export-ignore
