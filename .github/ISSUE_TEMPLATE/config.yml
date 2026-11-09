@@ -1,5 +1,1 @@
 blank_issues_enabled: false
-contact_links:
-  - name: Report a security vulnerability
-    url: https://github.com/rtCamp/theme-elementary/security/advisories/new
-    about: Report security issues privately, never in a public issue. See SECURITY.md.
