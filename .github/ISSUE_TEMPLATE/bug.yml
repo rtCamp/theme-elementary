@@ -1,0 +1,128 @@
+name: Bug report
+description: Something in the theme-elementary starter is broken or behaves unexpectedly.
+type: Bug
+labels:
+  - "Type: Bug"
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thanks for reporting a bug. Please search
+        [existing issues](https://github.com/rtCamp/theme-elementary/issues?q=is%3Aissue)
+        first. Bugs in the framework belong in
+        [wp-primitives](https://github.com/rtCamp/wp-primitives/issues), and
+        bugs in `npm run init` or `npx wp-tooling` in
+        [wp-tooling](https://github.com/rtCamp/wp-tooling/issues).
+  - type: markdown
+    attributes:
+      value: >-
+        **Found a security issue?** Do not open a public issue. Report it
+        privately through
+        [GitHub's vulnerability reporting](https://github.com/rtCamp/theme-elementary/security/advisories/new),
+        as [SECURITY.md](https://github.com/rtCamp/theme-elementary/blob/main/SECURITY.md)
+        describes.
+  - type: input
+    id: starter-version
+    attributes:
+      label: Starter version or commit
+      description: >-
+        The release you started from (`composer create-project` prints it) or,
+        if you cloned `main`, the commit SHA.
+      placeholder: 2.0.0, or a1b2c3d
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - In the starter itself, before `npm run init`
+        - In a theme created from the starter, after `npm run init`
+        - During `composer create-project` or `npm run init`
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "Init and setup (npm run init, bin/scaffold.config.js)"
+        - "Templates, parts, patterns and theme.json"
+        - "Assets and build (src/, blocks, webpack, HMR, Tailwind)"
+        - "PHP (inc/ and its wp-primitives wiring)"
+        - "Tests and lint (PHPUnit, Jest, PHPCS, PHPStan, ESLint, Stylelint)"
+        - "CI workflows"
+        - Documentation
+        - Not sure
+    validations:
+      required: false
+  - type: input
+    id: wp-version
+    attributes:
+      label: WordPress version
+      placeholder: "6.8"
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.3"
+    validations:
+      required: true
+  - type: input
+    id: node-version
+    attributes:
+      label: Node version
+      description: The output of `node --version`. The starter expects the version in `.nvmrc`.
+      placeholder: v22.22.2
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Local environment
+      description: Where WordPress runs, if relevant.
+      placeholder: wp-env, VIP dev-env, Local, a remote host
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: The error or behaviour you saw. Screenshots help for front-end and editor bugs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. composer create-project rtcamp/theme-elementary demo
+        2. cd demo && npm run init -- --name="Demo" --yes
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Terminal output, PHP errors or browser console errors. Rendered as code, so no backticks are needed.
+      render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I removed secrets, keys and private URLs from everything above.
+          required: true
