@@ -1,0 +1,15 @@
+# Starter-only files: theme-elementary's own repository settings, which must
+# not reach a theme created from the starter. `composer create-project`
+# installs the Packagist dist archive, and export-ignore leaves these out of
+# it. For a git clone, `npm run init` removes the same files (cleanup.targets
+# in bin/scaffold.config.js); keep the two lists in step.
+/.gitattributes                     export-ignore
+/.github/CODEOWNERS                 export-ignore
+/.github/ISSUE_TEMPLATE/bug.yml     export-ignore
+/.github/ISSUE_TEMPLATE/config.yml  export-ignore
+/.github/ISSUE_TEMPLATE/feature.yml export-ignore
+/.github/labels.yml                 export-ignore
+/SECURITY.md                        export-ignore
+/.github/release-starter            export-ignore
+/.github/workflows/release-starter.yml export-ignore
+/tests/js/starter-files.test.js     export-ignore
