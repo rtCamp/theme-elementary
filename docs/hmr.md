@@ -56,7 +56,7 @@ Without `SCRIPT_DEBUG`, WordPress does not support Fast Refresh.
 5. `start:blocks` starts a webpack dev server, using `webpack.blocks.config.js`.
 6. JS/JSX changes to block components hot-swap in the editor without a full reload; block state is preserved.
 
-`webpack.blocks.config.js` is a thin wrapper over `@wordpress/scripts`' default config. It exists only to strip the `devServer.proxy` option: webpack-dev-server v5 (pinned via the `overrides` block in `package.json`) requires `proxy` to be an array, while wp-scripts still emits the v4 object form, which v5 rejects with `options.proxy should be an array`. The wrapper also sets the dev-server port from `BLOCKS_DEV_SERVER_PORT`.
+`webpack.blocks.config.js` is a thin wrapper over `@wordpress/scripts`' default config, which runs webpack-dev-server 6. It removes the `/build` proxy that wp-scripts adds: block HMR doesn't use it, and its target is hardcoded to `localhost:8887`, so with a custom port it would point at another server. The wrapper also sets the dev-server port from `BLOCKS_DEV_SERVER_PORT` and limits `allowedHosts` to `localhost` and `WP_HOST`.
 
 BrowserSync watches the following:
 
@@ -175,4 +175,4 @@ This takes precedence over the auto-detected URL.
 
 **BrowserSync port**: BrowserSync requires its own port (3001) separate from your local site. Snippet mode keeps the site URL unchanged — proxy mode would change the URL and break WordPress redirects and cookie domains.
 
-**WDS host validation**: WDS runs on `localhost:8887`. For custom local hostnames (e.g. `yoursite.local`), `allowedHosts: 'all'` is set in the webpack devServer config so the HMR WebSocket connection is accepted.
+**WDS host validation**: WDS runs on `localhost:8887` by default. For custom local hostnames (e.g. `yoursite.local`), `webpack.blocks.config.js` sets `devServer.allowedHosts` to `localhost` plus your `WP_HOST` (rather than the blanket `all`) so the HMR WebSocket connection is accepted without exposing the dev server to DNS-rebinding.
