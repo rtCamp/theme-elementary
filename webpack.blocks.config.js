@@ -1,15 +1,11 @@
 /**
  * Wrapper config for the `start:blocks` invocation.
  *
- * Layered on top of wp-scripts' default config to fix the dev-server issue that
- * bites during `wp-scripts start --hot` for blocks in this stack:
- *
- * webpack-dev-server v5 (resolved at the top level for the CVE-2025-30359 /
- * CVE-2025-30360 fix) is what `webpack serve` loads, but `@wordpress/scripts`
- * still defines `devServer.proxy` in the webpack-dev-server v4 object form, so
- * v5's schema rejects it with "options.proxy should be an array". The bundled
- * `/build` rewrite has no `target`, isn't needed for block HMR, and would fail
- * at runtime even if converted to the v5 array form, so we remove it.
+ * Layered on top of wp-scripts' default config to adjust the webpack-dev-server
+ * 6 setup that `wp-scripts start --hot` runs for blocks. The stock config adds
+ * a `/build` proxy whose target is hardcoded to `localhost:8887`. Block HMR
+ * doesn't use it, and once the port comes from `BLOCKS_DEV_SERVER_PORT` it
+ * would point at whatever else listens on 8887, so we remove it.
  *
  * All dev-server knobs are read from `.env.local` so they can change without
  * editing this file.
@@ -56,7 +52,7 @@ const devServerPort = toPort(
  * Apply the dev-server fixes to a single webpack config.
  *
  * @param {Object} singleConfig A webpack configuration object.
- * @return {Object} The same config, dev-server v5 compatible.
+ * @return {Object} The same config, with the dev-server changes applied.
  */
 const fixDevServer = (singleConfig) => {
 	/*
@@ -68,8 +64,8 @@ const fixDevServer = (singleConfig) => {
 	}
 
 	/*
-	 * webpack-dev-server v5 requires `proxy` to be an array; wp-scripts ships a
-	 * v4-style object. Not needed for block HMR, so drop it.
+	 * wp-scripts adds a `/build` proxy hardcoded to localhost:8887. Block HMR
+	 * doesn't need it, and with a custom port it would hit another server.
 	 */
 	delete singleConfig.devServer.proxy;
 
