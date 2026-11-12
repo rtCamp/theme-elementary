@@ -21,7 +21,7 @@
 		"node": "^24.22.1 || >=26.12.1"
 	},
 	"dependencies": {
-		"@wordpress/interactivity": "8.0.0"
+		"@wordpress/interactivity": "8.1.0"
 	},
 	"devDependencies": {
 		"@babel/core": "7.29.7",
@@ -29,11 +29,11 @@
 		"@rtcamp/eslint-config": "^1.2.0",
 		"@rtcamp/stylelint-config": "^1.1.0",
 		"@rtcamp/wp-tooling": "^2.0.0",
-		"@wordpress/babel-preset-default": "10.0.0",
-		"@wordpress/browserslist-config": "7.0.0",
+		"@wordpress/babel-preset-default": "10.1.0",
+		"@wordpress/browserslist-config": "7.1.0",
 		"@wordpress/env": "12.1.0",
-		"@wordpress/eslint-plugin": "27.0.0",
-		"@wordpress/scripts": "37.0.0",
+		"@wordpress/eslint-plugin": "28.1.0",
+		"@wordpress/scripts": "37.1.0",
 		"browser-sync": "3.0.4",
 		"browser-sync-webpack-plugin": "2.4.0",
 		"browserslist": "4.29.5",
