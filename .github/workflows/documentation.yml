@@ -28,6 +28,8 @@ concurrency:
 
 jobs:
   build:
+    # Starter-only: init removes this file from generated themes. The guard keeps forks from building the site.
+    if: github.repository == 'rtCamp/theme-elementary'
     name: Build documentation
     runs-on: ubuntu-latest
     timeout-minutes: 15
