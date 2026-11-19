@@ -1,6 +1,6 @@
 {
 	"name": "rtcamp/theme-elementary",
-	"description": "A starter theme that facilitates a quick head start for developing new block-based themes along with a bunch of developer-friendly features.",
+	"description": "Elementary Theme block theme, built on rtCamp theme-elementary.",
 	"type": "wordpress-theme",
 	"homepage": "https://rtcamp.com/",
 	"license": "GPL-2.0-or-later",

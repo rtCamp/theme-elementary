@@ -17,8 +17,9 @@ const path = require('path');
 
 // theme-elementary's own repository files, kept out of new projects. Cleanup also runs on
 // --reinit, "Re-run full setup" and --clean, and a project's own CODEOWNERS,
-// SECURITY.md, .gitattributes or issue forms live at these same paths, so they
-// are removed on first setup only: before init writes .wp-scaffold.json.
+// SECURITY.md, .gitattributes, issue forms or docs workflow live at these same
+// paths, so they are removed on first setup only: before init writes
+// .wp-scaffold.json.
 // .gitattributes export-ignores the same paths; tests/js/starter-files.test.js
 // keeps the two lists in step.
 const STARTER_REPO_FILES = [
@@ -29,6 +30,7 @@ const STARTER_REPO_FILES = [
 	'.github/ISSUE_TEMPLATE/config.yml',
 	'.github/ISSUE_TEMPLATE/feature.yml',
 	'.github/labels.yml',
+	'.github/workflows/documentation.yml',
 	'SECURITY.md',
 ];
 const firstSetup = !fs.existsSync(
