@@ -78,7 +78,7 @@ Use PHP compatible with the project's installed checks (PHP 8.2 is the wp-env ba
 npm run wp-env -- run cli --env-cwd=/var/www/html/wp-content/themes/acme-blog -- vendor/bin/phpcs
 ```
 
-The theme's PHP test command runs inside the test environment's `cli` container; its pretest hook starts that environment and installs Composer dependencies there without scripts. The test environment has `WP_DEBUG` on, which the logger tests need.
+The theme's PHP test command runs inside the test environment's `cli` container. Its pretest hook starts that environment unless it is already up with its database ready, and installs Composer dependencies there without scripts when `composer.lock` is newer than `vendor/autoload.php` or `vendor/bin/phpunit` is missing. A running environment is reused as it is, so restart it with `npm run wp-env -- start --config=.wp-env.tests.json` after editing `.wp-env.tests.json`. The test environment has `WP_DEBUG` on, which the logger tests need.
 
 ```bash
 npm run test:php
