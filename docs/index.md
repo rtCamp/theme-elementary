@@ -41,3 +41,4 @@ PHP contracts: [wp-primitives](https://github.com/rtCamp/wp-primitives/blob/main
 | Watch and build assets | `npm start` / `npm run build:prod` |
 | Run PHP tests | `npm run test:php` |
 | Run PHP checks | `composer phpcs && composer phpstan` |
+| Regenerate the translation template | `npm run pot` |

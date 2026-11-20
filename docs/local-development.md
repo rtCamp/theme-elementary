@@ -102,6 +102,14 @@ Verify `assets/build/` contains the CSS, JavaScript, metadata, and any custom bl
 
 Review visible behavior and checks before feature integration; make a separate feature commit when that checkpoint is useful for your workflow.
 
+## Translations
+
+```bash
+npm run pot
+```
+
+It builds the production assets, then regenerates `languages/<text-domain>.pot` with WP-CLI inside wp-env, so start wp-env first. The template covers the PHP in `inc/` and `patterns/`, the built JavaScript and `block.json` files in `assets/build/`, and the names and titles in `theme.json` and `styles/`. A bare `composer pot` skips the build and reads whatever `assets/build/` already holds.
+
 ## Troubleshooting
 
 | Symptom | Check → next action |
