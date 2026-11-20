@@ -48,7 +48,7 @@
 		"post-install-cmd": [
 			"npm i"
 		],
-		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build/js\""
+		"pot": "wp i18n make-pot . ./languages/elementary-theme.pot --domain=elementary-theme --include=\"inc,patterns,assets/build,theme.json,styles\""
 	},
 	"extra": {
 		"phpstan/extension-installer": {

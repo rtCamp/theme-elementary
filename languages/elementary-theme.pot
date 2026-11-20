@@ -1,34 +1,92 @@
-# Copyright (C) 2023 rtCamp
+# Copyright (C) 2026 rtCamp
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Elementary Theme 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/enhance-use-wp-cli-for-pot-file-generation\n"
+"Project-Id-Version: Elementary Theme 2.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/theme-elementary\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-12T14:37:44+05:45\n"
+"POT-Creation-Date: 2026-11-20T17:56:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.9.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: elementary-theme\n"
 
 #. Theme Name of the theme
+#: style.css
 msgid "Elementary Theme"
 msgstr ""
 
 #. Theme URI of the theme
 #. Author URI of the theme
+#: style.css
 msgid "https://rtcamp.com/"
 msgstr ""
 
 #. Description of the theme
-msgid "Elementary is a FSE based theme,"
+#: style.css
+msgid "A modern starter theme for developing Full Site Editing (FSE) block-based WordPress themes with comprehensive developer tools and best practices."
 msgstr ""
 
 #. Author of the theme
+#: style.css
 msgid "rtCamp"
+msgstr ""
+
+#. translators: %s: The theme name.
+#: inc/Autoloader.php:51
+#, php-format
+msgid "%s: The Composer autoloader was not found. If you installed the theme from the GitHub source code, make sure to run `composer install`."
+msgstr ""
+
+#: inc/Core/Menu.php:38
+msgid "Primary Menu"
+msgstr ""
+
+#: inc/Core/Menu.php:39
+msgid "Footer Menu"
+msgstr ""
+
+#: inc/Modules/BlockExtensions/MediaTextInteractive.php:35
+msgid "Adds interactive behaviour to the core Media & Text block — play/pause controls, scroll-triggered video, and column layout enhancements."
+msgstr ""
+
+#: inc/Modules/Settings/FeaturesSettingsPage.php:39
+msgid "Elementary Features"
+msgstr ""
+
+#: inc/Modules/Settings/FeaturesSettingsPage.php:46
+msgid "Features"
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:53
+msgid "Elementary Theme Settings"
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:60
+msgid "Elementary"
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:82
+msgid "Example Text"
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:83
+msgid "A demo text field saved as a WordPress option."
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:126
+msgid "Theme Options"
+msgstr ""
+
+#: inc/Modules/Settings/ThemeOptions.php:152
+msgid "Theme-wide options exposed to the editor and front-end."
+msgstr ""
+
+#: inc/Modules/Shortcodes/AuthorBio.php:40
+msgid "Enables the [elementary_author_bio] shortcode, which renders an author biography block on posts and pages."
 msgstr ""
 
 #: patterns/footer.php
@@ -42,11 +100,12 @@ msgid "Footer pattern."
 msgstr ""
 
 #. Translators: WordPress link.
-#: patterns/footer.php:25
+#: patterns/footer.php:29
+#, php-format
 msgid "Proudly powered by %s"
 msgstr ""
 
-#: patterns/footer.php:26
+#: patterns/footer.php:30
 msgid "https://wordpress.org/"
 msgstr ""
 
@@ -60,17 +119,39 @@ msgctxt "Pattern description"
 msgid "404 pattern content."
 msgstr ""
 
-#: patterns/hidden-404.php:17
+#: patterns/hidden-404.php:21
 msgctxt "Error code for a webpage that is not found."
 msgid "404"
 msgstr ""
 
-#: patterns/hidden-404.php:23
+#: patterns/hidden-404.php:27
 msgid "This page could not be found. Maybe try a search?"
 msgstr ""
 
-#: patterns/hidden-404.php:31
+#: patterns/hidden-404.php:35
 msgid "Search"
+msgstr ""
+
+#: patterns/media-text-interactive.php
+msgctxt "Pattern title"
+msgid "Media Text Interactive"
+msgstr ""
+
+#: patterns/media-text-interactive.php
+msgctxt "Pattern description"
+msgid "Media Text Interactive pattern content."
+msgstr ""
+
+#: patterns/media-text-interactive.php:23
+msgid "Title"
+msgstr ""
+
+#: patterns/media-text-interactive.php:27
+msgid "Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis obcaecati vel impedit sed commodi error eveniet veniam. Delectus illum quis porro expedita quibusdam officiis iste est dicta assumenda, esse natus."
+msgstr ""
+
+#: patterns/media-text-interactive.php:34
+msgid "Play"
 msgstr ""
 
 #: patterns/page-creation-pattern.php
@@ -81,4 +162,63 @@ msgstr ""
 #: patterns/page-creation-pattern.php
 msgctxt "Pattern description"
 msgid "A page creation pattern"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "No Title Template"
+msgstr ""
+
+#: theme.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Foreground"
+msgstr ""
+
+#: theme.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Background"
+msgstr ""
+
+#: theme.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr ""
+
+#: theme.json
+#: styles/light.json
+msgctxt "Color name"
+msgid "Secondary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Tertiary"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "System Font"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Source Serif Pro"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr ""
+
+#: styles/light.json
+msgctxt "Color name"
+msgid "Transparent"
 msgstr ""
